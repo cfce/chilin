@@ -1,0 +1,15 @@
+\section*{FRiP}
+FRiP (Fraction of Reads in Peaks), is a quality measure for ChIP-Seq and Dnase-Seq experiments.  FRiP is simply the percentage of all tags that fall in 'hotspots', regions of local enrichment of short-read sequence tags mapped to the genome, i.e. MACS peaks.  FRiP scores are positively correlated with true positive rates and replicate reproducibility.  
+
+\begin{table}[h]
+\caption{FRiP measures}\label{friptable}
+\begin{tabularx}{\textwidth}{ |X|X|X|X| }
+\hline
+Sample & Reads under Peaks & Total Reads & FRiP  \\
+\hline
+\BLOCK{ for line in frip_table }
+\VAR{line|join(' & ')} \\
+\hline
+\BLOCK{ endfor }
+\end{tabularx}
+\end{table}

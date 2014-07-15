@@ -1,0 +1,24 @@
+\section*{Motif QC analysis}
+\subsection*{Motif QC measurement analysis}
+Sequence motifs are short, recurring patterns in DNA that are presumed to have a biological function. Often they indicate sequence-specific binding sites for proteins such as nucleases and transcription factors (TF). \footnote{ Patrik D'haeseleer. What are DNA sequence motifs. nature biotechnology 2006,24.}
+We scan the top 1000 peak regions found in MACS for both known sequence and denovo motifs.  To avoid redundant motifs, we merge similar motifs shown as ``merged''.\\*
+{\bf Name}: corresponding factor name for motif seqLogo.\\*
+{\bf Z-score}: a statistical measure of the motif credibility.  A good motif will usuaull have a z-score of less than -15.\\*
+{\it NOTE: if no motif z-score is below the -15 threshold, then no significant motif was found and the motif table will be empty.}\\*
+{\bf Hits}: number of times the motif occurs in the top 1000 regions. The more it occurs, the more credible the motif.\\*
+{\bf Logo}: a graphical plot of the information score of each base.\\*
+Motif QC analysis is helpful in determining antibody quality (i.e. that it sensitive and selective).  For example, if we use an AR antibody, we should expect AR motifs to appear (among other motifs as well).
+(Table ~\ref{motif})
+
+\begin{table}[h!]
+        \caption{Seqpos QC measurement} \label{motif}
+\begin{tabular}{llccp{3.0in}}
+\hline
+Factor name & Z-score & Hits  & Motif logo \tabularnewline
+\hline
+\BLOCK{ for line in motif_table }
+*\VAR{line.factors|join(' ')} & \VAR{line.seqpos_results.zscore} & \VAR{line.seqpos_results.numhits} & \parbox[l]{0.7em}{\includegraphics[scale=0.3]{\VAR{line.logoImg}}} \\
+\BLOCK{ endfor }
+\hline
+\end{tabular}
+\end{table}

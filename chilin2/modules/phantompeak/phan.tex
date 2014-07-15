@@ -1,0 +1,18 @@
+%% http://tex.stackexchange.com/questions/68001/side-by-side-minipage-figures
+\section*{Fragment Length QC}
+\subsection*{Strand Cross Correlation Figure}
+In order to estimate the fragment length, we compute the strand cross-
+correlation values against given shift-sizes.  The red-line(s) indicate
+the shift-size(s) that result in the maximum correlation value, i.e.
+the ``estimated'' fragment length.  The blue line represents the fragment
+length that was used by MACS, i.e. the ``actual'' fragment length.  The
+closer the two lines are, the better.
+
+\noindent\begin{minipage}{\textwidth}
+\BLOCK{ for p in phan }
+%%\caption{Phantom QC}\label{fig:p}
+\begin{minipage}[b]{0.45\linewidth}
+      {\includegraphics[width=0.7\linewidth]{\VAR{p}}}
+\end{minipage}
+\BLOCK{ endfor }
+\end{minipage}

@@ -1,0 +1,22 @@
+\section*{FastQC GC content distributions}
+We draw the GC content of each of your replicates and controls.  The expected GC content distribution (i.e. theoretical) is unimodal.  A bi-modal distribution may indicate sample contamination.
+
+%\begin{figure}[ht]
+%\centering
+%
+%\setlength{\abovecaptionskip}{0pt}
+%\setlength{\belowcaptionskip}{0pt}
+
+\noindent\begin{minipage}{\linewidth}
+
+\BLOCK{ for name, plot in gccontent_graphs }
+%%\caption{\VAR{name}} \label{gccontentplot}
+\begin{minipage}[b]{0.5\linewidth}
+      {\includegraphics[width=0.8\textwidth]{\VAR{plot}}}  \\
+  \VAR{name} \\ 
+\end{minipage}
+\BLOCK{ endfor}
+
+\end{minipage}
+
+\newpage
