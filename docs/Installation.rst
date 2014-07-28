@@ -77,19 +77,20 @@ Dependent softwares
 --------------------
 Following installation are tested under the bash shell and zshell under Ubuntu, CentOS, and Mac.
 
+If you have a nice internet connection speed, use the following links to download all necessary components.(preparing cistrome.org/chilin/materials)
+
 Here is the list of the software we integrate in ChiLin:
 
-============================      ====================================
-Tool Name		          usage
-============================      ====================================
-`seqtk`_                            sub-sample FASTQ files
-`FastQC`_                           sequence quality and gc contents
-`MACS2`_                            peak calling
-`bedtools`_		            operate bed files
-`samtools`_                         convert SAM to BAM
-`BWA`_                              mapping Fastq
-`Bowtie`_	                    library contamination
-============================      ====================================
+============================      ====================================  ==============
+Tool Name		          usage                                 version tested
+============================      ====================================  ==============
+`seqtk`_                            sub-sample FASTQ files              1.0-r32
+`FastQC`_                           sequence quality and gc contents    v0.10.1
+`MACS2`_                            peak calling                        2.0.10.2014XXXX
+`bedtools`_		            operate bed files                   v2.17.0
+`samtools`_                         convert SAM to BAM                  0.1.19+
+`BWA`_                              mapping Fastq                       0.7.7-r441
+============================      ====================================  ==============
 
 It seems that Mycoplasma_ contamination would be a major source of contamination, so we recommended downloading the Mycoplasma fasta for indexing, data is in the link of [[http://mycoplasma.genome.uab.edu/genomes.asp][mycoplasma]] ::
 
@@ -97,7 +98,7 @@ It seems that Mycoplasma_ contamination would be a major source of contamination
 
 first, we use bwa for mapping and samtools for post-mapping filtering::
 
-	sudo apt-get install bwa # or 	sudo apt-get install bowtie
+	sudo apt-get install bwa # or 	sudo apt-get install bowtie 
 	sudo apt-get install samtools
   
 
@@ -155,7 +156,8 @@ Then peaks calling, we use high-rated macs2 for peaks calling::
     sudo pip install MACS2
 
 
-Then, install `mdseqpos`_ and required dependency, refer to `genome`_ for filling settings.py::
+Then, install `mdseqpos`_ and required dependency, refer to `genome`_ for filling settings.py. Take hg19 as an example, first, copy mdseqpos/lib/settings.py.example to mdseqpos/lib/settings.py and modify them in lines 55-64. Take hg19 as example, you create /data/motif/assembly/hg19 directory, put raw and masked genome sequences to that directory. The raw genome ftp is in http://hgdownload.cse.ucsc.edu/goldenpath/hg19/bigZips/chromFa.tar.gz and the masked genome ftp is in http://hgdownload.cse.ucsc.edu/goldenpath/hg19/bigZips/chromFaMasked.tar.gz. 
+::
 
     hg clone https://bitbucket.org/cistrome/cistrome-applications-harvard
     cd cistrome-applications-harvard/mdseqpos
@@ -184,10 +186,10 @@ ChiLin involve `UCSC binary`_ for converting files, download them and put them i
 ============================   ==================================
 Tool Name                      from        
 ============================   ==================================
-bedClip                        trim outlier of coordinates
-bedGraphToBigWig	       convert bedgraph to bigwig
+bedClip                        trim outlier of coordinates 
+bedGraphToBigWig v 4	       convert bedgraph to bigwig
 wigCorrelate                   calculate reads count correlation
-wigToBigWiggle                 convert wiggle to bigwig
+wigToBigWiggle v 4             convert wiggle to bigwig
 ============================   ==================================
 
 For linux x86_64, use the followings::
@@ -259,24 +261,24 @@ Take hg19 as example, we support all species with following annotations.
     bash chilin2/modules/ceas/chromInfo.sh hg19
 
 * If you do not have mysql you can download all chromosome information files from the link::
-  
-   > wget -c from daisy
+   # hg19
+   > wget -c http://cistrome.org/~qqin/chilin/materials/hg19_chilin.tar.gz
 
-* To get merged exons, introns, promoters and intergenic regions, open `UCSC table browser`_::
+* To get merged exons, introns, promoters and intergenic regions, open `UCSC table browser`_
 
-    Use Browser step by step
-    1. Go to the UCSC table browser.
-    2. Select desired species and assembly, such as hg19
-    3. Select group: Genes and Gene Prediction Tracks
-    4. Select track: Refseq
-    5. Select table: genes and prediction track
-    6. Select region: genome
-    7. Select output format: BED - browser extensible data
-    8. Enter output file: UCSC_exon/gene.bed
-    9. Hit the 'get output' button
-    10. A second page of options relating to the BED file will appear.
-    11. Under 'create one BED record per:'. Select 'Whole Genome/Exons Plus'
-    12. Hit the 'get BED' option.
+  Use Browser step by step
+  1. Go to the UCSC table browser.
+  2. Select desired species and assembly, such as hg19
+  3. Select group: Genes and Gene Prediction Tracks
+  4. Select track: Refseq
+  5. Select table: genes and prediction track
+  6. Select region: genome
+  7. Select output format: BED - browser extensible data
+  8. Enter output file: UCSC_exon/gene.bed
+  9. Hit the 'get output' button
+  10. A second page of options relating to the BED file will appear.
+  11. Under 'create one BED record per:'. Select 'Whole Genome/Exons Plus'
+  12. Hit the 'get BED' option.
 
     after that, run:
     >bash chilin2/modules/ceas/meta_info.sh gene.bed exon.bed 2000 chromInfo

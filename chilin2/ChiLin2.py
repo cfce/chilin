@@ -70,7 +70,7 @@ def parse_args(args=None):
     ## add simple mode for chilin
     #generate a species list
     cf = SafeConfigParser()
-    cf.read(resource_filename('chilin2','config/chilin.conf'))
+    cf.read(resource_filename('chilin2.modules','config/chilin.conf'))
     sections_ls = ['basics', 'tool', 'bwa', 'macs2', 'reg', 'conservation',
                    'seqpos', 'qc', 'contamination']
     species_ls = [s for s in cf.sections() if s not in sections_ls]
@@ -105,6 +105,10 @@ def parse_args(args=None):
                        help="Only step before this number will be processed ")
         p.add_argument("--skip", dest="skip_step", default="",
                        help="Steps to skip, use comma as seperator")
+
+        p.add_argument("--mapper", dest="mapper", default="bwa",
+                       choices=["bwa", "bowtie", "star"],
+                       help="choose your mapper")
 
         ## new option for use total reads or down sampling 4M
         p.add_argument("--total", dest="down", action="store_false",
@@ -357,6 +361,7 @@ def main(args=None):
         conf.long = args.long
         conf.frip = args.frip
         conf.down = args.down
+        conf.mapper = args.mapper
 #        conf.unsc = args.unsc
         
         ## edit macs2 section species part to
@@ -394,6 +399,7 @@ def main(args=None):
         conf.frip = args.frip
         conf.down = args.down
         conf.long = args.long
+        conf.mapper = args.mapper
 #        conf.unsc = args.unsc
 
         conf.root_dir = os.path.dirname(args.treat.split(",")[0]) ## input and output should be in the same directory
@@ -454,6 +460,7 @@ def main(args=None):
                 conf = ChiLinConfig(a_conf)
                 conf.frip = args.frip
                 conf.down = args.down
+                conf.mapper = args.mapper
                 conf.long = args.long
 #                conf.unsc = args.unsc
                 conf.threads = args.threads

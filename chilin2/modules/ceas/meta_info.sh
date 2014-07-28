@@ -27,7 +27,7 @@
 if [ $# -lt 4 ];
 then
     echo "$0 gene.bed exon.bed size <limit>"
-    echo "example: $0 gene.bed exon.bed 2000 chromInfo.txt"
+    echo "example: $0 gene.bed exon.bed 2000 hg19_chromInfo.txt"
     exit 1
 fi
 

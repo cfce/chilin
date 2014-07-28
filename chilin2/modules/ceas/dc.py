@@ -80,7 +80,7 @@ def bedAnnotate_ceas(workflow, conf):
     summits = conf.prefix + "_sort_summits.bed" if conf.get("macs2", "type") in ["both", "narrow"] else conf.prefix + "_b_sort_peaks.broadPeak"
     ceas = attach_back(workflow, ShellCommand(
             """{tool} -g {param[geneTable]} -b {input} > {output}""",
-            tool=conf.get("tool", "bedAnnotate"),
+            tool="bedAnnotate.py",
             input=summits,
             output=conf.prefix + ".meta",
             param={"geneTable": conf.get_path(conf.get("basics", "species"), 

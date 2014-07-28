@@ -18,3 +18,9 @@ install.sh
 dist
 distribute-*
 testsuite
+.hg
+*~
+.hgignore
+chilin.conf.filled
+chilin2/modules/config/chilin.conf
+hg19.refGene

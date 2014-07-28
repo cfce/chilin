@@ -142,8 +142,3 @@ class ChiLinConfig(ConfigParser):
         if not os.path.exists(target_path):
             os.makedirs(target_path)
         return target_path
-        
-    @property
-    def mapper(self):
-        return self.get("tool", "mapper").strip().lower()
-

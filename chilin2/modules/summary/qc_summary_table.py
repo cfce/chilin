@@ -19,7 +19,7 @@ def latex_environ(workflow, conf):
             param={"id": conf.id,
                    "version": conf.get("basics", "version"),
                    "user": conf.get('basics', 'user'),
-                   "bmcard": resource_filename("chilin2.modules.summary", "bmcart")}))
+                   "bmcard": resource_filename("chilin2.modules.summary", "bmcart.cls").rstrip('.cls')}))
 
     attach_back(workflow,
         PythonCommand(
