@@ -16,7 +16,10 @@ story. Below is three sections of tables for universal name rules.
 Raw Data
 ========
 
-ChiLin supports input single end FASTQ files:
+
+.. note::
+
+     ChiLin supports input single end FASTQ files
 
 .. _Raw Data:
 
@@ -29,15 +32,22 @@ FASTQ.gz  gz       single end
 
 -----
 
-Three modes of running
-========================
+Instructions to usage
+=========================
 
 
 .. _quick-start:
 
 
-Quick start with The simple mode
+Quick start with the simple mode
 ---------------------------------
+
+Using test data as follows::
+
+   > wget -c cistrome.org/~qqin/test_data/foxa1_t1.fastq
+   > wget -c cistrome.org/~qqin/test_data/foxa1_c1.fastq
+   ChiLin2.py simple -p narrow -t foxa1_t1.fastq,foxa1_t1.fastq  -c foxa1_c1.fastq,foxa1_c1.fastq -i local -o local -s hg19 --skip 10,12  --dont_remove
+  
 
 This is major and the easiest mode to run ChiLin::
 
@@ -50,17 +60,28 @@ See more options by::
 
   ChiLin2.py simple -h
 
-----
+.. _simple-mode:
+
+simple mode usage
+---------------------
+
+- -t In simple mode, this is the options for specifying path to treatment.
+- -c In simple mode, this is the options for specifying path to control.
+- -p peaks calling type, narrow or broad
+- -i prefix of the output name
+- -o output directory
+- -s species, must be filled
+- -u user
 
 gen mode
 ------------------------------
-This mode is to generate config file for `run-mode`_. A config file is look like this,
 
+This mode is to generate config file for `run-mode`_. A config file is look like this,
 
 - The major section user needs to fill is the :envvar:`[basics] <[basics]>` section.
 
 .. code-block:: ini
-		
+
 		[basics]
 		user = anonymous
 		id = local
@@ -71,6 +92,61 @@ This mode is to generate config file for `run-mode`_. A config file is look like
 		cont = foxa1_c1.fastq,foxa1_c1.fastq
 		output = output_directory
 		version = 2.0.0
+
+run mode usage
+------------------------------
+
+.. _run-mode:
+
+After configurating the config files above, you could use run mode with a single command::
+
+  ChiLin2.py gen -o my_config
+  ## modify tool parameters and run
+  ChiLin2.py run -c my_config
+
+
+batch mode usage
+------------------------------
+This mode help user run dataset one by one.
+
+After configurating a batch of the config files above, such as e.g. 1.conf, 2.conf, 3.conf, then you fill in a file called *batch.conf*::
+
+  1.conf
+  2.conf
+  3.conf
+
+you could use batch mode with a single command::
+
+  ChiLin2.py batch -b batch.conf
+  
+Common options
+---------------------------
+Common options can be used for simple mode, run and batch modes.
+
+- --skip, step control, e.g::
+
+    ChiLin2.py simple -s hg19 -i id -p narrow -o output -u user --skip 1,3,5,9,10,11 -t treat1.fastq,treat2.fastq`
+
+  - step 1(*can skip*): FastQC sequence quality evaluation, reads GC contents evaluation and library contamination, this step can be skipped.
+  - step 2: bwa(default), bowtie or star mapping, this step cannot be skipped, because this provided necessary BAM files.
+  - step 3: sub-sample bam files and do macs2 fragment size estimation.
+  - step 4: sub-sample bam files(if step 3 is run, skip) and do PBC evaluation
+  - step 5: sub-sample bam files(if step 3 is run, skip) and calculate reads ratio in meta regions
+  - step 6: call peak for replicates samples, and do replicates peak overlap/correlation analysis
+  - step 7: call peak for merged bam file, this step cannot be skipped, because this provided peak for annotation step
+  - step 8: calculate FRiP scores for each sample.
+  - step 9: use bedAnnotate.py script to evaluate merged peak calling meta regions distribution(promoters, exons, introns, intergenic, dhs, black list regions)
+  - step 10(*can skip*): draw Phastcon scores distribution around peak call summits, if you do not have Phastcon score bigwig files, use --skip 10 or leave chilin.conf blank for that reference
+  - step 11(*can skip*): use MDSeqPos to perform motif analysis
+  
+- --dont_resume, by default, each re-run would use previous temporary files to resume from the step it crashed. When dont_resume is on, ChiLin would start from first step, so user do not to clean up the work directory.
+- --dont_remove, keep temporary files
+- --threads, BWA, Bowtie and FastQC multithreads options.
+- --mapper, to choose mapping tools
+
+
+Instructions to config file
+==============================
 
 basics
 ----------------------------
@@ -126,18 +202,14 @@ The tool section is like this:
 
 .. literalinclude:: ../chilin.conf
    :language: ini
-   :lines: 14-19
-   :emphasize-lines: 15-18
+   :lines: 14-18
+   :emphasize-lines: 15-16
    :linenos:
 
 .. envvar:: [tool]
 
     Lists all the meta-data of current workflow.
     Consist of the following options:
-
-    .. envvar:: spp
-
-       absolute path to ``run_spp.R``
 
     .. envvar:: mdseqpos
 
@@ -146,14 +218,6 @@ The tool section is like this:
     .. envvar:: macs2
 
        absolute path to ``macs2``
-
-    .. envvar:: bedannotate
-
-       The absolute paths of built-in ``bedAnnotate.py``
-
-    .. envvar:: mapper
-
-       Default is bwa, alternatively bowtie and star
 
 
 species
@@ -194,6 +258,14 @@ And,
 
        absolute path to chromosome bed file
 
+    .. envvar:: dhs
+
+       absolute path union DHS regions
+
+    .. envvar:: velcro
+
+       absolute path black list regions
+
     .. envvar:: regpotential
 
        absolute path species gene bed files from UCSC gene table browser
@@ -201,6 +273,10 @@ And,
     .. envvar:: conservation
 
        absolute path to the directory containing UCSC Phastcon score bigwig files
+
+    .. envvar:: geneTable
+
+       standard refSeq annotation table from UCSC table browser
 
     .. envvar:: ceas_exon
 
@@ -297,76 +373,12 @@ ChiLin has some user-defined parameters for macs2, regulatory potential, conserv
 		window width around peaks summits for plotting conservation
        
        
-		
-run mode
-------------------------------
-
-.. _run-mode:
-
-After configurating the config files above, you could use run mode with a single command::
-
-  ChiLin2.py run -c config
-
-
-batch mode
-------------------------------
-This mode help user run dataset one by one.
-
-After configurating a batch of the config files above, such as e.g. 1.conf, 2.conf, 3.conf, then you fill in a file called *batch.conf*::
-
-  1.conf
-  2.conf
-  3.conf
-
-you could use batch mode with a single command::
-
-  ChiLin2.py batch -b batch.conf
-
-
--------------
-
-Options instructions
-===============================
-
-Common options
----------------
-Common options can be used for simple mode, run and batch modes.
-
-- --skip, step control, e.g::
-    
-    ChiLin2.py simple -s hg19 -i id -p narrow -o output -u user --skip 1,3,5,9,10,11,12 -t treat1.fastq,treat2.fastq`
-    
-  - step 1: FastQC sequence quality evaluation, reads GC contents evaluation and library contamination, this step can be skipped.
-  - step 2: bwa(default), bowtie or star mapping, this step cannot be skipped, because this provided necessary BAM files.
-  - step 3: sub-sample bam files and do macs2 fragment size estimation.
-  - step 4: sub-sample bam files(if step 3 is run, skip) and do PBC evaluation
-  - step 5: sub-sample bam files and calculate reads ratio in meta regions
-  - step 6: call peak for replicates samples, and do replicates peak overlap/correlation analysis
-  - step 7: call peak for merged bam file, this step cannot be skipped, because this provided peak for annotation step
-  - step 8: calculate FRiP scores for each sample.
-  - step 9: use bedAnnotate.py script to evaluate merged peak calling meta regions distribution(promoters, exons, introns, intergenic, dhs, velcro regions)
-  - step 10: draw Phastcon scores distribution around peak call summits
-  - step 11: use MDSeqPos to perform motif analysis
-  
-- --dont_resume, by default, each re-run would use previous temporary files to resume from the step it crashed. When dont_resume is on, ChiLin would start from first step, so user do not to clean up the work directory.
-- --threads, BWA, Bowtie and FastQC multithreads options.
-  
-
-.. _simple-mode:
-
-simple mode options
----------------------
-- -t In simple mode, this is the options for specifying path to treatment.
-- -c In simple mode, this is the options for specifying path to treatment.
-
 .. _Instructions_table:
-
-
 .. _Instructions_results:
 
 Instructions to results
 ==========================
-The output prefix is from 1. `simple-mode`_ -i specified or 2. `run-mode`_ filled in :envvar:`[basics] <[basics]>` section :envvar:`id <id>` part. The output directory is `simple mode` -o specified or 2. `run-mode`_  filled in :envvar:`[basics] <[basics]>` section :envvar:`output <output>` part. For a fully test dataset with replicates of treatments and replicates of controls, the results folder are like following, which are generated with --dont_remove option, by default, only part of the files would be preserved::
+The output prefix is from 1. `simple-mode`_ -i specified or 2. `run-mode`_ filled in :envvar:`[basics] <[basics]>` section :envvar:`id <id>` part. The output directory is `simple mode` -o specified or 2. `run-mode`_  filled in :envvar:`[basics] <[basics]>` section :envvar:`output <output>` part. For a fully test dataset with replicates of treatments and replicates of controls, the results folder are like following, which are generated with *-dont_remove* option, by default, only part of the files would be preserved. If you only have one sample, do not look at *rep2*. Without *--dont_remove*, you will get a `cleaner`_ directory::
 
   output
   |-- json  ## qc statistics
@@ -648,6 +660,8 @@ The output prefix is from 1. `simple-mode`_ -i specified or 2. `run-mode`_ fille
   |-- id_treat_rep2mbr_total.bwa
   `-- id_treatment.bam  ## samtools merged filtered bam files
 
+
+.. _cleaner:
 
 Without `--dont_remove` option, the work directory would be cleaned up::
 

@@ -2,363 +2,439 @@
 Installation
 ===============
 :abbr:`ChiLin (ChIP-seq pipeline)`
-   
-ChiLin_ Theoretically, we support all species listed on UCSC, which have masked, non-masked genomics fasta file, and standard RefSeq files.
-The species we have tested includes: hg19, hg38, mm9, mm10. We have successfully deployed on Ubuntu, CentOS, Mac.
 
-.. _ChiLin: https://bitbucket.org/Alvin_Qin/chilin/overview
+ChiLin_ Theoretically, we support all species listed on UCSC, which have masked, non-masked genomics fasta, chromosome information file, and standard RefSeq files.
+The species we have tested includes: hg19, hg38, mm9, mm10. We have successfully deployed on Ubuntu, CentOS, Mac, do not support for Windows.
 
-Here is the instruction for step-by-step installation.
+.. _ChiLin: https://github.com/cfce/chilin
 
-Prerequisites
------------------
+Dependent tools Prerequisites
+==============================
+Here is a list of prerequisites, we use python to develop chilin. All related python tool and packages should be installed under the same version of python (fully tested under 2.6/2.7), 
+If you already have these software, skip to `virtualenv_installation`_.
 
-Here is a list of prerequisites:
+============================   ==============================  ==================================
+Tool Name                      Download source                 Usage
+============================   ==============================  ==================================
+git (optional)                 apt-get or yum install          for sync latest tool
+mercurial (optional)           apt-get or yum install          for sync latest tool
+python dev header              apt-get or yum install          for installing numpy
+python setuptools              apt-get or yum install          python package distribution package
+python numpy package           apt-get or yum install          for installing macs and bx-python
+bx-python_                     pip                             parsing bigwig
+cython                         apt-get or yum install          for installing macs and bx-python
+R                              apt-get or yum install          for plotting
+java/gcc/g++                   apt-get/yum install/Xcode       for FastQC/make/samtools etc.
+ghostscript                    apt-get or yum install          for motif plotting
+texlive-latex                  apt-get or yum install          for rendering latex template
+ImageMagick                    apt-get or yum install          convert image
+============================   ==============================  ==================================
 
-============================   =======================  ==================================
-Tool Name                      Download source           Usage
-============================   =======================  ==================================
-git (optional)                 apt-get or yum install    for sync latest tool
-mercurial (optional)           apt-get or yum install    for sync latest tool
-python dev header              apt-get or yum install    for installing numpy
-python numpy package           apt-get or yum install    for installing macs and bx-python
-cython                         apt-get or yum install    for installing macs and bx-python
-R                              apt-get or yum install    for plotting
-java                           apt-get or yum install    for FastQC
-ghostscript                    apt-get or yum install    for motif plotting
-texlive-latex                  apt-get or yum install    for rendering latex template
-============================   =======================  ==================================
+* If you are the administrator, use followings.
 
-Most of the softwares are under source control system, you'd better install, on ubuntu or debian system, install as follows::
+For ubuntu or debian system, install as follows:
 
-        sudo apt-get update
-	sudo apt-get install git
-	sudo apt-get install mercurial
+     .. code-block:: bash
 
-Alternatively, you can download this source control software by hand.  
-
-Install python develop header files and numpy::
-       
-        sudo apt-get install python-dev python-numpy cython
-
-Install R for conservation plot and Motif analysis::
-
-	sudo apt-get install r-base
-
-Install java for FastQC::
-
-        sudo apt-get install default-jre
+		     sudo apt-get update
+		     sudo apt-get install git
+		     sudo apt-get install mercurial
+		     sudo apt-get install python-dev python-numpy python-setuptools cython python-pip
+		     sudo apt-get install r-base
+		     sudo apt-get install default-jre
+		     sudo apt-get install ghostscript
+                     sudo apt-get install imagemagick --fix-missing
+		     sudo apt-get install texlive-latex-base
+		     sudo pip install bx-python
 
 
-Install python package management system files and numpy::
+For centos, use:
+
+     .. code-block:: bash
+
+		     sudo yum install git
+		     sudo yum install mercurial
+		     rpm -Uvh http://mirror.chpc.utah.edu/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+		     sudo yum install tcl tcl-devel tk-devel
+		     sudo yum install R
+		     sudo yum install python-devel numpy python-setuptools python-pip
+                     sudo yum install ImageMagick
+		     sudo easy_install Cython
+		     sudo easy_install bx-python
+		     sudo yum install tetex
 
 
-	sudo apt-get install python-pip
+For mac, we suggest using `macports`_, before install macport, user need to have Xcode and Java installed:
+
+     .. code-block:: bash
+
+		     sudo port install git
+		     sudo port install mercurial
+		     sudo port install py27-setuptools py27-pip py27-nose py27-cython py27-numpy @1.8.1 
+		     sudo port install R 3.1.1
+		     ## For mac latex, install separately, download and click to install it
+		     wget -c http://mirror.ctan.org/systems/mac/mactex/MacTeX.pkg
 
 
-..
-   Install dependency C++ package boost for NSC/RSC/Qtag calculation::
+.. _macports: http://www.macports.org/
 
-	   sudo apt-get install libboost-all-dev
+.. _virtualenv_installation:
 
-.. _boost:	
+* After solving the dependency need above, hopefully you can using the following command to install all dependent software in the virtualenv::
 
+     git clone https://github.com/cfce/chilin
+     cd chilin
+     bash install_linux.sh or bash install_mac.sh
 
-Install prerequisites for motif::
-
-        sudo apt-get install ghostscript
-
-Install *pdflatex* for rending pdf::
-
-        sudo apt-get install texlive-latex-base
+then see `mdseqpos`_ installation and download `dependentdata`_
 
 
-Dependent softwares
---------------------
-Following installation are tested under the bash shell and zshell under Ubuntu, CentOS, and Mac.
+* Or follow the instruction for step-by-step installation.
 
-If you have a nice internet connection speed, use the following links to download all necessary components.(preparing cistrome.org/chilin/materials)
+Overall:
+1. install `dependent software`_
+2. download reference `dependentdata`_
+3. fill in chilin.conf or chilin.conf.filled(this has high priority, do not use this two together), `fill_conf`_
+4. `python setup.py install`
 
-Here is the list of the software we integrate in ChiLin:
+.. note::
+
+   each time, users add a new species section or modify a species reference section in the chilin.conf, users need to reinstall chilin
+
+.. _dependent software:
+
+Dependent softwares 
+========================
+Following installation are tested under the shell under Ubuntu, CentOS, and Mac.
+
+Here is the list of published software and `UCSC binary`_ we have fully tested with ChiLin:
 
 ============================      ====================================  ==============
 Tool Name		          usage                                 version tested
 ============================      ====================================  ==============
-`seqtk`_                            sub-sample FASTQ files              1.0-r32
+`seqtk`_                            sub-sample FASTQ files              1.0
 `FastQC`_                           sequence quality and gc contents    v0.10.1
-`MACS2`_                            peak calling                        2.0.10.2014XXXX
+`BWA`_                              mapping Fastq                       0.7.7
+`samtools`_                         convert SAM to BAM                  0.1.19
 `bedtools`_		            operate bed files                   v2.17.0
-`samtools`_                         convert SAM to BAM                  0.1.19+
-`BWA`_                              mapping Fastq                       0.7.7-r441
+`MACS2`_                            peak calling                        2.0.10.2014XXXX
+bedClip                             trim outlier of coordinates 
+bedGraphToBigWig                    convert bedgraph to bigwig          v 4
+wigCorrelate                        calculate reads count correlation
+wigToBigWig                         convert wiggle to bigwig            v 4
+`MDSeqPos`                          motif scan and SeqPos               v 2.01
 ============================      ====================================  ==============
 
-It seems that Mycoplasma_ contamination would be a major source of contamination, so we recommended downloading the Mycoplasma fasta for indexing, data is in the link of [[http://mycoplasma.genome.uab.edu/genomes.asp][mycoplasma]] ::
-
-.. _Mycoplasma: http://www.biodatamining.org/content/7/1/3/abstract?utm_campaign=22_05_14_BioDataMining_ArticleMailing_EBM_PA_REG_BMCUP&utm_content=8772920153&utm_medium=BMCemail&utm_source=Emailvision
-
-first, we use bwa for mapping and samtools for post-mapping filtering::
-
-	sudo apt-get install bwa # or 	sudo apt-get install bowtie 
-	sudo apt-get install samtools
-  
-
-Second, install *bedtools* for bed and bam comparison::
-
-        sudo apt-get install bedtools
-
-Then, we can install bx-python_  for plotting conservation distribution::
-
-        sudo pip install bx-python
+See :ref:`"basic command" <basic-command>` for using above tools.
 
 
-0 step is to setup a PATH bin for your local installation::
+.. _virtualenv: https://raw.githubusercontent.com/pypa/virtualenv/1.9.X/virtualenv.py
 
-                    mkdir ~/bin
-                    echo -e "export PATH=${PATH}:~/bin" >> ~/.bashrc
+0 step is to setup `virtualenv`_, activate virtualenv each time before using `chilin`, use `macports` python2.7 as python virtualenv version:
+
+     .. code-block:: bash
+
+		     wget -c --no-check-certificate https://raw.githubusercontent.com/pypa/virtualenv/1.9.X/virtualenv.py
+		     python virtualenv.py -p/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python --system-site-packages --distribute chilin_env
+		     source chilin_env/bin/activate
 
 First, seqtk for sampling fastq/fastq.gz, download from github:
 
      .. code-block:: bash
 	
 		     git clone https://github.com/lh3/seqtk
-		     cd seqtk
-		     make
-	             cp seqtk ~/bin	
+		     cd seqtk && make && chmod 755 seqtk && cp seqtk ../chilin_env/bin && cd ..
 
-Then for `FastQC`_, download from the link, and put the binary files into your PATH::
+For UCSC utility, Linux `x86_64` users use the followings:
 
-  
-     wget -c http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.10.1.zip
-     unzip fastqc_v0.10.1.zip
-     chmod -R 755 FastQC
-     cp -r FastQC/* ~/bin/
-  
+     .. code-block:: bash
 
-..
-   Then for NSC/RSC/Qtag, we use phantompeakqc packages derived from spp peaks caller, `phantompeakqc`_ , this needs `boost`_ for compiling:
-
-   - first, spp dependency, enter R console::
-
-	install.packages("caTools")
+		     wget -c http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedGraphToBigWig
+		     wget -c http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedClip
+		     wget -c http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/wigCorrelate
+		     wget -c http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/wigToBigWig
+		     chmod 755 bedGraphToBigWig bedClip wigCorrelate wigToBigWig && cp bedGraphToBigWig bedClip wigCorrelate wigToBigWig chilin_env/bin
 
 
-   - second, install spp.
+For mac `x86_64` users use the followings:
 
-       .. code-block:: bash
+     .. code-block:: bash
 
-			wget -c http://phantompeakqualtools.googlecode.com/files/ccQualityControl.v.1.1.tar.gz
-			tar xvfz ccQualityControl.v.1.1.tar.gz
-			cd phantompeakqualtools/
-			R CMD INSTALL spp_1.10.1.tar.gz
+		     wget -c http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/bedGraphToBigWig
+		     wget -c http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/bedClip
+		     wget -c http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/wigCorrelate
+		     wget -c http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/wigToBigWig
+		     cp bedGraphToBigWig bedClip wigCorrelate wigToBigWig chilin_env/bin
+		     chmod 755 bedGraphToBigWig bedClip wigCorrelate wigToBigWig && cp bedGraphToBigWig bedClip wigCorrelate wigToBigWig chilin_env/bin
 
-Then peaks calling, we use high-rated macs2 for peaks calling::
+Alternatively, users can download and compile them yourselves from `UCSC utility`_:
 
-    sudo pip install MACS2
+.. _UCSC utility: http://genome-source.cse.ucsc.edu/gitweb/?p=kent.git;a=blob;f=src/userApps/README
+
+Then for `FastQC`_, download from the link, and put the binary files into your virtualenv:
+
+     .. code-block:: bash
+
+		     wget -c http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.10.1.zip
+		     unzip fastqc_v0.10.1.zip
+		     chmod -R 755 FastQC
+		     cp -r FastQC/* chilin_env/bin
 
 
-Then, install `mdseqpos`_ and required dependency, refer to `genome`_ for filling settings.py. Take hg19 as an example, first, copy mdseqpos/lib/settings.py.example to mdseqpos/lib/settings.py and modify them in lines 55-64. Take hg19 as example, you create /data/motif/assembly/hg19 directory, put raw and masked genome sequences to that directory. The raw genome ftp is in http://hgdownload.cse.ucsc.edu/goldenpath/hg19/bigZips/chromFa.tar.gz and the masked genome ftp is in http://hgdownload.cse.ucsc.edu/goldenpath/hg19/bigZips/chromFaMasked.tar.gz. 
-::
+Then for bwa, samtools and bedtools, download from the link and compile to put the binary into your virtualenv:
 
-    hg clone https://bitbucket.org/cistrome/cistrome-applications-harvard
-    cd cistrome-applications-harvard/mdseqpos
-    ## refer the following for other steps
+     .. code-block:: bash
 
+		     wget -c --no-check-certificate https://github.com/lh3/bwa/archive/0.7.7.tar.gz
+		     tar xvfz 0.7.7.tar.gz
+		     cd bwa*
+		     make && cp bwa ../chilin_env/bin && cd ..
+
+		     wget -c --no-check-certificate http://sourceforge.net/projects/samtools/files/samtools/0.1.19/samtools-0.1.19.tar.bz2/download -O samtools.tar.bz2
+		     tar xvfj samtools.tar.bz2
+		     cd samtools* && make && cp samtools ../chilin_env/bin && cd ..
+
+		     wget -c --no-check-certificate http://github.com/arq5x/bedtools/archive/v2.17.0.tar.gz
+		     tar xvfz v2.17.0.tar.gz
+		     cd bedtools* && make && cp bin/* ../chilin_env/bin && cd ..
+
+Then peaks calling, we use high-rated macs2 for peaks calling, for version `2.0.10.2014XXXX`, python version needs to be 2.7 for installing macs2:
+
+     .. code-block:: bash
+
+		     wget -c --no-check-certificate https://github.com/taoliu/MACS/archive/de419af20b6b441f0c0b62a3c18a262228409c8a.zip -O macs_2.0.10.2014XXXX.zip 
+		     unzip  macs_2.0.10.2014XXXX.zip 
+		     cd MACS*
+		     python setup_w_cython.py build_ext
+		     python setup.py install
+       
+
+Then, Installation of `mdseqpos`_ needs R `seqLogo` package, open R console and install dependent R packages:
+
+     .. code-block:: python
+
+		     source("http://bioconductor.org/biocLite.R")
+		     biocLite("seqLogo")
+		     library(seqLogo)
+
+Download `mdseqpos`_ dependent masked and non-masked sequence data. Refer to `genome`_ for filling settings.py.
+
+at last, install `mdseqpos`_:
+
+     .. code-block:: bash
+
+		     wget -c --no-check-certificate https://bitbucket.org/cistrome/cistrome-applications-harvard/get/cfec0147b6f6.zip
+		     unzip cfec0147b6f6.zip
+		     cd cistrome*/mdseqpos
+		     cp lib/settings.py.example lib/settings.py
+		     python setup.py install
+      
+Take hg19 as example. Create /data/motif/assembly/hg19/raw and /data/motif/assembly/hg19/masked directory. Download raw and masked genome data. Modify mdseqpos/lib/settings.py.example in lines 55-64 according to where you put the sequence data. 
+
+.. _mdseqpos document: https://bitbucket.org/cistrome/cistrome-applications-harvard/src/270e986a26a0ab3b143dbf9720d990f3654f677f/mdseqpos/?at=default
+
+List of tested species sequence data, 
+
+.. _genome:
+
+============================   ==============================  ==================================
+Genome version                  Raw genome sequence             Masked genome sequence
+============================   ==============================  ==================================
+hg19                           hg19_raw_		       hg19_mask_
+hg38			       hg38_raw_		       hg38_mask_
+mm9			       mm9_raw_  		       mm9_mask_
+mm10			       mm10_raw_		       mm10_mask_
+============================   ==============================  ==================================
+
+uncompress the above *raw* and *masked* sequence into directory, rename *masked* *chrxxx.fa* to *chrxxx.fa.masked*, then fill in `settings.py` then install mdseqpos, See `mdseqpos document`_ if necessary.
+
+.. _hg19_raw: http://hgdownload.cse.ucsc.edu/goldenpath/hg19/bigZips/chromFa.tar.gz
+.. _hg19_mask: http://hgdownload.cse.ucsc.edu/goldenpath/hg19/bigZips/chromFaMasked.tar.gz
+.. _hg38_raw: http://hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/hg38.chromFa.tar.gz
+.. _hg38_mask: http://hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/hg38.chromFaMasked.tar.gz
+.. _mm9_raw: http://hgdownload.cse.ucsc.edu/goldenpath/mm9/bigZips/chromFa.tar.gz
+.. _mm9_mask: http://hgdownload.cse.ucsc.edu/goldenpath/mm9/bigZips/chromFaMasked.tar.gz
+.. _mm10_raw: http://hgdownload.cse.ucsc.edu/goldenpath/mm10/bigZips/chromFa.tar.gz	       
+.. _mm10_mask: http://hgdownload.cse.ucsc.edu/goldenpath/mm10/bigZips/chromFaMasked.tar.gz
+
+	       
+For other genomes, here is the major list we tested:
 	
-- fill in the :envvar:`[tool] section <[tool]>`::
-  
+* Now fill in the chilin.conf in chilin :envvar:`[tool] section <[tool]>`::
+
     [tool]
     mdseqpos = path/MDSeqPos.py
     macs2 = path/macs2
-    bedannotate = path/bedAnnotate.py
-  
-  
-Open R console and install dependent R packages::
-
-   source("http://bioconductor.org/biocLite.R")
-   biocLite("seqLogo")
-   library(seqLogo)
 
 
-Installation of MDSeqpos needs dependent masked and non-masked sequence data.
-  
-ChiLin involve `UCSC binary`_ for converting files, download them and put them into PATH:
-
-============================   ==================================
-Tool Name                      from        
-============================   ==================================
-bedClip                        trim outlier of coordinates 
-bedGraphToBigWig v 4	       convert bedgraph to bigwig
-wigCorrelate                   calculate reads count correlation
-wigToBigWiggle v 4             convert wiggle to bigwig
-============================   ==================================
-
-For linux x86_64, use the followings::
-
-   wget -c http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedGraphToBigWig
-   wget -c http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedClip
-   wget -c http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/wigCorrelate
-   wget -c http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/wigToBigWiggle
-
-  
 .. _dependentdata:
+
 
 Dependent data
 ==============
 
+We have packaged reference data for hg19/hg38/mm9/mm10 on our server.
 
-Take hg19 as example, we support all species with following annotations.
+There are two categories of data.
 
-* Before preparing dependent data, use a uniform data::
+First is large disk usage data:
 
-    mkdir  ~/data
+============================   =====================  =========================
+Data Name                       Used by                Data Source         
+============================   =====================  =========================
+:envvar:`genome_index`          bwa/bowtie/star        raw fasta indexed files
+:envvar:`conservation`          conservation_plot.py   wiggle files
+============================   =====================  =========================
+
+Second is small pieces of reference files:
+
+.. _reference_small:
+
+.. code-block:: bash
+
+		## hg19
+		wget -c http://cistrome.org/~qqin/chilin/materials/hg19_chilin.tar.gz
+		## hg38
+		wget -c http://cistrome.org/~qqin/chilin/materials/hg38_chilin.tar.gz
+		## mm9
+		wget -c http://cistrome.org/~qqin/chilin/materials/mm9_chilin.tar.gz
+		## mm10
+		wget -c http://cistrome.org/~qqin/chilin/materials/mm10_chilin.tar.gz
+		## contamination index
+		wget -c http://cistrome.org/~qqin/chilin/materials/mycoplasma_bwa_index.tar.gz
+                ## hg38 index
+   		wget -c http://cistrome.org/~qqin/chilin/materials/hg38_bwa_index.tar.gz
+                ## mm10 index
+   		wget -c http://cistrome.org/~qqin/chilin/materials/mm10_bwa_index.tar.gz
+                ## mm9 index
+   		wget -c http://cistrome.org/~qqin/chilin/materials/mm9_bwa_index.tar.gz
+                ## hg19 index
+   		wget -c http://cistrome.org/~qqin/chilin/materials/hg19_bwa_index.tar.gz
+                ## hg19 placetalmammals Phastcons conservation tracks
+   		wget -c http://cistrome.org/~qqin/chilin/materials/hg19_placental_conservation.tar.gz
+                ## mm9 placetalmammals Phastcons conservation tracks
+                wget -c http://cistrome.org/~qqin/chilin/materials/mm9_placental_conservation.tar.gz
+
+============================   =====================  ======================================
+Data Name                       Used by                Data Source         
+============================   =====================  ======================================
+:envvar:`chrom_len`             samtools              `UCSC table browser`_  
+:envvar:`chrom_bed`             bedtools              `UCSC table browser`_
+:envvar:`regpotential`          RegPotential          `UCSC table browser`_
+:envvar:`dhs`                   bedtools               Union DHS regions home processed
+:envvar:`velcro`                bedtools	      `ENCODE track`_ blacklist regions
+:envvar:`geneTable`             bedAnnotate           `UCSC table browser`_
+:envvar:`ceas_exon`             bedtools	      `UCSC table browser`_ merged exons
+:envvar:`ceas_intron`           bedtools	      `UCSC table browser`_ merged introns
+:envvar:`ceas_intergenic`       bedtools	      `UCSC table browser`_ merged intergenic
+:envvar:`ceas_promotor`         bedtools	      `UCSC table browser`_ merged promoter
+:envvar:`[contamination]`	bwa                   `Mycoplasma`_
+============================   =====================  ======================================
 
 
-.. _genome:
+* Followings is how we generate these reference files, if you have any species other than hg19/hg38/mm9/mm10, you can find the reference files with the similar ways.
 
-* First, preparing raw genome fasta for getting genome index for bwa and bowtie, and masked and raw genome sequence for MDSeqPos sequence database::
+Mycoplasma genome
+---------------------
 
-    use bowtie source codes contained e_coli for testing your library purity
+It seems that Mycoplasma_ contamination would be a major source of contamination, so we recommended downloading the Mycoplasma fasta for indexing, data is in the link of the `mycoplasma genome`_.
 
-    > wget -c ftp://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/chromFa.tar.gz
-    > wget -c ftp://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/chromFaMasked.tar.gz
-    > tar xvfz chromFaMasked.tar.gz
-    > tar xvfz chromFa.tar.gz
-    # cat all base chromosome for indexing genome into hg19.fasta
-    > bwa index -p hg19 -a bwtsw hg19.fasta
+.. _Mycoplasma: http://www.biodatamining.org/content/7/1/3/abstract?utm_campaign=22_05_14_BioDataMining_ArticleMailing_EBM_PA_REG_BMCUP&utm_content=8772920153&utm_medium=BMCemail&utm_source=Emailvision
+.. _mycoplasma genome: http://mycoplasma.genome.uab.edu/genomes.asp
 
-..
-   * (Optional), Motif analysis genome masked and raw genome, such as hg19,
+Then index with `bwa index -a is mycoplasma.fasta`.
 
-       .. code-block:: bash
+BWA Index 
+--------------------
 
+download raw `genome`_ sequence data, and `tar xvfz` them and `cat *fa > genome.fa`. Use the following to index them:
 
-	   wget -c http://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/chromFa.tar.gz
+.. code-block:: bash
 
-       .. code-block:: bash
+		bwa index -a bwtsw genome.fasta
 
-
-	   wget -c http://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/chromFaMasked.tar.gz
-
-.. note::
-
-   Our pipeline starts from fastq or fastq.gz file, currently, we do not support bam, bed file, and ab solid fastq file.
-  
-..
-   * if platform is ab solid colorspace sequence, latest bwa may not support it, used version before 0.6.0 instead::
-
-       > bwa index -c -p hg19_color -a bwtsw hg19.fasta
-
-..
-   * if platform is ab solid colorspace sequence, latest bwa may not support it, used bowtie instead::
-       
-       > bwa index -c -p hg19_color -a bwtsw hg19.fasta
+Then fill in species specific reference section `species_ref`_.
 
 
-
-* Second, get chromosome information and chromosome bed files, we have a auxiliary script, user needs to install mysql ::
-
-    sudo apt-get install mysql-client-core-5.5
-    bash chilin2/modules/ceas/chromInfo.sh hg19
-
-* If you do not have mysql you can download all chromosome information files from the link::
-   # hg19
-   > wget -c http://cistrome.org/~qqin/chilin/materials/hg19_chilin.tar.gz
-
+UCSC table browser
+---------------------
 * To get merged exons, introns, promoters and intergenic regions, open `UCSC table browser`_
 
-  Use Browser step by step
-  1. Go to the UCSC table browser.
-  2. Select desired species and assembly, such as hg19
-  3. Select group: Genes and Gene Prediction Tracks
-  4. Select track: Refseq
-  5. Select table: genes and prediction track
-  6. Select region: genome
-  7. Select output format: BED - browser extensible data
-  8. Enter output file: UCSC_exon/gene.bed
-  9. Hit the 'get output' button
-  10. A second page of options relating to the BED file will appear.
-  11. Under 'create one BED record per:'. Select 'Whole Genome/Exons Plus'
-  12. Hit the 'get BED' option.
+Use Browser step by step
+1. Go to the UCSC table browser.
+2. Select desired species and assembly, such as hg19
+3. Select group: Genes and Gene Prediction Tracks
+4. Select track: Refseq
+5. Select table: genes and prediction track
+6. Select region: genome
+7. Select output format: BED - browser extensible data
+8. Enter output file: UCSC_exon/gene.bed
+9. Hit the 'get output' button
+10. A second page of options relating to the BED file will appear.
+11. Under 'create one BED record per:'. Select 'Whole Genome/Exons Plus'
+12. Hit the 'get BED' option.
 
-    after that, run:
-    >bash chilin2/modules/ceas/meta_info.sh gene.bed exon.bed 2000 chromInfo
+If you have mysql configured properly, auxiliary scripts modified from biostar may be useful, for debian and for hg19, or use `reference_small`_ data above::
 
+  sudo apt-get install mysql-client-core-5.5  
 
-* get bed files for computing regulatory potentials::
-
-    > bash chilin2/modules/ceas/mysql_reg.sh hg19
-
-* (Optional) get Phaston conservation, for most common species version, such as hg19::
-
-   > wget -c http://hgdownload-test.cse.ucsc.edu/goldenPath/hg19/phastCons46way/placentalMammals/
-
-   > wigToBigWiggle to convert them into bigwiggle, download only the normal chromosome wig.gz files and convert them.
-
-The ChiLin package includes all the build-in data for hg19 and mm9. For other species, you may need to download these data from data source or custom it yourself.
+  1.bash chilin2/modules/ceas/chromInfo.sh hg19  ## get chrom_len and chrom_bed
+  2.bash chilin2/modules/ceas/meta_info.sh gene.bed exon.bed 2000 chromInfo_file(from 1) ## get ceas_exon, ceas_intron, ceas_intergenic, ceas_promotor
+  3.bash chilin2/modules/ceas/ceas_reg.sh hg19  ## get regpotential reference file
 
 
-============================   ============  =====================  =========  
-Data Name                       Used by       Data Source           Format     
-============================   ============  =====================  =========  
-Chromesome length              samtools      `UCSC table browser`_  2-column   
-DHS region                     bedtools      Custom                 BED
-Velcro region                  bedtools	     `ENCODE track`_        BED
-Motif database                 MDSeqPos      `mdseqpos`_            xml
-FastQC result database         QCreport      Custom                 bed
-Data summary database          QCreport      Custom                 bed
-============================   ============  =====================  =========
+Conservation score
+----------------------
+
+* (Optional) get Phaston conservation, for most common species version, such as hg19, get from `hg19_conserv`_ or `mm9_conserv`_, and use wigToBigWig to convert them into bigwig, we provide hg19/mm9 conservation score on our server, for other species, just left the chilin.conf conservation section blank. Take hg19 as an example::
+
+                  wget -r -np -nd --accept=gz http://hgdownload-test.cse.ucsc.edu/goldenPath/hg19/phastCons46way/placentalMammals/
+		  for c in chr*wig*gz
+		  do
+          	  bw=${c%phastCons46way.placental.wigFix.gz}bw
+		  echo $bw
+		  gunzip -c $c | wigToBigWig stdin chrom_len $bw  ## chrom_len is where you put your reference chromosome information file
+		  done
+
+
+.. _hg19_conserv: http://hgdownload-test.cse.ucsc.edu/goldenPath/hg19/phastCons46way/placentalMammals/
+.. _mm9_conserv: http://hgdownload-test.cse.ucsc.edu/goldenPath/mm9/phastCons30way/placental/
+
+.. _UCSC table browser: http://genome.ucsc.edu/cgi-bin/hgTables?command=start
 
 Test
 ------------
-After downloading, users can use our pre-prepared small size datasets for testing::
+After downloading, users can use our pre-prepared small size datasets for testing:
 
-   > wget -c cistrome.org/~qqin/test_data/foxa1_t1.fastq
-   > wget -c cistrome.org/~qqin/test_data/foxa1_c1.fastq
+  .. code-block:: bash
 
-ChiLin Installation
----------------------
-To install the tool, you will first have to cp chilin.conf to chilin.conf.filled
-and modify chilin.conf to define site-wide defaults for your system.
+		  wget -c cistrome.org/~qqin/test_data/foxa1_t1.fastq.gz
+		  wget -c cistrome.org/~qqin/test_data/foxa1_c1.fastq.gz
+                  wget -c http://cistrome.org/~qqin/test_data/chilin_test.tar.gz ## reference test data
 
-In chilin.conf, there are three main sections-- tools, references, and params.
 
-In the tools section, you will have to define the absolute paths to the various
-sub-tools or modules in the analysis pipeline.
-
-In the references section, you will have to define the absolute paths to the
-reference files (e.g. assembly, DHS file, gene regions, etc.) for the species
-you wish to support.  Please read 'Generating Species References' below for
-information on how to generate files for your species of interest.
-
-In the params section, you will have the ability to fine-tune and define
-site-wide defaults for some of the sub-tools/modules.  NOTE: the defaults
-should work for almost all installations--only make modifications only if you
-are sure!
-
-After tailoring chilin.conf to suit your system's needs, simple type:
-python setup.py install
-
-NOTE: if you are installing system-wide, you may want to add 'sudo' in front
-of that command
+.. _species_ref:
 
 Generating Species References
 -------------------------------
+After these preparation of software and reference data, you need to fill in chilin.conf,
+
+.. _fill_conf:
+
+.. literalinclude:: ../chilin.conf
+
 Take hg19 as an example,
 
 .. literalinclude:: hg19.conf
-   :language: ini
-   :linenos:
 
+:language: ini
+:linenos:
 
-use the standard python package installation method::
+You can append as many species as you want.
 
-  hg clone https://bitbucket.org/Alvin_Qin/chilin
-  cd chilin
-  ## support python >= 2.6
-  sudo python setup.py install
+The last step of installation is running `python setup.py install`.
 
-
-After these installation, you could try :ref:`"quick start" <quick-start>` to run ChiLin.
+Now try :ref:`"quick start" <quick-start>` to run ChiLin.
 
 
 .. _seqtk: https://github.com/lh3/seqtk

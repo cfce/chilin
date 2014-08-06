@@ -7,10 +7,10 @@ To check for cross-species contamination of the sample, we randomly select 100K 
 \caption{Library contamination}\label{libcontamin}
 \begin{tabular}{\VAR{layout}}
 \hline
-sample name & \VAR{library_contamination.meta.species|join(' & ')} \\
+sample name & \VAR{library_contamination.value[library_contamination.value.keys()[0]].keys()|join(' & ')} \\
 \hline
 \BLOCK{ for k, v in library_contamination.value.items() }
-\VAR{k} & \VAR{library_contamination.value[k].values() |join(' & ')} \\
+\VAR{k} & \VAR{library_contamination.value[k].values()|join(' & ')} \\
 \BLOCK{ endfor }
 \hline
 \end{tabular}

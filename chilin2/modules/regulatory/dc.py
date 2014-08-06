@@ -33,6 +33,6 @@ def reg_potential(workflow, conf):
                           param = {"table": conf.get_path(conf.get("basics", "species"), "regpotential"),
                                    "tool": resource_filename("chilin2.modules", "regulatory/RegPotential.py"),
                                    "prefix": conf.prefix,
-                                   "dist": 10000},
+                                   "dist": 100000},
                           name = "Regulatory Potential"))
     reg.update(param=conf.items("reg_potential"))

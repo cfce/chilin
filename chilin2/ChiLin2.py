@@ -284,7 +284,7 @@ def create_workflow(args, conf):
     ## DC prepare sampling reads and raw reads fastqs, support Fastq currently
     bld.build(groom_sequencing_files)
 
-    
+
     #-------------------------
     ## need input fastq
     # A. reads qc
@@ -321,7 +321,7 @@ def create_workflow(args, conf):
             bld.build(macs2_rep)
             # bld.build(washU)
             bld.build(replicates)
-    if need_run(7): ## this step can not skipped if you want to run following steps
+    if need_run(7): ## this step can not skipped if run following steps
         bld.build(macs2)
         # bld.build(washU)
 

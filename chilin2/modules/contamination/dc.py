@@ -75,52 +75,52 @@ def contamination_check(workflow, conf):
     """
     bowtie mapping back to different species
     """
+    if conf.items("contamination"):
+        for target in conf.sample_targets:
+            for species in dict(conf.items("contamination")):
+                index = conf.get("contamination", species)
+                if conf.mapper == "bwa":
+                    outsai = target + species + ".sai"
+                    output = target + species + ".sam"
+                    bwa(workflow, conf, target, output, outsai, index)
+                elif conf.mapper == "bowtie":
+                    output = target + species + ".sam"
+                    bowtie(workflow, conf, target, output, index)
+                elif conf.mapper == "star":
+                    output = target + species + "Aligned.out.sam"
+                    star(workflow, conf, target, output, index)
 
-    for target in conf.sample_targets:
-        for species in dict(conf.items("contamination")):
-            index = conf.get("contamination", species)            
-            if conf.mapper == "bwa":
-                outsai = target + species + ".sai"
-                output = target + species + ".sam"
-                bwa(workflow, conf, target, output, outsai, index)
-            elif conf.mapper == "bowtie":
-                output = target + species + ".sam"
-                bowtie(workflow, conf, target, output, index)
-            elif conf.mapper == "star":
-                output = target + species + "Aligned.out.sam"                
-                star(workflow, conf, target, output, index)
-            
-            sam2bam = attach_back(workflow,  ## use mapping quality 1 defined by samtools official FAQ
-                        ShellCommand(
-                            """
-                            {tool} view -bS -t {param[genome]} -q {param[mapq]} {input[sam]} > {param[tmp_bam]} && {tool} sort -m {param[max_mem]} {param[tmp_bam]} {param[output_prefix]}
-                            """,
-                            tool="samtools",
-                            input={"sam": output},
-                            output={"bam":target + species + ".bam"},
-                            param={"tmp_bam": target + species + ".tmp.bam", "output_prefix": target + species,
-                                   "mapq": 1,
-                                   "genome": conf.get(conf.get("basics", "species"), "chrom_len"),
-                                   "max_mem": 4000000000},
-                            name = "filtering mapping and convert")) # Use 5G memory as default
-            
-            sam2bam.update(param=conf.items("sam2bam"))
+                sam2bam = attach_back(workflow,  ## use mapping quality 1 defined by samtools official FAQ
+                            ShellCommand(
+                                """
+                                {tool} view -bS -t {param[genome]} -q {param[mapq]} {input[sam]} > {param[tmp_bam]} && {tool} sort -m {param[max_mem]} {param[tmp_bam]} {param[output_prefix]}
+                                """,
+                                tool="samtools",
+                                input={"sam": output},
+                                output={"bam":target + species + ".bam"},
+                                param={"tmp_bam": target + species + ".tmp.bam", "output_prefix": target + species,
+                                       "mapq": 1,
+                                       "genome": conf.get(conf.get("basics", "species"), "chrom_len"),
+                                       "max_mem": 4000000000},
+                                name = "filtering mapping and convert")) # Use 5G memory as default
 
-            attach_back(workflow, ShellCommand(
-            """
-            {tool} view -Sc {input[sam]} > {output[total]}
-            {tool} flagstat {input[bam]} > {output[stat]}
-            """,
-            tool = "samtools",
-            input = {"bam": target + species + ".bam",
-                     "sam": output},
-            output = {"stat": target + species + "_mapped." + conf.mapper,
-                      "total": target + species + "_total." + conf.mapper},
-            name = "contamination calculation"))
+                sam2bam.update(param=conf.items("sam2bam"))
 
+                attach_back(workflow, ShellCommand(
+                """
+                {tool} view -Sc {input[sam]} > {output[total]}
+                {tool} flagstat {input[bam]} > {output[stat]}
+                """,
+                tool = "samtools",
+                input = {"bam": target + species + ".bam",
+                         "sam": output},
+                output = {"stat": target + species + "_mapped." + conf.mapper,
+                          "total": target + species + "_total." + conf.mapper},
+                name = "contamination calculation"))
 
-    ## QC part
-    stat_contamination(workflow, conf)
-    if conf.long:
-        tex_contamination(workflow, conf)
+        ## QC part
+        stat_contamination(workflow, conf)
+        if conf.long:
+            tex_contamination(workflow, conf)
+
 

@@ -17,16 +17,17 @@ Introduction
 **Features**
 
 There are two commands for the pipeline. The new version ChiLin_ provides a more flexible handle for understanding the ChIP-seq analysis workflow. ChiLin_ is part of the Cistrome_ project.
+Fully tested on Ubuntu, CentOS, Mac. and qc nearly 3000 datasets on centos 6.0 with slurm system, here is the `qc_list`_.
+
+.. _qc_list: http://cistrome.org/~qqin/dc/qc_dataset.html
 
 Here is the PDF version of documentation, :download:`PDF version manual <_build/latex/ChiLin.pdf>`.
 
-.. _ChiLin: https://bitbucket.org/Alvin_Qin/chilin/overview
+.. _ChiLin: https://github.com/cfce/chilin
 .. _Cistrome: http://cistrome.org
 
-
-:download:`QC report Summary Table instructions,  <../chilin2/modules/summary/instructions.pdf>`
-:ref:`Instructions to QC report Summary Table <Instructions_table>` 
-:ref:`Instructions to data analysis results<Instructions_results>`
+* :download:`QC report Summary Table instructions<../chilin2/modules/summary/instructions.pdf>`
+* :ref:`Instructions to data analysis results<Instructions_results>`
    
 
 Table of contents
@@ -36,10 +37,11 @@ Table of contents
 
    Installation
    Manual
-   Advanced
    FAQ
    Changeset
-   API	      
+   API
+
+
 
 ------
 
@@ -49,7 +51,7 @@ Any question on installation or runnning is appreciated, please mail
 to qianqind@gmail.com
 
 **reference**
-Manuscript are being prepared.
+Manuscript are being submitted.
 
 Others
 -------
