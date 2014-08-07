@@ -129,7 +129,7 @@ class PScore:
             if line.startswith("#"):
                 continue
             line = line.strip().split()
-            self.geneInfo.append([line[1], line[0], int(line[3]), int(line[4]), line[2], line[5]]) # (0:chrom, 1:name, 2:txStart, 3:txEnd, 4:strand, 5:symbol)
+            self.geneInfo.append([line[2], line[1], int(line[4]), int(line[5]), line[3], line[-4]]) # (0:chrom, 1:name, 2:txStart, 3:txEnd, 4:strand, 5:symbol)
 
         self.geneInfo.sort()
         self.geneInfo = [list(t) for t in self.geneInfo]

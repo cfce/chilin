@@ -77,14 +77,18 @@ def bedAnnotate_ceas(workflow, conf):
     """
     Calls bedAnnotate to get the genome distribution of the summits
     """
+    import os
     summits = conf.prefix + "_sort_summits.bed" if conf.get("macs2", "type") in ["both", "narrow"] else conf.prefix + "_b_sort_peaks.broadPeak"
     ceas = attach_back(workflow, ShellCommand(
-            """{tool} -g {param[geneTable]} -b {input} > {output}""",
+            """{tool} -g {param[geneTable]} -b {input} -e {output[exon]} -t {output[gene]}> {output[meta]}
+            meta_info.sh {output[gene]} {output[exon]} 2000 {param[chrominfo]}
+            """,
             tool="bedAnnotate.py",
             input=summits,
-            output=conf.prefix + ".meta",
-            param={"geneTable": conf.get_path(conf.get("basics", "species"), 
-                                              "geneTable")},
+            output={"meta":conf.prefix + ".meta", "gene":os.path.join(conf.target_dir, "gene.bed"), "exon": os.path.join(conf.target_dir, "exon.bed"),
+                    "promoter": os.path.join(conf.target_dir, "gene.bed_promoter"), "exon": os.path.join(conf.target_dir, "gene.bed_exon")},
+            param={"geneTable": conf.get_path(conf.get("basics", "species"), "geneTable"),
+                   "chrominfo": conf.get_path(conf.get("basics", "species"), "chrom_len")},
             name="bedAnnotate (ceas)"))
     try:
         has_velcro = conf.get(conf.get("basics", "species"), "velcro")

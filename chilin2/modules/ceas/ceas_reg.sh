@@ -1,5 +1,3 @@
-#!/bin/env sh
-
 ## this script prepare meta information for regulatory potential score and ceas 
 
 ORG=$1

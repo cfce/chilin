@@ -71,7 +71,7 @@ For mac, we suggest using `macports`_, before install macport, user need to have
 		     sudo port install git
 		     sudo port install mercurial
 		     sudo port install py27-setuptools py27-pip py27-nose py27-cython py27-numpy @1.8.1 
-		     sudo port install R 3.1.1
+		     sudo port install R 3.1.1 ## for mac 10.8, this may cause weird failture, recommend downloading R DMG 
 		     ## For mac latex, install separately, download and click to install it
 		     wget -c http://mirror.ctan.org/systems/mac/mactex/MacTeX.pkg
 
@@ -124,8 +124,6 @@ wigCorrelate                        calculate reads count correlation
 wigToBigWig                         convert wiggle to bigwig            v 4
 `MDSeqPos`                          motif scan and SeqPos               v 2.01
 ============================      ====================================  ==============
-
-See :ref:`"basic command" <basic-command>` for using above tools.
 
 
 .. _virtualenv: https://raw.githubusercontent.com/pypa/virtualenv/1.9.X/virtualenv.py

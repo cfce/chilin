@@ -129,7 +129,7 @@ class Gene():
                     return True
             return False
 
-        if not self.siteInGene(site):
+        if not self.siteInGene(site):  ## discuss with len 201486
             return "Intergenic"
         elif inPromoter(site):
             return "Promoter"
@@ -150,7 +150,7 @@ class Gene():
     def __eq__(self, other):
         return self.chunk() == other.chunk()
     def __ne__(self, other):
-        return self.chunk() == other.chunk()
+        return self.chunk() == other.chunk()  ## discuss with len 201486
     #order by chunk()[0]s
     def __lt__(self, other):
         return self.chunk()[0] < other.chunk()[0]
@@ -179,7 +179,7 @@ class Chromosome(list):
         """Given a site, e.g. 5246835, will return the gene chunk that the site
         falls into, otherwise None"""
         #binary search
-        if hi < lo or lo >= self.len or hi < 0:
+        if hi < lo or lo >= self.len or hi < 0: ## need discuss with len 201486
             return None
         else:
             mid = (hi + lo)/2
@@ -194,17 +194,20 @@ class Chromosome(list):
                 else:
                     return self.findGene(site, lo, mid-1)
 
-def main():    
+def main():
     optparser = OptionParser()
     optparser.add_option("-g", "--gt", help="UCSC geneTable")
     optparser.add_option("-b", "--bed", help="bed file (of genomic sites)")
     optparser.add_option("-u", "--up", help="How many bps should we consider upstream of TSS? default: 2000", default=2000)
     optparser.add_option("-d", "--down", help="How many bps should we consider downstream of TTS? default: 0", default=0)
+    optparser.add_option("-e", "--exon", help="How many bps should we consider downstream of TTS? default: 0", default=0)
+    optparser.add_option("-t", "--gene", help="How many bps should we consider downstream of TTS? default: 0", default=0)
+
     (options, args) = optparser.parse_args(sys.argv)
 
     Gene.upstream = int(options.up)
     Gene.downstream = int(options.down)
-    
+
     if not options.gt or not options.bed:
         print "USAGE: bedAnnotate.py -g [UCSC geneTable] -b [bed file of genomic sites] -u [upstream of TSS- default:2000 (optional)] -d [downstream of TTS- default:0 (optional)]"
         sys.exit(-1)
@@ -222,6 +225,14 @@ def main():
             genome[g.chrom] = Chromosome()
         genome[g.chrom].add(g)
     f.close()
+
+    fexon = open(options.exon, 'w')
+    fgene = open(options.gene, 'w')
+    for chr in genome:
+        for g in genome[chr]:
+            print >>fgene, '\t'.join(map(str,[g.chrom, g.txStart, g.txEnd]))
+            for s, e in g.exons:
+                print >>fexon, '\t'.join(map(str,[g.chrom, s, e]))
 
     #TEST: find gene
     #g = genome['chr11'].findGene(5246835, 0, len(genome['chr11'])-1)

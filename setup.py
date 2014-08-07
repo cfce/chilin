@@ -1,5 +1,5 @@
 """
-Time-stamp: <2014-01-16 10:46:09 qqin>
+Time-stamp: <2014-08-06 17:52:58 chenfei>
 install ChiLin2 and related program and dependent data
 """
 import os
@@ -81,6 +81,7 @@ def main():
         description=read("README.md"),
         scripts = ["chilin2/ChiLin2.py", "chilin2/modules/conservation/conservation_plot.py",
                    "chilin2/modules/ceas/bedAnnotate.py",
+                   "chilin2/modules/ceas/meta_info.sh",
                    "chilin2/modules/interface/sampling_pe_sam.py",
                    "chilin2/modules/regulatory/RegPotential.py"],
         install_requires=['jinja2','argparse'])

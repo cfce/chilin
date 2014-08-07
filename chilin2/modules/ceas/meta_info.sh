@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/bash -ex
+## exon.bed and gene.bed is parsed from standard UCSC RefSeq file
 ## this script prepare annotation for reads ratio in meta regions evaluation
 
 # Start with the exons and genes BED file from UCSC(http://www.biostars.org/p/17985/)
@@ -62,7 +63,6 @@ mv ${genes}.filter ${genes}_promoter
 rm ${genes}.tmp 
 
 ## exon and intron remove promoter regions
-## when merging meta exons, consider strand
 cut -f 1,2,3 $exon | sort -k 1,1 -k 2,2n - | uniq | bedtools merge -i - > ${exon}.merged
 
 cut -f 1,2,3 $genes | sort -k 1,1 -k 2,2n - | uniq | bedtools merge -i - > ${genes}.merged
@@ -70,7 +70,7 @@ cut -f 1,2,3 $genes | sort -k 1,1 -k 2,2n - | uniq | bedtools merge -i - > ${gen
 ## remove exons from genes to get artificial introns 
 bedtools subtract -a ${genes}.merged -b ${exon}.merged  > ${genes}_intron.tmp
 
-## when merging meta introns, consider strand, remove promoter 
+## when merging meta introns, remove promoter 
 bedtools subtract -a ${genes}_intron.tmp -b ${genes}_promoter | sort -k1,1 -k2,2n | uniq | bedtools merge -i - > ${genes}_intron
 
 ## remove promoters from exons

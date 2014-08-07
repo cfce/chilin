@@ -52,6 +52,7 @@ def _bwa_sam2bam(workflow, conf):  # SAM -> BAM
     :param conf: parsed config file
     :return: void
     """
+    import os
     for target in conf.sample_targets:
         sam2bam = attach_back(workflow,  ## use mapping quality 1 defined by samtools official FAQ
                     ShellCommand(
@@ -73,6 +74,7 @@ def _bwa_sam2bam(workflow, conf):  # SAM -> BAM
         sam2bamnochrm = attach_back(workflow,  ## use mapping quality 1 defined by samtools official FAQ
                     ShellCommand(
                         """
+                        awk \'BEGIN{{OFS="\\t"}} {{print $1,0,$2}}\' {param[genome]} > {param[chrom_bed]}
                         grep -v chrM {param[chrom_bed]} > {output[nochrmbed]}
                         {tool} view -h -b -L {output[nochrmbed]} {input[bam]} > {output[nochrmbam]}
                         {tool} view -h {output[nochrmbam]}  > {output[nochrmsam]}
@@ -84,6 +86,7 @@ def _bwa_sam2bam(workflow, conf):  # SAM -> BAM
                                 "nochrmbam": target + "_nochrM.bam",
                                 "usam": target + "_u.sam", ## uniquely mapping sam for sampling
                                 "nochrmsam": target + "_nochrM.sam"},
-                        param={"chrom_bed": conf.get(conf.get("basics", "species"), "chrom_bed")},
+                        param={"chrom_bed": os.path.join(conf.target_dir, "chrom.bed"),
+                               "genome": conf.get(conf.get("basics", "species"), "chrom_len")},
                         name = "filtering chrM and convert to sam for sampling"))
         sam2bamnochrm.update(param=conf.items("sam2bam"))

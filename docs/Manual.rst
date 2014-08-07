@@ -131,13 +131,14 @@ Common options can be used for simple mode, run and batch modes.
   - step 2: bwa(default), bowtie or star mapping, this step cannot be skipped, because this provided necessary BAM files.
   - step 3: sub-sample bam files and do macs2 fragment size estimation.
   - step 4: sub-sample bam files(if step 3 is run, skip) and do PBC evaluation
-  - step 5: sub-sample bam files(if step 3 is run, skip) and calculate reads ratio in meta regions
-  - step 6: call peak for replicates samples, and do replicates peak overlap/correlation analysis
-  - step 7: call peak for merged bam file, this step cannot be skipped, because this provided peak for annotation step
-  - step 8: calculate FRiP scores for each sample.
-  - step 9: use bedAnnotate.py script to evaluate merged peak calling meta regions distribution(promoters, exons, introns, intergenic, dhs, black list regions)
+  - step 5: call peak for replicates samples, and do replicates peak overlap/correlation analysis
+  - step 6: call peak for merged bam file, this step cannot be skipped, because this provided peak for annotation step
+  - step 7: calculate FRiP scores for each sample.
+  - step 8: use bedAnnotate.py script to evaluate merged peak calling meta regions distribution(promoters, exons, introns, intergenic, dhs, black list regions)
+  - step 9: sub-sample bam files(if step 3 is run, skip) and calculate reads ratio in meta regions
   - step 10(*can skip*): draw Phastcon scores distribution around peak call summits, if you do not have Phastcon score bigwig files, use --skip 10 or leave chilin.conf blank for that reference
-  - step 11(*can skip*): use MDSeqPos to perform motif analysis
+  - step 11(*can skip*): Regulatory potential score calculation on top 10k peaks
+  - step 12(*can skip*): use MDSeqPos to perform motif analysis
   
 - --dont_resume, by default, each re-run would use previous temporary files to resume from the step it crashed. When dont_resume is on, ChiLin would start from first step, so user do not to clean up the work directory.
 - --dont_remove, keep temporary files
@@ -254,10 +255,6 @@ And,
 
        absolute path to chromosome length text file
 
-    .. envvar:: chrom_bed
-
-       absolute path to chromosome bed file
-
     .. envvar:: dhs
 
        absolute path union DHS regions
@@ -266,10 +263,6 @@ And,
 
        absolute path black list regions
 
-    .. envvar:: regpotential
-
-       absolute path species gene bed files from UCSC gene table browser
-
     .. envvar:: conservation
 
        absolute path to the directory containing UCSC Phastcon score bigwig files
@@ -277,22 +270,6 @@ And,
     .. envvar:: geneTable
 
        standard refSeq annotation table from UCSC table browser
-
-    .. envvar:: ceas_exon
-
-       absolute path to merged exons files from UCSC gene table browser
-
-    .. envvar:: ceas_intron
-
-       absolute path to intron files by subtracting ceas_exon from genes body defined by UCSC table browser
-
-    .. envvar:: ceas_intergenic
-
-       absolute path to intergenic files by subtracting genes body from whole genome regions defined by UCSC table browser
-
-    .. envvar:: ceas_promotor
-
-       absolute path to promotor files from whole genome regions defined by UCSC RefSeq TSS +/- 2kb.
 
 
 contamination

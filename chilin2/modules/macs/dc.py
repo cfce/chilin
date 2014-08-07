@@ -104,13 +104,13 @@ def macs2(workflow, conf):
     if conf.get("macs2", "type").lower() in ["both", "narrow"]:
         cont_bdg = conf.prefix + "_control_lambda.bdg"
         treat_bdg = conf.prefix + "_treat_pileup.bdg"
-
+    import os
     bdg_trim_control = attach_back(workflow,
                                    ShellCommand(
-                                       '{tool} intersect -a {input[bdg]} -b {input[chrom_bed]} -wa -f 1.00 > {output}',
+                                       '{tool} intersect -a {input[bdg]} -b {param[chrom_bed]} -wa -f 1.00 > {output}',
                                        tool="bedtools",
-                                       input={"bdg": cont_bdg,
-                                              'chrom_bed': conf.get_path(conf.get("basics", "species"), "chrom_bed")},
+                                       input={"bdg": cont_bdg},
+                                       param = {"chrom_bed": os.path.join(conf.target_dir, "chrom.bed")},
                                        output=cont_bdg+".tmp",
                                        name="bedGraph filtering control"))
     bdg_trim_control.fail = True
@@ -235,13 +235,14 @@ def macs2_rep(workflow, conf):
         if conf.get("macs2", "type").lower() in ["both", "narrow"]:
             cont_bdg = target + "_control_lambda.bdg"
             treat_bdg = target + "_treat_pileup.bdg"
+        import os
         bdg_trim_controlrep = attach_back(workflow,
                                           ShellCommand(
                                               '{tool} intersect -a {input} -b {param[chrom_bed]} -wa -f 1.00 > {output}',
                                               tool="bedtools",
                                               input=cont_bdg,
                                               output=cont_bdg + ".tmp",
-                                              param={'chrom_bed': conf.get_path(conf.get("basics", "species"), "chrom_bed")},
+                                              param={"chrom_bed": os.path.join(conf.target_dir, "chrom.bed")},
                                               name="bedGraph control replicate filtering"))
 
         bdg_trim_controlrep.allow_dangling = True

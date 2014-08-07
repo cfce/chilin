@@ -24,6 +24,7 @@ def read_enrichment_on_meta(workflow, conf):
         has_dhs = conf.get(conf.get("basics", "species"), "dhs")
     except:
         has_dhs = ""
+    import os
     for t in conf.sample_targets:
         attach_back(workflow, ShellCommand(
             ## use bash modules/ceas/meta_info.sh to get latest annotations
@@ -37,7 +38,7 @@ def read_enrichment_on_meta(workflow, conf):
             input = {"bam": t + "_4000000.bam" if conf.down else t + ".bam"},
             output = {"exon":t+".enrich.exon",
                       "promoter": t+".enrich.promoter"},
-            param = {"exon": conf.get_path(conf.get("basics", "species"), "ceas_exon"), "promoter": conf.get_path(conf.get("basics", "species"), "ceas_promotor")}))
+            param = {"promoter": os.path.join(conf.target_dir, "gene.bed_promoter"), "exon": os.path.join(conf.target_dir, "gene.bed_exon")}))
 
         if has_dhs:
             ## Qian: dhs has no strand problem, use 4th column as reads count

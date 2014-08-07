@@ -10,10 +10,6 @@ def reg_potential(workflow, conf):
     """
 
     """
-
-    ## exclude some peaks regions, such as velcro
-
-    ##
     get_top_peaks = attach_back(workflow,
                                 ShellCommand(
                                     "{tool} -n {param[peaks]} {input} | cut -f 1,2,3,4,9> {output}",
@@ -26,11 +22,11 @@ def reg_potential(workflow, conf):
 
     reg = attach_back(workflow,
                       ShellCommand(
-                          "{tool} -t {input[peaks]} -g {param[table]} -n {param[prefix]} -d {param[dist]}",
+                          "{tool} -t {input[peaks]} -g {param[geneTable]} -n {param[prefix]} -d {param[dist]}",
                           tool = "RegPotential.py",
                           input = {"peaks": conf.prefix + "_peaks_top_reg.bed"},
                           output = {"potential": conf.prefix + "_gene_score.txt"},
-                          param = {"table": conf.get_path(conf.get("basics", "species"), "regpotential"),
+                          param = {"geneTable": conf.get_path(conf.get("basics", "species"), "geneTable"),
                                    "tool": resource_filename("chilin2.modules", "regulatory/RegPotential.py"),
                                    "prefix": conf.prefix,
                                    "dist": 100000},

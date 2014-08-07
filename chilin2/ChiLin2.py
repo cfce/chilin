@@ -272,7 +272,6 @@ def create_workflow(args, conf):
     ## flexible options for replicates and species annotations
     have_treat_reps = len(conf.treatment_pairs) >= 2
     has_conservation = conf.get(conf.get("basics", "species"), "conservation")
-    has_regpotential = conf.get(conf.get("basics", "species"), "regpotential")
     has_motifdb = conf.get("seqpos", "db")
 
     need_run = step_checker.need_run
@@ -283,7 +282,6 @@ def create_workflow(args, conf):
 
     ## DC prepare sampling reads and raw reads fastqs, support Fastq currently
     bld.build(groom_sequencing_files)
-
 
     #-------------------------
     ## need input fastq
@@ -312,28 +310,29 @@ def create_workflow(args, conf):
         bld.build(sampling_bam) ## provide sam and bam
         bld.build(PBC)
 
-    if need_run(5):
-        bld.build(sampling_bam) ## provide sam and bam
-        bld.build(read_enrichment_on_meta)
-
-    if need_run(6): ## if no replicates, skip automatically
+    if need_run(5): ## if no replicates, skip automatically
         if have_treat_reps:
             bld.build(macs2_rep)
             # bld.build(washU)
             bld.build(replicates)
-    if need_run(7): ## this step can not skipped if run following steps
+    if need_run(6): ## this step can not skipped if run following steps
         bld.build(macs2)
         # bld.build(washU)
 
         ## following all needs merged peaks or summits
-        if need_run(8):
+        if need_run(7):
             ## merged peaks FRiP
             bld.build(FRiP) ## sample and IP qc
         # --------------------
         # C. annotation qc
-        if need_run(9):
+        if need_run(8):
             #bld.build(bedtools_ceas)
             bld.build(bedAnnotate_ceas)
+            ## generate gene.bed, exon.bed for read_enrichment analysis
+            if need_run(9):
+                bld.build(sampling_bam) ## provide sam and bam
+                bld.build(read_enrichment_on_meta)
+
         ## following steps dependent on step 6th
         if need_run(10):
             if has_conservation:
@@ -341,8 +340,7 @@ def create_workflow(args, conf):
                 ## make this more common
                 bld.build(conservation)
         if need_run(11):
-            if has_regpotential:
-                bld.build(reg_potential)
+            bld.build(reg_potential)
         if need_run(12):
             if has_motifdb:
                 bld.build(seqpos)

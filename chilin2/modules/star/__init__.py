@@ -41,6 +41,7 @@ def _star_sam2bam(workflow, conf):  # SAM -> BAM
     :param conf: parsed config file
     :return: void
     """
+    import os
     for target in conf.sample_targets:
         sam2bam= attach_back(workflow,
                     ShellCommand(
@@ -61,6 +62,7 @@ def _star_sam2bam(workflow, conf):  # SAM -> BAM
         sam2bamnochrm = attach_back(workflow,  ## use mapping quality 1 defined by samtools official FAQ
                     ShellCommand(
                         """
+                        awk \'BEGIN{{OFS="\\t"}} {{print $1,0,$2}}\' {param[genome]} > {param[chrom_bed]}
                         grep -v chrM {param[chrom_bed]} > {output[nochrmbed]}
                         {tool} view -h -b -L {output[nochrmbed]} {input[bam]} > {output[nochrmbam]}
                         {tool} view -h {output[nochrmbam]}  > {output[nochrmsam]}
@@ -73,7 +75,7 @@ def _star_sam2bam(workflow, conf):  # SAM -> BAM
                                 "usam": target + "_u.sam", ## uniquely mapping sam for sampling
                                 "nochrmsam": target + "_nochrM.sam"},
                         param={"tmp_bam": target + ".tmp.bam", "output_prefix": target,
-                               "chrom_bed": conf.get(conf.get("basics", "species"), "chrom_bed"),
+                               "chrom_bed": os.path.join(conf.target_dir, "chrom.bed"),
                                "mapq": 1,
                                "genome": conf.get(conf.get("basics", "species"), "chrom_len")},
                         name = "filtering mapping and convert")) # Use 5G memory as default
