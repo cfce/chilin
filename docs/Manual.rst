@@ -119,6 +119,9 @@ you could use batch mode with a single command::
 
   ChiLin2.py batch -b batch.conf
   
+
+.. _skip:
+
 Common options
 ---------------------------
 Common options can be used for simple mode, run and batch modes.
@@ -203,8 +206,8 @@ The tool section is like this:
 
 .. literalinclude:: ../chilin.conf
    :language: ini
-   :lines: 14-18
-   :emphasize-lines: 15-16
+   :lines: 8-16
+   :emphasize-lines: 13-15
    :linenos:
 
 .. envvar:: [tool]
@@ -228,16 +231,16 @@ You can add as many species as possible. To add species, first you need to read 
 
 .. literalinclude:: ../chilin.conf
    :language: ini
-   :lines: 63-76
-   :emphasize-lines: 63-75
+   :lines: 61-70
+   :emphasize-lines: 62-70
    :linenos:
 
-And,
+And mm9 assembly,
 
 .. literalinclude:: ../chilin.conf
    :language: ini
-   :lines: 78-83
-   :emphasize-lines: 78-82
+   :lines: 70-78
+   :emphasize-lines: 71-77
    :linenos:
 
 
@@ -279,10 +282,10 @@ you can add all species you are suspicious of sampling swap or library contamina
 
 .. literalinclude:: ../chilin.conf
    :language: ini
-   :lines: 63-76
-   :emphasize-lines: 63-75
+   :lines: 80-88
+   :emphasize-lines: 85-86
    :linenos:
-   
+
 .. envvar:: [contamination]
 
    specific species assembly path that you want to screen.
@@ -294,8 +297,8 @@ ChiLin has some user-defined parameters for macs2, regulatory potential, conserv
 
 .. literalinclude:: ../chilin.conf
    :language: ini
-   :lines: 26-52
-   :emphasize-lines: 26-51
+   :lines: 22-51
+   :emphasize-lines: 23-50
    :linenos:
    
 .. envvar:: [macs2]

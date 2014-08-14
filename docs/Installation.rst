@@ -39,7 +39,7 @@ For ubuntu or debian system, install as follows:
 		     sudo apt-get update
 		     sudo apt-get install git
 		     sudo apt-get install mercurial
-		     sudo apt-get install python-dev python-numpy python-setuptools cython python-pip
+		     sudo apt-get install python-dev python-numpy python-setuptools cython python-pip ## or install redhat EPD python
 		     sudo apt-get install r-base
 		     sudo apt-get install default-jre
 		     sudo apt-get install ghostscript
@@ -57,7 +57,7 @@ For centos, use:
 		     rpm -Uvh http://mirror.chpc.utah.edu/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 		     sudo yum install tcl tcl-devel tk-devel
 		     sudo yum install R
-		     sudo yum install python-devel numpy python-setuptools python-pip
+		     sudo yum install python-devel numpy python-setuptools python-pip ## or use EPD package
                      sudo yum install ImageMagick
 		     sudo easy_install Cython
 		     sudo easy_install bx-python
@@ -70,8 +70,8 @@ For mac, we suggest using `macports`_, before install macport, user need to have
 
 		     sudo port install git
 		     sudo port install mercurial
-		     sudo port install py27-setuptools py27-pip py27-nose py27-cython py27-numpy @1.8.1 
-		     sudo port install R 3.1.1 ## for mac 10.8, this may cause weird failture, recommend downloading R DMG 
+		     sudo port install py27-setuptools py27-pip py27-nose py27-cython py27-numpy @1.8.1  ## or use EPD to replace this
+		     ## Install R manually from http://cran.cnr.berkeley.edu/bin/macosx/
 		     ## For mac latex, install separately, download and click to install it
 		     wget -c http://mirror.ctan.org/systems/mac/mactex/MacTeX.pkg
 
@@ -86,7 +86,7 @@ For mac, we suggest using `macports`_, before install macport, user need to have
      cd chilin
      bash install_linux.sh or bash install_mac.sh
 
-then see `mdseqpos`_ installation and download `dependentdata`_
+then see `mdseqpos`_ installation and download `dependentdata`_, currently mdseqpos cannot be installed on mac, this step can be :ref:`"skip" <skip>` with *--skip 12*
 
 
 * Or follow the instruction for step-by-step installation.
