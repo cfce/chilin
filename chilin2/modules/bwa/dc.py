@@ -13,29 +13,56 @@ def bwa(workflow, conf):   # Mapping
     :param conf: parsed config files
     :return: void
     """
+    print conf.sample_targets
     for target in conf.sample_targets:
-        bwa = attach_back(workflow,
-                          ShellCommand(
-                              "{tool} aln -q 5 -n 0.04 -l 32 -k 2 -t {param[NUM_THREADS]} {param[index]} {input[fastq]} > {output[sai]}",
-                              #"{tool} aln -q 5 -l 32 -k 2 -t {param[NUM_THREADS]} {param[index]} {input[fastq]} > {output[sai]}",
-                              tool = "bwa",
-                              input = {"fastq": target + ".fastq"},
-                              output = {"sai": target + ".sai"},
-                              param = {"NUM_THREADS": conf.threads,
-                                       ## judge chosen species from basics section
-                                       "index": conf.get_path(conf.get("basics", "species"), "genome_index")},
-                              name = "bwa aln"))
+        if conf.pe:
+            bwa = attach_back(workflow,
+                              ShellCommand(
+                                  "{tool} aln -q 5 -l 32 -k 2 -t {param[NUM_THREADS]} {param[index]} {input[fastq1]} > {output[sai1]} && {tool} aln -q 5 -l 32 -k 2 -t {param[NUM_THREADS]} {param[index]} {input[fastq2]} > {output[sai2]}",
+                                  tool = "bwa",
+                                  input = {"fastq1": target + "pair1.fastq",
+                                           "fastq2": target + "pair2.fastq"},
+                                  output={"sai1": target + "_all_pair1.sai",
+                                          "sai2": target + "_all_pair2.sai"},
+                                  param = {"NUM_THREADS": conf.threads,
+                                           ## judge chosen species from basics section
+                                           "index": conf.get_path(conf.get("basics", "species"), "genome_index")},
+                                  name = "bwa aln"))
 
-        bwa_coordin = attach_back(workflow,
-                                  ShellCommand(
-                                      "{tool} samse {param[index]} {input[sai]} {input[fastq]} > {output[sam]}",
-                                      tool = "bwa",
-                                      input = {"fastq": target + ".fastq",
-                                               "sai": target + ".sai"},
-                                      output = {"sam": target + ".sam"},
-                                      param = {"index": conf.get_path(conf.get("basics", "species"), "genome_index")},
-                                      name = "bwa samse"))
-        bwa.update(param = conf.items("bwa"))
+            bwa_coordin = attach_back(workflow,
+                                      ShellCommand(
+                                          "{tool} sampe {param[index]} {input[sai1]} {input[sai2]} {input[fastq1]} {input[fastq2]} > {output[sam]}",
+                                          tool = "bwa",
+                                          input = {"fastq1": target + "pair1.fastq",
+                                                   "fastq2": target + "pair2.fastq",
+                                                   "sai1": target + "_all_pair1.sai",
+                                                   "sai2": target + "_all_pair2.sai"},
+                                          output = {"sam": target + ".sam"},
+                                          param = {"index": conf.get_path(conf.get("basics", "species"), "genome_index")},
+                                          name = "bwa sampe"))
+            bwa.update(param = conf.items("bwa"))
+        else:
+            bwa = attach_back(workflow,
+                              ShellCommand(
+                                  "{tool} aln -q 5 -l 32 -k 2 -t {param[NUM_THREADS]} {param[index]} {input[fastq]} > {output[sai]}",
+                                  tool = "bwa",
+                                  input = {"fastq": target + ".fastq"},
+                                  output = {"sai": target + "_all.sai"},
+                                  param = {"NUM_THREADS": conf.threads,
+                                           ## judge chosen species from basics section
+                                           "index": conf.get_path(conf.get("basics", "species"), "genome_index")},
+                                  name = "bwa aln"))
+            bwa.update(param = conf.items("bwa"))
+
+            attach_back(workflow,
+                        ShellCommand(
+                            "{tool} samse {param[index]} {input[sai]} {input[fastq]} > {output[sam]}",
+                            tool = "bwa",
+                            input = {"fastq": target + ".fastq",
+                                     "sai": target + "_all.sai"},
+                            output = {"sam": target + ".sam"},
+                            param = {"index": conf.get_path(conf.get("basics", "species"), "genome_index")},
+                            name = "bwa samse"))
 
     _bwa_sam2bam(workflow, conf)
 

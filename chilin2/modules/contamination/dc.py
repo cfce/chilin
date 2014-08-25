@@ -49,27 +49,55 @@ def bwa(workflow, conf, target, output, outsai, index):   # Mapping
     Use BWA to map reads to genome,
     bwa before 0.6.0 support ab solid color space
     """
-    bwa = attach_back(workflow,
-                      ShellCommand(
-                          "{tool} aln -q 5 -l 32 -k 2 -t {param[NUM_THREADS]} {param[index]} {input[fastq]} > {output[sai]}",
-                          tool = "bwa",
-                          input = {"fastq": target + "_100k.fastq"},
-                          output = {"sai": outsai},
-                          param = {"NUM_THREADS": conf.threads,
-                                   ## judge chosen species from basics section
-                                   "index": index},
-                          name = "bwa aln"))
-    bwa.update(param = conf.items("bwa"))
 
-    attach_back(workflow,
-                ShellCommand(
-                    "{tool} samse {param[index]} {input[sai]} {input[fastq]} > {output[sam]}",
-                    tool = "bwa",
-                    input = {"fastq": target + "_100k.fastq",
-                             "sai": outsai},
-                    output = {"sam": output},
-                    param = {"index": index},
-                    name = "bwa samse"))
+    if not conf.pe:
+        bwa = attach_back(workflow,
+                          ShellCommand(
+                              "{tool} aln -q 5 -l 32 -k 2 -t {param[NUM_THREADS]} {param[index]} {input[fastq]} > {output[sai]}",
+                              tool = "bwa",
+                              input = {"fastq": target + "_100k.fastq"},
+                              output = {"sai": outsai},
+                              param = {"NUM_THREADS": conf.threads,
+                                       ## judge chosen species from basics section
+                                       "index": index},
+                              name = "bwa aln"))
+        bwa.update(param = conf.items("bwa"))
+        attach_back(workflow,
+                    ShellCommand(
+                        "{tool} samse {param[index]} {input[sai]} {input[fastq]} > {output[sam]}",
+                        tool = "bwa",
+                        input = {"fastq": target + "_100k.fastq",
+                                 "sai": outsai},
+                        output = {"sam": output},
+                        param = {"index": index},
+                        name = "bwa samse"))
+    else:
+        bwa = attach_back(workflow,
+                          ShellCommand(
+                              "{tool} aln -q 5 -l 32 -k 2 -t {param[NUM_THREADS]} {param[index]} {input[fastq1]} > {output[sai1]} && {tool} aln -q 5 -l 32 -k 2 -t {param[NUM_THREADS]} {param[index]} {input[fastq2]} > {output[sai2]}",
+                              tool = "bwa",
+                              input = {"fastq1": target[0] + "_100k.fastq",
+                                       "fastq2": target[1] + "_100k.fastq"},
+                              output = {"sai1": outsai[0],
+                                        "sai2": outsai[1]},
+                              param = {"NUM_THREADS": conf.threads,
+                                       ## judge chosen species from basics section
+                                       "index": index},
+                              name = "bwa aln"))
+        bwa.update(param = conf.items("bwa"))
+
+        attach_back(workflow,
+                    ShellCommand(
+                        "{tool} sampe {param[index]} {input[sai1]} {input[sai2]} {input[fastq1]} {input[fastq2]}> {output[sam]}",
+                        tool = "bwa",
+                        input = {"fastq1": target[0] + "_100k.fastq",
+                                 "fastq2": target[1] + "_100k.fastq",
+                                 "sai1": outsai[0],
+                                 "sai2": outsai[1]},
+                        output = {"sam": output},
+                        param = {"index": index},
+                        name = "bwa sampe"))
+
 
 def contamination_check(workflow, conf):
     """
@@ -80,9 +108,14 @@ def contamination_check(workflow, conf):
             for species in dict(conf.items("contamination")):
                 index = conf.get("contamination", species)
                 if conf.mapper == "bwa":
-                    outsai = target + species + ".sai"
                     output = target + species + ".sam"
-                    bwa(workflow, conf, target, output, outsai, index)
+                    if conf.pe:
+                        outsai = [target + "pair1.sai", target + "pair2.sai"]
+                        targets = [ target + "pair1", target + "pair2" ]
+                    else:
+                        outsai = target + ".sai"
+                        targets = target
+                    bwa(workflow, conf, targets, output, outsai, index)
                 elif conf.mapper == "bowtie":
                     output = target + species + ".sam"
                     bowtie(workflow, conf, target, output, index)

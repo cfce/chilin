@@ -4,7 +4,7 @@ class NoTreatmentData(Exception):
     pass
 
 class ChiLinConfig(ConfigParser):
-    def __init__(self, conf):
+    def __init__(self, conf, args):
         ConfigParser.__init__(self)
         self._verbose_level = 1
         self._conf = ConfigParser()
@@ -12,6 +12,7 @@ class ChiLinConfig(ConfigParser):
             raise IOError("No such config file: %s" % repr(conf))
         self._conf.read(conf)
         self.root_dir = os.path.dirname(conf)
+        self.pe = args.pe
         self.long = False
 
     def write(self, fileobj):
@@ -36,6 +37,9 @@ class ChiLinConfig(ConfigParser):
             else:
                 raise
 
+    @property
+    def treatment_pairs_pe(self):
+        return list(zip(self.treatment_raws, self.treatment_pair_targets["pairs"]))
 
     def set(self, section, option, value):
         try:
@@ -77,11 +81,21 @@ class ChiLinConfig(ConfigParser):
 
     @property
     def treatment_pairs(self):
-        return list(zip(self.treatment_raws, self.treatment_targets))
+        """
+        one to one in single end mode,  original, target
+        two to one in pair end mode [original_pair1, original_pair2], target
+        """
+        if not self.pe:
+            return list(zip(self.treatment_raws, self.treatment_targets))
+        else:
+            return self.treatment_pairs_pe
 
     @property
     def control_pairs(self):
-        return list(zip(self.control_raws, self.control_targets))
+        if not self.pe:
+            return list(zip(self.control_raws, self.control_targets))
+        else:
+            return self.control_pairs_pe
 
     @property
     def sample_pairs(self):
@@ -96,31 +110,124 @@ class ChiLinConfig(ConfigParser):
     @property
     def control_raws(self):
         if self.get("basics","cont").strip():
-            return [self.to_abs_path(i.strip()) for i in self.get("basics", "cont").split(",")]
-        else:
-            return []
-
-    @property
-    def treatment_raws(self):
-        if self.get("basics", "treat").strip():
-            return [self.to_abs_path(i.strip()) for i in self.get("basics", "treat").split(",")]
+            if not self.pe:
+                return [self.to_abs_path(i.strip()) for i in self.get("basics", "cont").split(",")]
+            else:
+                data_list = []
+                for i in self.get("basics", "cont").split(";"):
+                    data_list.append([ self.to_abs_path(j.strip()) for j in i.split(",") ])
+                return data_list
         else:
             raise NoTreatmentData
 
     @property
+    def treatment_raws(self):
+        """
+        single end data separate by , for replicates
+        pair end data separate by ; for replicates , for pairs
+        """
+        if self.get("basics", "treat"):
+            if not self.pe:
+                return [self.to_abs_path(i.strip()) for i in self.get("basics", "treat").split(",")]
+            else:
+                data_list = []
+                for i in self.get("basics", "treat").split(";"):
+                    data_list.append([ self.to_abs_path(j.strip()) for j in i.split(",") ])
+                return data_list
+        else:
+            raise NoTreatmentData
+
+    # previous interface only for SE
+    # @property
+    # def treatment_raws(self):
+    #     if self.get("basics", "treat").strip():
+    #         return [self.to_abs_path(i.strip()) for i in self.get("basics", "treat").split(",")]
+    #     else:
+    #         raise NoTreatmentData
+
+    # previous interface only for SE
+    # @property
+    # def treatment_targets(self):
+    #     return [os.path.join(self.target_dir,
+    #         self.id + "_treat_rep" + str(num+1)
+    #     ) for num in range(len(self.treatment_raws))]
+
+    @property
+    def pe(self):
+        return self._pe
+
+    @pe.setter
+    def pe(self, value):
+        '''setting Pair End state, True for PE, False for SE
+        '''
+        self._pe = value
+
+
+    @property
     def treatment_targets(self):
+        if not self.pe:
+            return self.treatment_single_targets
+        else:
+            return self.treatment_pair_targets["reps"]
+
+    @property
+    def control_pairs_pe(self):
+        return list(zip(self.control_raws, self.control_pair_targets["pairs"]))
+
+    @property
+    def treatment_pair_data(self):
+        return self.treatment_pair_targets["pairs"]
+
+    @property
+    def treatment_single_targets(self):
         return [os.path.join(self.target_dir,
             self.id + "_treat_rep" + str(num+1)
         ) for num in range(len(self.treatment_raws))]
 
     @property
+    def treatment_pair_targets(self):
+        '''pairs: for [[rep1_pair1, rep1_pair2]],
+        usually for evaluating read quality
+        reps: for [rep1, rep2],
+        usually for mapping pair end data
+        '''
+        return {"pairs": [ [os.path.join(self.target_dir, self.id + "_treat_rep" + str(num+1)) + "pair1",
+                  os.path.join(self.target_dir, self.id + "_treat_rep" + str(num+1)) + "pair2"]
+                 for num in range(len(self.treatment_raws)) ],
+                "reps": [os.path.join(self.target_dir,
+                    self.id + "_treat_rep" + str(num+1)
+                ) for num in range(len(self.treatment_raws))]}
+
+    @property
+    def control_pair_targets(self):
+        '''pairs: for [[rep1_pair1, rep1_pair2]],
+        usually for evaluating read quality
+        reps: for [rep1, rep2],
+        usually for mapping pair end data
+        '''
+        return {"pairs": [ [os.path.join(self.target_dir, self.id + "_control_rep" + str(num+1)) + "pair1",
+                  os.path.join(self.target_dir, self.id + "_control_rep" + str(num+1)) + "pair2"]
+                 for num in range(len(self.control_raws)) ],
+                "reps": [os.path.join(self.target_dir,
+                    self.id + "_control_rep" + str(num+1)
+                ) for num in range(len(self.control_raws))]}
+
+    @property
     def control_targets(self):
-        return [os.path.join(self.target_dir,self.id + "_control_rep" + str(num+1))
-                for num in range(len(self.control_raws))]
+        if not self.pe:
+            return self.control_single_targets
+        else:
+            return self.control_pair_targets["reps"]
+
+    @property
+    def control_single_targets(self):
+        return [os.path.join(self.target_dir,
+            self.id + "_control_rep" + str(num+1)
+        ) for num in range(len(self.control_raws))]
+
     @property
     def sample_targets(self):
         return self.treatment_targets + self.control_targets
-
 
     def _base(self, path):
         return os.path.basename(path)

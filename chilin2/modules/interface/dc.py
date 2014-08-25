@@ -18,27 +18,33 @@ def groom_sequencing_files(workflow, conf):  # the start of ChiLin
     """
     not_groomed = []
     for raw, target in conf.sample_pairs:
-        if re.search(r"\.(fastq.gz|fq.gz)$", raw, re.I):
-            attach_back(workflow, make_link_command(orig=raw, dest=target + ".fastq"))
-            attach_back(workflow, sampling({"fastq": target + ".fastq"}, {"fastq_sample": target + "_100k.fastq"}, 100000, "fastq", conf))
+        if not conf.pe:
+            if re.search(r"\.(fastq.gz|fq.gz)$", raw, re.I):
+                attach_back(workflow, make_link_command(orig=raw, dest=target + ".fastq"))
+                attach_back(workflow, sampling({"fastq": target + ".fastq"}, {"fastq_sample": target + "_100k.fastq"}, 100000, "fastq", conf))
 
-        elif re.search(r"\.(fastq|fq)$", raw, re.I):
-            attach_back(workflow, make_link_command(orig=os.path.abspath(raw), dest=target + ".fastq"))
-            attach_back(workflow, sampling({"fastq": target + ".fastq"}, {"fastq_sample": target + "_100k.fastq"}, 100000, "fastq", conf))
+            elif re.search(r"\.(fastq|fq)$", raw, re.I):
+                attach_back(workflow, make_link_command(orig=os.path.abspath(raw), dest=target + ".fastq"))
+                attach_back(workflow, sampling({"fastq": target + ".fastq"}, {"fastq_sample": target + "_100k.fastq"}, 100000, "fastq", conf))
+            else:
+           ##     print(raw, " is neither fastq nor bam file. Skip grooming.")
+                not_groomed.append([raw, target])
         else:
-       ##     print(raw, " is neither fastq nor bam file. Skip grooming.")
-            not_groomed.append([raw, target])
 
+            if all(map(lambda x: re.search(r"\.(fastq.gz|fq.gz)", x, re.I), raw)):
 
-def pe_interface(workflow, conf):
-    """
+                attach_back(workflow, make_link_command(orig=raw[0], dest=target[0] + ".fastq"))
+                attach_back(workflow, make_link_command(orig=raw[1], dest=target[1] + ".fastq"))
 
-    :param workflow:
-    :param conf:
-    :return:
-    """
-    pass
+                attach_back(workflow, sampling({"fastq": target[0] + ".fastq"}, {"fastq_sample": target[0] + "_100k.fastq"}, 100000, "fastq", conf))
+                attach_back(workflow, sampling({"fastq": target[1] + ".fastq"}, {"fastq_sample": target[1] + "_100k.fastq"}, 100000, "fastq", conf))
 
+            elif all(map(lambda x: re.search(r"\.(fastq|fq)", x, re.I), raw)):
+                attach_back(workflow, make_link_command(orig=os.path.abspath(raw[0]), dest=target[0] + ".fastq"))
+                attach_back(workflow, make_link_command(orig=os.path.abspath(raw[1]), dest=target[1] + ".fastq"))
+            else:
+           ##     print(raw, " is neither fastq nor bam file. Skip grooming.")
+                not_groomed.append([raw, target])
 
 def sampling_bam(workflow, conf):   ## sampling to 4M
     """

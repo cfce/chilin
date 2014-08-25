@@ -10,10 +10,17 @@ def stat_fastqc(workflow, conf):  # collect raw reads quality and GC contents
     """
     long: generate long pages or not
     """
+    sums = []
+    for raw, target in conf.sample_pairs:
+        if conf.pe:
+            sums.append(target[0] + "_100k_fastqc/fastqc_data.txt")
+        else:
+            sums.append(target + "_100k_fastqc/fastqc_data.txt")
+
     attach_back(workflow,
                 PythonCommand(
                     json_fastqc,
-                    input={"fastqc_summaries": [target + "_100k_fastqc/fastqc_data.txt" for target in conf.sample_targets]},
+                    input={"fastqc_summaries": sums},
                     output={"json": conf.json_prefix + "_fastqc.json"},
                     param={"ids": conf.sample_bases,
                            "id": conf.id},

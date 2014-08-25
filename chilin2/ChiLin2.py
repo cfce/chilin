@@ -112,7 +112,7 @@ def parse_args(args=None):
 
         ## new option for use total reads or down sampling 4M
         p.add_argument("--total", dest="down", action="store_false",
-                default=True, help="default: 4M, down sampling 4M or use total reads, only support PBC, NSC/RSC/Qtag, FRiP")
+                       default=True, help="default: 4M, down sampling 4M or use total reads, only support PBC, NSC/RSC/Qtag, FRiP")
         p.add_argument("--frip", dest="frip", action="store_true",
                 default=False, help="default: 4M for FRiP, decide using 5M or 4M for FRiP calculation")
 #        p.add_argument("--unsc", dest="unsc", action="store_true",
@@ -128,8 +128,9 @@ def parse_args(args=None):
                        default=True)
         p.add_argument("--threads", dest="threads", default=4, type=int,
                        help="threads # to use when aligning (default: 4)")
-        p.add_argument("--pe", dest="pe", default=4, type=int,
+        p.add_argument("--pe", dest="pe", action="store_true", default=False,
                        help="pair end mode, not implemented ")
+
     return parser.parse_args(args), parser
 
 
@@ -317,27 +318,27 @@ def create_workflow(args, conf):
             bld.build(replicates)
     if need_run(6): ## this step can not skipped if run following steps
         bld.build(macs2)
-        # bld.build(washU)
+       # bld.build(washU)
 
-        ## following all needs merged peaks or summits
+       ## following all needs merged peaks or summits
         if need_run(7):
-            ## merged peaks FRiP
+           ## merged peaks FRiP
             bld.build(FRiP) ## sample and IP qc
-        # --------------------
-        # C. annotation qc
+       # --------------------
+       # C. annotation qc
         if need_run(8):
-            #bld.build(bedtools_ceas)
+           #bld.build(bedtools_ceas)
             bld.build(bedAnnotate_ceas)
-            ## generate gene.bed, exon.bed for read_enrichment analysis
+           ## generate gene.bed, exon.bed for read_enrichment analysis
             if need_run(9):
                 bld.build(sampling_bam) ## provide sam and bam
                 bld.build(read_enrichment_on_meta)
 
-        ## following steps dependent on step 6th
+       ## following steps dependent on step 6th
         if need_run(10):
             if has_conservation:
-                ## wig from ucsc and convert to bigwiggle
-                ## make this more common
+               ## wig from ucsc and convert to bigwiggle
+               ## make this more common
                 bld.build(conservation)
         if need_run(11):
             bld.build(reg_potential)
@@ -346,7 +347,6 @@ def create_workflow(args, conf):
                 bld.build(seqpos)
 
     bld.build(render_pdf)
-
     return workflow
 
 
@@ -354,13 +354,12 @@ def main(args=None):
     args, parser = parse_args(args)
 
     if args.sub_command == "run":
-        conf = ChiLinConfig(args.config)
+        conf = ChiLinConfig(args.config, args)
         # long document or only summary
         conf.long = args.long
         conf.frip = args.frip
         conf.down = args.down
         conf.mapper = args.mapper
-#        conf.unsc = args.unsc
         
         ## edit macs2 section species part to
         ## your specified species effective genome size
@@ -393,7 +392,7 @@ def main(args=None):
         fout.close()
 
     if args.sub_command == "simple":
-        conf = ChiLinConfig(resource_filename("chilin2.modules", "config/chilin.conf"))
+        conf = ChiLinConfig(resource_filename("chilin2.modules", "config/chilin.conf"), args)
         conf.frip = args.frip
         conf.down = args.down
         conf.long = args.long
@@ -455,7 +454,7 @@ def main(args=None):
         with open(args.batch_config) as batch_file:
             for a_conf in batch_file:
                 a_conf = a_conf.strip()
-                conf = ChiLinConfig(a_conf)
+                conf = ChiLinConfig(a_conf, args)
                 conf.frip = args.frip
                 conf.down = args.down
                 conf.mapper = args.mapper

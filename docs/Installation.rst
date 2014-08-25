@@ -86,7 +86,7 @@ For mac, we suggest using `macports`_, before install macport, user need to have
      cd chilin
      bash install_linux.sh or bash install_mac.sh
 
-then see `mdseqpos`_ installation and download `dependentdata`_, currently mdseqpos cannot be installed on mac, this step can be :ref:`"skip" <skip>` with *--skip 12*
+then see `mdseqpos`_ installation and download `dependentdata`_, install on mac should install gcc copiler (brew install gcc) instead of llvm-gcc.
 
 
 * Or follow the instruction for step-by-step installation.
@@ -424,9 +424,8 @@ After these preparation of software and reference data, you need to fill in chil
 Take hg19 as an example,
 
 .. literalinclude:: hg19.conf
-
-:language: ini
-:linenos:
+   :language: ini
+   :linenos:
 
 You can append as many species as you want.
 

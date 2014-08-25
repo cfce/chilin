@@ -20,9 +20,11 @@ def macs2(workflow, conf):
     else:
         macs2_bin = "macs2"
 
+    format = "-f BAMPE" if conf.pe else " "
+
     if conf.get("macs2", "type").lower() in ["both", "narrow"]: ## for DNase, H3K4, H2AZ, all acetyl marks, or TF
         macs2_on_merged_narrow = attach_back(workflow, ShellCommand(
-            "{tool} callpeak --SPMR -B -q {param[fdr]} --keep-dup {param[keep_dup]} --shiftsize={param[shiftsize]} --nomodel -g {param[species]} \
+            "{tool} callpeak --SPMR -B -q {param[fdr]} --keep-dup {param[keep_dup]} --shiftsize={param[shiftsize]} --nomodel -g {param[species]} {param[format]} \
             {param[treat_opt]} {param[control_opt]} -n {param[description]}",
             tool=macs2_bin,
             input={"treat": conf.prefix + "_treatment.bam"},
@@ -33,6 +35,7 @@ def macs2(workflow, conf):
                     "control_bdg": conf.prefix + "_control_lambda.bdg"},
             param={"description": conf.prefix,
                    "keep_dup": 1,
+                   "format": format,
                    "shiftsize": 73,
                    "fdr": 0.01,
                    "species": "hs"},
@@ -63,7 +66,7 @@ def macs2(workflow, conf):
     if conf.get("macs2", "type").lower() in ["both", "broad"]:  # K9, K36, K79 and K27 methylation, both for chromatin regulator, all other histone marks
         macs2_on_merged_broad = attach_back(workflow,
                                             ShellCommand(
-                                                "{tool} callpeak --SPMR -B -q {param[fdr]} {param[treat_opt]} {param[control_opt]} --keep-dup {param[keep_dup]} --broad -g {param[species]} -n {param[description]}",
+                                                "{tool} callpeak --SPMR -B -q {param[fdr]} {param[treat_opt]} {param[control_opt]} --keep-dup {param[keep_dup]} --broad -g {param[species]} {param[format]} -n {param[description]}",
                                                 tool=macs2_bin,
                                                 input = {"treat": conf.prefix + "_treatment.bam"},
                                                 output = {"peaks": conf.prefix + "_b_peaks.broadPeak",
@@ -72,6 +75,7 @@ def macs2(workflow, conf):
                                                           "control_bdg": conf.prefix + "_b_control_lambda.bdg"},
                                                 param = {"description": conf.prefix + "_b",
                                                          "species": "hs",
+                                                         "format": format,
                                                          "keep_dup": 1, "fdr": 0.01},
                                                 name = "broad peaks calling"))
         macs2_on_merged_broad.param["treat_opt"] = " -t " + macs2_on_merged_broad.input["treat"]
@@ -157,12 +161,14 @@ def macs2_rep(workflow, conf):
     else:
         macs2_bin = "macs2"
 
+    format = " -f BAMPE " if conf.pe  else " "
+
     for target in conf.treatment_targets:
         ## DNase, H3K4, H2AZ, all acetyl marks, or TF
         if conf.get("macs2", "type").lower() in ["both", "narrow"]: ## for DNase, H3K4, H2AZ, all acetyl marks, or TF
             macs2_on_rep_narrow = attach_back(workflow,
                                               ShellCommand(
-                                                  "{tool} callpeak --SPMR -B -q {param[fdr]} --keep-dup {param[keep_dup]} --shiftsize={param[shiftsize]} --nomodel -g {param[species]} \
+                                                  "{tool} callpeak --SPMR -B -q {param[fdr]} --keep-dup {param[keep_dup]} --shiftsize={param[shiftsize]} --nomodel -g {param[species]} {param[format]} \
                                                   {param[treat_opt]} {param[control_opt]} -n {param[description]}",
                                                   tool=macs2_bin,
                                                   input={"treat": target + ".bam"},
@@ -170,7 +176,7 @@ def macs2_rep(workflow, conf):
                                                           "treat_bdg": target + "_treat_pileup.bdg",
                                                           "peaks_xls": target + "_peaks.xls",
                                                           "control_bdg": target + "_control_lambda.bdg"},
-                                                  param={"description": target, "keep_dup": 1, "shiftsize": 73, "species": "hs", "fdr":0.01},
+                                                  param={"description": target, "keep_dup": 1, "shiftsize": 73, "species": "hs", "fdr":0.01, "format": format},
                                                   name="macs2_callpeak_rep"))
             macs2_on_rep_narrow.param["treat_opt"] = "-t " + macs2_on_rep_narrow.input["treat"]
 
@@ -194,7 +200,7 @@ def macs2_rep(workflow, conf):
         if conf.get("macs2", "type").lower() in ["both", "broad"]:  # K9, K36, K79 and K27 methylation, both for chromatin regulator, all other histone marks
             macs2_on_rep_broad = attach_back(workflow,
                                              ShellCommand(
-                                                 "{tool} callpeak --SPMR -B -q {param[fdr]} {param[treat_opt]} {param[control_opt]} --keep-dup {param[keep_dup]} --broad -g {param[species]} -n {param[description]}",
+                                                 "{tool} callpeak --SPMR -B -q {param[fdr]} {param[treat_opt]} {param[control_opt]} --keep-dup {param[keep_dup]} --broad -g {param[species]} {param[format]} -n {param[description]}",
                                                  tool=macs2_bin,
                                                  input = {"treat": target + ".bam"},
                                                  output = {"peaks": target + "_b_peaks.broadPeak",
@@ -203,6 +209,7 @@ def macs2_rep(workflow, conf):
                                                           "control_bdg": target + "_b_control_lambda.bdg"},
                                                  param = {"description": target + "_b",
                                                           "species": "hs",
+                                                          "format": format,
                                                           "fdr": 0.01},
                                                  name = " macs2 broad peaks"))
             macs2_on_rep_broad.param["treat_opt"] = " -t " + macs2_on_rep_broad.input["treat"]
