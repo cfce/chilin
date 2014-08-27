@@ -117,8 +117,8 @@ class ChiLinConfig(ConfigParser):
                 for i in self.get("basics", "cont").split(";"):
                     data_list.append([ self.to_abs_path(j.strip()) for j in i.split(",") ])
                 return data_list
-        else:
-            raise NoTreatmentData
+        return []
+
 
     @property
     def treatment_raws(self):
