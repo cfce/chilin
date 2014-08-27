@@ -14,10 +14,16 @@ def tex_fastqc(workflow, conf):
                    "pdf": conf.prefix + "_raw_sequence_qc.pdf"},
             output={"latex": conf.latex_prefix + "_fastqc.tex"}))
     #these are name, png pairings
-    gccontent_graphs = [(nm.replace("_"," "),
-                         os.path.join(conf.target_dir, "%s_100k_fastqc" % nm,
-                                      "Images","per_sequence_gc_content.png"))\
-                            for nm in conf.sample_bases]
+    if not conf.pe:
+        gccontent_graphs = [(nm.replace("_"," "),
+                             os.path.join(conf.target_dir, "%s_100k_fastqc" % nm,
+                                          "Images","per_sequence_gc_content.png"))\
+                                for nm in conf.sample_bases]
+    else:
+        gccontent_graphs = [(nm.replace("_"," "),
+                             os.path.join(conf.target_dir, "%spair1_100k_fastqc" % nm,
+                                          "Images","per_sequence_gc_content.png"))\
+                                for nm in conf.sample_bases]
     attach_back(workflow,
         PythonCommand(
             load_gc_latex,
