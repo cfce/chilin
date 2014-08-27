@@ -345,8 +345,9 @@ def create_workflow(args, conf):
         if need_run(12):
             if has_motifdb:
                 bld.build(seqpos)
+        if need_run(13):
+            bld.build(render_pdf)
 
-    bld.build(render_pdf)
     return workflow
 
 
