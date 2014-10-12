@@ -17,7 +17,7 @@ def stat_fastqc(workflow, conf):  # collect raw reads quality and GC contents
         else:
             sums.append(target + "_100k_fastqc/fastqc_data.txt")
 
-    attach_back(workflow,
+    collect = attach_back(workflow,
                 PythonCommand(
                     json_fastqc,
                     input={"fastqc_summaries": sums},
@@ -25,17 +25,21 @@ def stat_fastqc(workflow, conf):  # collect raw reads quality and GC contents
                     param={"ids": conf.sample_bases,
                            "id": conf.id},
                     name = "collect fastqc results"))
-    
+    collect.allow_fail = True
+    collect.allow_dangling = True
+
     if conf.long:  ## prepare long document images and tex
-        attach_back(workflow,
-        PythonCommand(fastqc_detailed_figure,
+        long_collect = attach_back(workflow,
+                    PythonCommand(fastqc_detailed_figure,
                       input = {"dbaccessor": resource_filename("chilin2.modules.dbaccessor", "ChiLinQC.db"),
                                "template": resource_filename("chilin2.modules.summary", "R_culmulative_plot.R"), 
                                "json": conf.json_prefix + "_fastqc.json"},
                       output = {"R": conf.prefix + "_raw_sequence_qc.R",
                                 "pdf": conf.prefix + "_raw_sequence_qc.pdf"},
                       param={"ids": conf.sample_bases}))
-        
+        long_collect.allow_fail = True
+        long_collect.allow_dangling = True
+
 
 def json_fastqc(input={"fastqc_summaries": []},
                 output={"R": "", "json": "", "pdf": ""},

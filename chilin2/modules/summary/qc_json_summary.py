@@ -117,7 +117,7 @@ def summary_table(conf):
     js = pre + "_enrich_meta.json"
     if exist(js):
         stat = _stat(js)
-        if conf.down: 
+        if conf.down:
             table.append(["DHS/Promoter/Exon ratio of 4M reads"] + [ str(decimal_to_latex_percent(stat[s]['dhs']))+"/"+str(decimal_to_latex_percent(stat[s]['promoter']))+"/"+str(decimal_to_latex_percent(stat[s]['exon']))  for s in samples ])
         else:
             table.append(["DHS/Promoter/Exon ratio of total reads"] + [ str(decimal_to_latex_percent(stat[s]['dhs']))+"/"+str(decimal_to_latex_percent(stat[s]['promoter']))+"/"+str(decimal_to_latex_percent(stat[s]['exon']))  for s in samples ])

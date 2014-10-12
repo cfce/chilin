@@ -16,7 +16,7 @@ def stat_bwa(workflow, conf): ## use samtools to parse mappable reads from bwa
     bam files are filtered by samtools -q 1, so mapped reads are considered to be unique
     """
     for t in conf.sample_targets:
-        attach_back(workflow, ShellCommand(
+        stat = attach_back(workflow, ShellCommand(
         """
         {tool} view -Sc {input[sam]} > {output[total]}
         {tool} flagstat {input[bam]} > {output[stat]}
@@ -26,15 +26,19 @@ def stat_bwa(workflow, conf): ## use samtools to parse mappable reads from bwa
                  "sam": t + ".sam"},
         output = {"stat": t + "_mapped.bwa",
                   "total": t + "_total.bwa"}))
-    attach_back(workflow, PythonCommand(json_bwa,
+        stat.allow_fail = True
+        stat.allow_dangling = True
+    collect = attach_back(workflow, PythonCommand(json_bwa,
         input={"bwa_mapped": [ t + "_mapped.bwa" for t in conf.sample_targets ],
                "bwa_total": [ t + "_total.bwa" for t in conf.sample_targets ]},
         output={"json": conf.json_prefix+"_map.json"},
         param={"sample":conf.sample_bases},
         name="bwa qc"))
+    collect.allow_dangling = True
+    collect.allow_fail = True
 
     if conf.long:
-        attach_back(workflow, PythonCommand(bwa_figures,
+        long_collect = attach_back(workflow, PythonCommand(bwa_figures,
                                             input = {"dbaccessor": resource_filename("chilin2.modules.dbaccessor", "ChiLinQC.db"),
                                                      "json": conf.json_prefix + "_map.json",
                                                      "template": resource_filename("chilin2.modules.summary", "R_culmulative_plot.R")},
@@ -42,6 +46,8 @@ def stat_bwa(workflow, conf): ## use samtools to parse mappable reads from bwa
 
                                             output = {"pdf": conf.prefix + "_bwa_compare.pdf", "R": conf.prefix+"_bwa_compare.R"},
                                             param = {"sample": conf.sample_bases}))
+        long_collect.allow_fail = True
+        long_collect.allow_fail = True
 
 
 def json_bwa(input={}, output={}, param={}): ## convert values to json files

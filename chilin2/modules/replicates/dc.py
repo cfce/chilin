@@ -30,6 +30,8 @@ def replicates_peaks_overlap(workflow, conf):  # peaks bed from each replicate
                                                           output = conf.prefix + "_%s_%s.overlap" % (i, j),
                                                           param = {"p": 0.3},
                                                           name = "Replicates peaks overlap QC"))
+            replicates_overlap.allow_fail = True # in case 0 peak in macs2
+            replicates_overlap.allow_dangling = True
     ## generate a barplot for meta distribution
 
     replicates_overlap.update(param = conf.items("replicates"))
@@ -52,3 +54,6 @@ def replicates_bw_correlation(workflow, conf):    ## correlation among different
                                              param = {"input_list": []},
                                              name = "correlation between bigwiggle"))
     replicates_correlation.update(param={"input_list": " ".join(replicates_correlation.input)})
+    replicates_correlation.allow_fail = True # in case 0 peak in macs2
+    replicates_correlation.allow_dangling = True
+

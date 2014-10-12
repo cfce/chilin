@@ -24,7 +24,7 @@ def macs2(workflow, conf):
 
     if conf.get("macs2", "type").lower() in ["both", "narrow"]: ## for DNase, H3K4, H2AZ, all acetyl marks, or TF
         macs2_on_merged_narrow = attach_back(workflow, ShellCommand(
-            "{tool} callpeak --SPMR -B -q {param[fdr]} --keep-dup {param[keep_dup]} --shiftsize={param[shiftsize]} --nomodel -g {param[species]} {param[format]} \
+            "{tool} callpeak --SPMR -B -q {param[fdr]} --keep-dup {param[keep_dup]} --extsize={param[extsize]} --nomodel -g {param[species]} {param[format]} \
             {param[treat_opt]} {param[control_opt]} -n {param[description]}",
             tool=macs2_bin,
             input={"treat": conf.prefix + "_treatment.bam"},
@@ -36,7 +36,7 @@ def macs2(workflow, conf):
             param={"description": conf.prefix,
                    "keep_dup": 1,
                    "format": format,
-                   "shiftsize": 73,
+                   "extsize": 73 * 2, # extsize=2*shiftsize
                    "fdr": 0.01,
                    "species": "hs"},
             name="macs2_callpeak_merged"))
@@ -62,6 +62,10 @@ def macs2(workflow, conf):
                                output = {"p":conf.prefix + "_sort_peaks.narrowPeak",
                                          "s":conf.prefix + "_sort_summits.bed"},
                                name = "sort peaks"))
+        macs2_on_merged_narrow.allow_fail = True
+        macs2_on_merged_narrow.allow_dangling = True
+        sort.allow_fail = True
+        sort.allow_dangling = True
 
     if conf.get("macs2", "type").lower() in ["both", "broad"]:  # K9, K36, K79 and K27 methylation, both for chromatin regulator, all other histone marks
         macs2_on_merged_broad = attach_back(workflow,
@@ -80,6 +84,7 @@ def macs2(workflow, conf):
                                                 name = "broad peaks calling"))
         macs2_on_merged_broad.param["treat_opt"] = " -t " + macs2_on_merged_broad.input["treat"]
         macs2_on_merged_broad.allow_fail = True
+        macs2_on_merged_broad.allow_dangling = True
 
         if len(conf.control_targets) >= 1:
             macs2_on_merged_broad.input["control"] = conf.prefix + "_control.bam"
@@ -168,7 +173,7 @@ def macs2_rep(workflow, conf):
         if conf.get("macs2", "type").lower() in ["both", "narrow"]: ## for DNase, H3K4, H2AZ, all acetyl marks, or TF
             macs2_on_rep_narrow = attach_back(workflow,
                                               ShellCommand(
-                                                  "{tool} callpeak --SPMR -B -q {param[fdr]} --keep-dup {param[keep_dup]} --shiftsize={param[shiftsize]} --nomodel -g {param[species]} {param[format]} \
+                                                  "{tool} callpeak --SPMR -B -q {param[fdr]} --keep-dup {param[keep_dup]} --extsize={param[extsize]} --nomodel -g {param[species]} {param[format]} \
                                                   {param[treat_opt]} {param[control_opt]} -n {param[description]}",
                                                   tool=macs2_bin,
                                                   input={"treat": target + ".bam"},
@@ -176,7 +181,7 @@ def macs2_rep(workflow, conf):
                                                           "treat_bdg": target + "_treat_pileup.bdg",
                                                           "peaks_xls": target + "_peaks.xls",
                                                           "control_bdg": target + "_control_lambda.bdg"},
-                                                  param={"description": target, "keep_dup": 1, "shiftsize": 73, "species": "hs", "fdr":0.01, "format": format},
+                                                  param={"description": target, "keep_dup": 1, "extsize": 73*2, "species": "hs", "fdr":0.01, "format": format},
                                                   name="macs2_callpeak_rep"))
             macs2_on_rep_narrow.param["treat_opt"] = "-t " + macs2_on_rep_narrow.input["treat"]
 
@@ -195,6 +200,8 @@ def macs2_rep(workflow, conf):
             else:
                 macs2_on_rep_narrow.param["control_opt"] = ""
             macs2_on_rep_narrow.update(param=conf.items("macs2"))
+            macs2_on_rep_narrow.allow_dangling = True
+            macs2_on_rep_narrow.allow_fail = True
 
 
         if conf.get("macs2", "type").lower() in ["both", "broad"]:  # K9, K36, K79 and K27 methylation, both for chromatin regulator, all other histone marks

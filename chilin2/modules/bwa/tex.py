@@ -6,12 +6,14 @@ from samflow.workflow import attach_back
 
 
 def tex_bwa(workflow, conf):
-    attach_back(workflow,
+    tex = attach_back(workflow,
                 PythonCommand(
                     long_tex,
                     input = {"template": resource_filename("chilin2.modules.bwa", "bwa.tex"),
                              "figure": conf.prefix + "_bwa_compare.pdf"},
                     output = {"latex": conf.latex_prefix + "_map.tex"}))
+    tex.allow_fail = True
+    tex.allow_dangling = True
 
 
 def long_tex(input, output, param):

@@ -41,28 +41,34 @@ def stat_bedAnnotate(workflow, conf, has_dhs, has_velcro):
     """ Describe peaks' distribution
     # collect meta gene distribution info
     """
-    attach_back(workflow, PythonCommand(
+    collect_meta2 = attach_back(workflow, PythonCommand(
         json_meta2,
         input={"meta": conf.prefix + ".meta"},
         output={"json": conf.json_prefix + "_meta.json"},
         param={"id": conf.id},
         name="bedAnnotate summary"))
+    collect_meta2.allow_fail = True
+    collect_meta2.allow_dangling = True
 
     if has_dhs:
-        attach_back(workflow, PythonCommand(
+        collect_dhs = attach_back(workflow, PythonCommand(
             json_dhs,
             input={"dhs": conf.prefix + ".dhs",
                    "top_peaks": 5000},
             output={"json": conf.json_prefix + "_dhs.json"},
             name="DHS summary"))
+        collect_dhs.allow_dangling = True
+        collect_dhs.allow_fail = True
 
     if has_velcro:
-        attach_back(workflow, PythonCommand(
+        collect_velcro = attach_back(workflow, PythonCommand(
             json_velcro,
             input={"velcro": conf.prefix + ".velcro",
                    "top_peaks": 5000},
             output={"json": conf.json_prefix + "_velcro.json"},
             name="Velcro summary"))
+        collect_velcro.allow_fail = True
+        collect_velcro.allow_dangling = True
 
 
 def json_meta(input={}, output={}, param={}):

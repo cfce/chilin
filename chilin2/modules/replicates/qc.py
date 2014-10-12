@@ -17,13 +17,15 @@ def stat_replicates(workflow, conf):  ## replicates peaks and bigwiggle
           replicates peaks overlap number(percentage: 0.3)
     output: *replicates.json
     """
-    attach_back(workflow,
+    stat = attach_back(workflow,
                 PythonCommand(
                     json_reps,
                     input = {"cor": conf.prefix+".cor",
                              "overlap": [conf.prefix + "_%s_%s.overlap" % (i, j) for i in range(len(conf.treatment_targets)) for j in range(i+1, len(conf.treatment_targets))]},
                     output = {"json": conf.json_prefix + "_rep.json"},
                     param = {"param": conf.id}))
+    stat.allow_fail = True
+    stat.allow_dangling = True
 
 def json_reps(input, output, param):
     json_dict = {"stat": {}, "input": input, "output": output, "param": param}

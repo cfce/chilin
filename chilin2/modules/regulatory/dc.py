@@ -19,6 +19,8 @@ def reg_potential(workflow, conf):
                                     param={"peaks": 10000},
                                     name="top summits for regpotential"))
     get_top_peaks.update(param=conf.items("reg_potential"))
+    get_top_peaks.allow_fail = True
+    get_top_peaks.allow_dangling = True
 
     reg = attach_back(workflow,
                       ShellCommand(
@@ -32,3 +34,5 @@ def reg_potential(workflow, conf):
                                    "dist": 100000},
                           name = "Regulatory Potential"))
     reg.update(param=conf.items("reg_potential"))
+    reg.allow_fail = True
+    reg.allow_dangling = True

@@ -96,6 +96,9 @@ def bedAnnotate_ceas(workflow, conf):
     except:
         has_velcro = ""
         has_dhs = ""
+    ceas.allow_fail = True
+    ceas.allow_dangling = True
+
     if has_dhs:
         DHS(workflow, conf)
     if has_velcro:
@@ -124,10 +127,12 @@ def DHS(workflow, conf):   # DHS overlap percentage
                                    output=conf.prefix + ".dhs",
                                    param={"p": 5000},
                                    name = "intersect DHS"))
+    DHS.allow_dangling = True
+    DHS.allow_fail = True
 
 
 def velcro(workflow, conf):
-    attach_back(workflow,
+    vel = attach_back(workflow,
                 ShellCommand(
                     """
                     n=$(head -n {param[p]} {input[MACS2_bed]} | wc -l)
@@ -142,4 +147,6 @@ def velcro(workflow, conf):
                     output=conf.prefix + ".velcro",
                     param={"p": 5000},
                     name = "velcro overlap"))
+    vel.allow_fail = True
+    vel.allow_dangling = True
 

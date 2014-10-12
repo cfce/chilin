@@ -54,7 +54,7 @@ def bwa(workflow, conf):   # Mapping
                                   name = "bwa aln"))
             bwa.update(param = conf.items("bwa"))
 
-            attach_back(workflow,
+            bwa_coordin = attach_back(workflow,
                         ShellCommand(
                             "{tool} samse {param[index]} {input[sai]} {input[fastq]} > {output[sam]}",
                             tool = "bwa",
@@ -63,6 +63,10 @@ def bwa(workflow, conf):   # Mapping
                             output = {"sam": target + ".sam"},
                             param = {"index": conf.get_path(conf.get("basics", "species"), "genome_index")},
                             name = "bwa samse"))
+        bwa.allow_fail = True
+        bwa.allow_dangling = True
+        bwa_coordin.allow_fail = True
+        bwa_coordin.allow_dangling = True
 
     _bwa_sam2bam(workflow, conf)
 
@@ -95,6 +99,9 @@ def _bwa_sam2bam(workflow, conf):  # SAM -> BAM
                                "max_mem": 4000000000},
                         name = "filtering mapping and convert")) # Use 5G memory as default
         sam2bam.update(param=conf.items("sam2bam"))
+        sam2bam.allow_fail = True
+        sam2bam.allow_dangling = True
+
 
         ## filter chrM for chromosomoe information, generate uniquely
         ## aligned sam files (prepared for built-in sampling utility)
@@ -117,3 +124,5 @@ def _bwa_sam2bam(workflow, conf):  # SAM -> BAM
                                "genome": conf.get(conf.get("basics", "species"), "chrom_len")},
                         name = "filtering chrM and convert to sam for sampling"))
         sam2bamnochrm.update(param=conf.items("sam2bam"))
+        sam2bamnochrm.allow_dangling = True
+        sam2bamnochrm.allow_fail = True

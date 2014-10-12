@@ -26,7 +26,7 @@ def read_enrichment_on_meta(workflow, conf):
         has_dhs = ""
     import os
     for t in conf.sample_targets:
-        attach_back(workflow, ShellCommand(
+        enrich = attach_back(workflow, ShellCommand(
             ## use bash modules/ceas/meta_info.sh to get latest annotations
             ## Qian: coverage should not consider the strand information for promoters and exons, 5 column for reads count
             ## because of no strand information, we plus the 4th column
@@ -39,10 +39,12 @@ def read_enrichment_on_meta(workflow, conf):
             output = {"exon":t+".enrich.exon",
                       "promoter": t+".enrich.promoter"},
             param = {"promoter": os.path.join(conf.target_dir, "gene.bed_promoter"), "exon": os.path.join(conf.target_dir, "gene.bed_exon")}))
+        enrich.allow_dangling = True
+        enrich.allow_fail = True
 
         if has_dhs:
             ## Qian: dhs has no strand problem, use 4th column as reads count
-            attach_back(workflow, ShellCommand(
+            dhs = attach_back(workflow, ShellCommand(
             ## 4 column reads count
             """
             {tool}  -abam {input[bam]} -b {param[dhs]} -counts | awk \'{{n+=$4}}END{{print n}}\' - > {output[dhs]}
@@ -52,8 +54,10 @@ def read_enrichment_on_meta(workflow, conf):
                     "dhs":conf.get_path(conf.get("basics", "species"), "dhs")},
             output = {"dhs": t+".enrich.dhs"}, param = {"dhs": conf.get_path(conf.get("basics", "species"), "dhs")},
             ))
+            dhs.allow_fail = True
+            dhs.allow_dangling = True
 
-    attach_back(workflow, PythonCommand(
+    em = attach_back(workflow, PythonCommand(
         enrich_in_meta,
         input = {"exon":[ t+".enrich.exon" for t in conf.sample_targets ],
                  "promoter": [ t+".enrich.promoter" for t in conf.sample_targets ],
@@ -61,6 +65,9 @@ def read_enrichment_on_meta(workflow, conf):
         output = {"json": conf.json_prefix + "_enrich_meta.json"},
         param = {"samples": conf.sample_bases, "id":conf.id, "has_dhs":has_dhs,
                  "dhs": [ t+".enrich.dhs" for t in conf.sample_targets ]}))
+    em.allow_fail = True
+    em.allow_dangling = True
+
 
 def enrich_in_meta(input = {'exon':'','dhs':'','promoter':'', "mapped": ""}, output = {"json": ""}, param = {'id':"", 'samples':""}):
     """ enrichment in meta regions

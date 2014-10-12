@@ -13,7 +13,7 @@ def stat_contamination(workflow, conf):
     summ = []
     for target in conf.sample_targets:
         summ.append([ (target + species + "_mapped." + conf.mapper, target + species + "_total." + conf.mapper) for species in all_species ])
-    attach_back(workflow,
+    collect = attach_back(workflow,
                 PythonCommand(json_contamination,
                               input={"summaries": summ},
                               output={"json": conf.json_prefix + "_contam.json"},
@@ -21,6 +21,9 @@ def stat_contamination(workflow, conf):
                                      "id": conf.id,
                                      "species": all_species},
                               name = "stat contamination"))
+    collect.allow_dangling = True
+    collect.allow_fail = True
+
 
 ## summary of library contamination
 def json_contamination(input = {"summaries": [[]]}, output = {"json": ""}, param = {"samples": "", "species": "", "id": ""}):

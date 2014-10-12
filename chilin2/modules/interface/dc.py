@@ -15,6 +15,7 @@ def groom_sequencing_files(workflow, conf):  # the start of ChiLin
     interface of the ChiLin input
     support fastq and fastq.gz input format,
     prepare Input with symbol links
+    not allow failed, this is the first step ...
     """
     not_groomed = []
     for raw, target in conf.sample_pairs:
@@ -51,9 +52,6 @@ def groom_sequencing_files(workflow, conf):  # the start of ChiLin
 def sampling_bam(workflow, conf):   ## sampling to 4M
     """
     sampling bam files through macs2 and bedtools
-    :param workflow:
-    :param conf:
-    :return:
     """
     for target in conf.sample_targets:
         ## sampling treat and control simultaneously
@@ -61,14 +59,20 @@ def sampling_bam(workflow, conf):   ## sampling to 4M
         ## if total mapped reads < 4M, use original bam files link to *4000000.bam
         ## extract mapped reads number from json files
         ## use uniquely mapped reads sampling
-        attach_back(workflow, sampling(target + "_u.sam", target + "_4000000.bam", 4000000, "sam", conf))
+        sampling_u = attach_back(workflow, sampling(target + "_u.sam", target + "_4000000.bam", 4000000, "sam", conf))
+        sampling_u.allow_dangling = True
+        sampling_u.allow_fail = True
 
         ## use encode version of 5M non chrM reads to evaluate
         if conf.frip:
-            attach_back(workflow, sampling(target + "_nochrM.sam", target + "_5000000_nochrM.bam", 5000000, "sam", conf))
+            samp = attach_back(workflow, sampling(target + "_nochrM.sam", target + "_5000000_nochrM.bam", 5000000, "sam", conf))
+            samp.allow_fail = True
+            samp.allow_dangling = True
         else: ## default
             ## change FRiP computing with merged peaks as reference, no chrM as comparison
-            attach_back(workflow, sampling(target + "_nochrM.sam", target + "_4000000_nochrM.bam", 4000000, "sam", conf))
+            samp = attach_back(workflow, sampling(target + "_nochrM.sam", target + "_4000000_nochrM.bam", 4000000, "sam", conf))
+            samp.allow_fail = True
+            samp.allow_dangling = True
 
     ## sampling merged control data to 4M control data for SPP and FRiP peaks calling
     ## change FRiP computing with merged peaks as reference, no chrM as comparison
@@ -89,6 +93,8 @@ def merge_bams(workflow, conf):   ## merge input and chip bam
         input=[target + ".bam" for target in conf.treatment_targets],
         output={"merged": conf.prefix + "_treatment.bam"})
     merge_bams_treat.param = {"bams": " ".join(merge_bams_treat.input)}
+    merge_bams_treat.allow_fail = True
+    merge_bams_treat.allow_dangling = True
 
     if len(conf.treatment_targets) > 1:
         attach_back(workflow, merge_bams_treat)

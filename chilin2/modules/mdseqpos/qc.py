@@ -10,13 +10,15 @@ from chilin2.modules.config.helpers import JinjaTemplateCommand, template_dump, 
 
 
 def stat_motif(workflow, conf):
-    attach_back(workflow,
+    collect = attach_back(workflow,
                 PythonCommand(
                     stat_seqpos,
                     input={"seqpos":conf.prefix + "_seqpos/" + "motif_list.json"},
                     output={"json": conf.json_prefix + "_seqpos.json"},
                     param={"prefix": conf.prefix + "_seqpos/seqLogo/", "z_score_cutoff": -1},
                     name = "collect motif info"))
+    collect.allow_fail = True
+    collect.allow_dangling = True
 
 
 def stat_seqpos(input = {"template": "", "seqpos": ""}, output={"latex_section": ""}, param = {"prefix": "", "z_score_cutoff":-15}):

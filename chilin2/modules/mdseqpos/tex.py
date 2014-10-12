@@ -9,13 +9,15 @@ from pkg_resources import resource_filename
 from chilin2.modules.config.helpers import JinjaTemplateCommand, template_dump, json_load, json_dump
 
 def tex_motif(workflow, conf):
-    attach_back(workflow,
+    tex = attach_back(workflow,
                 PythonCommand(
                     latex_seqpos,
                     input={"template": resource_filename("chilin2.modules", "mdseqpos/motif.tex"),"json":conf.json_prefix + "_seqpos.json"},
                     output={"tex": conf.latex_prefix + "_motif.tex"},
                     param={"id": conf.id},
                     name = "generating latex of motif info"))
+    tex.allow_fail = True
+    tex.allow_dangling = True
 
 def latex_seqpos(input, output, param):
     json_dict = json_load(input["json"])

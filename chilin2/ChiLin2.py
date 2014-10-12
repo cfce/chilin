@@ -105,11 +105,9 @@ def parse_args(args=None):
                        help="Only step before this number will be processed ")
         p.add_argument("--skip", dest="skip_step", default="",
                        help="Steps to skip, use comma as seperator")
-
         p.add_argument("--mapper", dest="mapper", default="bwa",
                        choices=["bwa", "bowtie", "star"],
-                       help="choose your mapper")
-
+                       help="choose your mapper") ## should be consistent with the genome index you specified in the gene
         ## new option for use total reads or down sampling 4M
         p.add_argument("--total", dest="down", action="store_false",
                        default=True, help="default: 4M, down sampling 4M or use total reads, only support PBC, NSC/RSC/Qtag, FRiP")
@@ -120,8 +118,10 @@ def parse_args(args=None):
 
         p.add_argument("--dry-run", dest="dry_run", action="store_true",
                        default=False)
-        p.add_argument("--allow-dangling", dest="allow_dangling", action="store_true",
-                       default=False)
+        p.add_argument("--not-allow-dangling", dest="allow_dangling", action="store_false",
+                       default=True)
+        p.add_argument("--not-allow-fail", dest="allow_fail", action="store_false",
+                       default=True)
         p.add_argument("--dont_resume", dest="resume", action="store_false",
                        default=True)
         p.add_argument("--dont_remove", dest="clean", action="store_false",
@@ -129,7 +129,7 @@ def parse_args(args=None):
         p.add_argument("--threads", dest="threads", default=4, type=int,
                        help="threads # to use when aligning (default: 4)")
         p.add_argument("--pe", dest="pe", action="store_true", default=False,
-                       help="pair end mode, not implemented ")
+                       help="default single end mode, turn on for pair end sequencing")
 
     return parser.parse_args(args), parser
 
@@ -361,7 +361,7 @@ def main(args=None):
         conf.frip = args.frip
         conf.down = args.down
         conf.mapper = args.mapper
-        
+
         ## edit macs2 section species part to
         ## your specified species effective genome size
         #handle threads
@@ -372,7 +372,8 @@ def main(args=None):
             verbose_level=args.verbose_level,
             dry_run_mode=args.dry_run,
             resume=args.resume,
-            allow_dangling=args.allow_dangling)
+            allow_dangling=args.allow_dangling,
+            allow_fail=args.allow_fail)
 
         if workflow.invoke(): #invoke returns True on success
             if args.clean: #clean_up
@@ -393,7 +394,7 @@ def main(args=None):
         fout.close()
 
     if args.sub_command == "simple":
-        conf = ChiLinConfig(resource_filename("chilin2.modules", "config/chilin.conf"), args)
+        conf = ChiLinConfig(resource_filename("chilin2.modules", "config/chilin.conf"), args) ## pass command parameter
         conf.frip = args.frip
         conf.down = args.down
         conf.long = args.long
@@ -429,9 +430,9 @@ def main(args=None):
 
         ## uniform extension for different types of factors
         if args.rtype.lower() in ['tf', 'histone']:
-            conf.set("macs2","shiftsize", "73")
+            conf.set("macs2","extsize", "146") # for histone and tf, use 146 extsize(73 shiftsize)
         elif args.rtype.lower() == "dnase":
-            conf.set("macs2", "shiftsize", "50")
+            conf.set("macs2", "extsize", "100") # for dnase, use 100 extsize(50 shiftsize)
         else:
             print >>sys.stderr, "No such factor\n"
 
@@ -444,7 +445,8 @@ def main(args=None):
             verbose_level=args.verbose_level,
             dry_run_mode=args.dry_run,
             resume=args.resume,
-            allow_dangling=args.allow_dangling)
+            allow_dangling=args.allow_dangling,
+            allow_fail=args.allow_fail)
 
         if workflow.invoke(): #invoke returns True on success
             if args.clean: #clean_up
@@ -467,7 +469,8 @@ def main(args=None):
                     verbose_level=args.verbose_level,
                     dry_run_mode=args.dry_run,
                     resume=args.resume,
-                    allow_dangling=args.allow_dangling)
+                    allow_dangling=args.allow_dangling,
+                    allow_fail=args.allow_fail)
 
                 ## one by one clean up
                 if workflow.invoke(): #invoke returns True on success

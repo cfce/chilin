@@ -40,7 +40,7 @@ def merge_latex(workflow, conf):
                         "_fastqc_gc.tex",
                         "_map.tex",
                         "_conserv.tex",
-                        "_macs2.latex", "_macs2_on_sample.latex",
+                        # "_macs2.latex", "_macs2_on_sample.latex",
                         # "_phan.tex",
                         "_motif.tex",
                         "_contam.tex",
@@ -69,13 +69,15 @@ def latex_summary_table(input, output, param):
 
 
 def summary_table_latex(workflow, conf):
-    attach_back(workflow,
+    summary_tab = attach_back(workflow,
          PythonCommand(
              latex_summary_table,
              input={"template": resource_filename("chilin2.modules.summary", "summary_table.tex")},
              output={"latex": conf.latex_prefix + "_summary_table.tex"},
              param={"conf": conf,
                     "layout": "l"+"c"*(1+len(conf.sample_bases))}))
+    summary_tab.allow_fail = True
+    summary_tab.allow_dangling = True
 
 
 def render_pdf(workflow, conf, long = True):
@@ -94,5 +96,5 @@ def render_pdf(workflow, conf, long = True):
                     # param[name] should use "conf.id" to avoid using absolute path
                     param={"name": conf.id},
                     name="report"))
-                                   
+
     render.allow_fail = True

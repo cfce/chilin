@@ -24,6 +24,8 @@ def star(workflow, conf, target, output, index):   # Mapping
                                    "index": index},
                           name = "star aln"))
     star.update(param = conf.items("bowtie"))
+    star.allow_dangling = True
+    star.allow_fail = True
     return workflow
 
 
@@ -42,6 +44,8 @@ def bowtie(workflow, conf, target, output, index):   # Mapping
                                    "index": index},
                                    name = "bowtie aln"))
     bowtie.update(param = conf.items("bowtie"))
+    bowtie.allow_fail = True
+    bowtie.allow_dangling = True
     return workflow
 
 def bwa(workflow, conf, target, output, outsai, index):   # Mapping
@@ -62,7 +66,7 @@ def bwa(workflow, conf, target, output, outsai, index):   # Mapping
                                        "index": index},
                               name = "bwa aln"))
         bwa.update(param = conf.items("bwa"))
-        attach_back(workflow,
+        out = attach_back(workflow,
                     ShellCommand(
                         "{tool} samse {param[index]} {input[sai]} {input[fastq]} > {output[sam]}",
                         tool = "bwa",
@@ -86,7 +90,7 @@ def bwa(workflow, conf, target, output, outsai, index):   # Mapping
                               name = "bwa aln"))
         bwa.update(param = conf.items("bwa"))
 
-        attach_back(workflow,
+        out = attach_back(workflow,
                     ShellCommand(
                         "{tool} sampe {param[index]} {input[sai1]} {input[sai2]} {input[fastq1]} {input[fastq2]}> {output[sam]}",
                         tool = "bwa",
@@ -97,6 +101,10 @@ def bwa(workflow, conf, target, output, outsai, index):   # Mapping
                         output = {"sam": output},
                         param = {"index": index},
                         name = "bwa sampe"))
+    bwa.allow_dangling = True
+    bwa.allow_fail = True
+    out.allow_dangling = True
+    out.allow_fail = True
 
 
 def contamination_check(workflow, conf):
@@ -138,8 +146,10 @@ def contamination_check(workflow, conf):
                                 name = "filtering mapping and convert")) # Use 5G memory as default
 
                 sam2bam.update(param=conf.items("sam2bam"))
+                sam2bam.allow_dangling = True
+                sam2bam.allow_fail = True
 
-                attach_back(workflow, ShellCommand(
+                rem = attach_back(workflow, ShellCommand(
                 """
                 {tool} view -Sc {input[sam]} > {output[total]}
                 {tool} flagstat {input[bam]} > {output[stat]}
@@ -150,6 +160,8 @@ def contamination_check(workflow, conf):
                 output = {"stat": target + species + "_mapped." + conf.mapper,
                           "total": target + species + "_total." + conf.mapper},
                 name = "contamination calculation"))
+                rem.allow_fail = True
+                rem.allow_dangling = True
 
         ## QC part
         stat_contamination(workflow, conf)

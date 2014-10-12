@@ -6,13 +6,15 @@ from pkg_resources import resource_filename
 import os
 
 def tex_frip(workflow, conf):
-    attach_back(workflow,
+    tex = attach_back(workflow,
         PythonCommand(
             load_latex,
             input={"json": conf.json_prefix + "_frip.json",
                    "template": resource_filename("chilin2.modules.frip", "frip.tex"),
                    },
             output={"latex": conf.latex_prefix + "_frip.tex"}))
+    tex.allow_dangling = True
+    tex.allow_fail = True
 
 def load_latex(input, output, param):
     json_dict = json_load(input["json"])

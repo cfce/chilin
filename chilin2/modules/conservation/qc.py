@@ -10,16 +10,18 @@ from pkg_resources import resource_filename
 from chilin2.modules.config.helpers import JinjaTemplateCommand, template_dump, json_load, json_dump
 
 def stat_conservation(workflow, conf):
-    attach_back(workflow,
+    collect = attach_back(workflow,
                 PythonCommand(
                     json_conservation,
                     input={"score": conf.prefix + "_conserv.txt"},
                     output={"json": conf.json_prefix + "_conserv.json"},
                     param={"atype": conf.get("basics", "factor", "TF"), "id": conf.id},
                     name = "conservation score"))
+    collect.allow_dangling = True
+    collect.allow_fail = True
 
     if conf.long:  ## cluster figures, obsolete, keep for compatible
-        attach_back(workflow,
+        fig = attach_back(workflow,
                     PythonCommand(conservation_figures,
                                   input ={"conservationR": conf.prefix + "_conserv.R",
                                           "historical_conservation_cluster_text": resource_filename("chilin2.modules.dbaccessor", "Histone_centers.txt")},
@@ -28,6 +30,8 @@ def stat_conservation(workflow, conf):
                                   output = {"R": conf.prefix+"_conserv_cluster.R",
                                             "compare_pdf": conf.prefix + "_conserv_compare.pdf"},
                                   param = {"id": conf.id}))
+        fig.allow_fail = True
+        fig.allow_dangling = True
 
 def json_conservation(input={"score": ""}, output={"json": ""}, param={}):
     """

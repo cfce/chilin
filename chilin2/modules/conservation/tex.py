@@ -16,9 +16,11 @@ def latex_conservation(input, output, param):
     template_dump(latex)
 
 def tex_conserv(workflow, conf):
-    attach_back(workflow,
+    tex = attach_back(workflow,
         PythonCommand(
             latex_conservation,
             input={"template": resource_filename("chilin2.modules.conservation", "conservation.tex")},
             output={"latex": conf.latex_prefix + "_conserv.tex"},
             param = {"prefix": conf.prefix}))
+    tex.allow_dangling = True
+    tex.allow_fail = True

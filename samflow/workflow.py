@@ -57,10 +57,10 @@ class Workflow(AbstractCommand):
         return False
 
     def invoke(self):
-        if self._have_render_error():
+        if self._have_render_error(): ## template rendering test
             return False
 
-        if self.have_dangling:
+        if self.have_dangling:  ## dangling input test for dry run check
             return False
 
         for cmd in self:

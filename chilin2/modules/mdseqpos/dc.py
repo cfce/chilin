@@ -8,12 +8,7 @@ from chilin2.modules.mdseqpos.tex import tex_motif
 
 
 def seqpos(workflow, conf):
-    """
-
-    :param workflow:
-    :param conf:
-    :return:
-    """
+    """ running MDSeqPos"""
     get_top_peaks = attach_back(workflow,
                                 ShellCommand(
                                     "{tool} -n {param[peaks]} {input} | cut -f 1,2,3,4,9 > {output}",
@@ -23,6 +18,8 @@ def seqpos(workflow, conf):
                                     param={"peaks": 5000},
                                     name="top summits for mdseqpos"))
     get_top_peaks.update(param=conf.items("seqpos"))
+    get_top_peaks.allow_fail = True
+    get_top_peaks.allow_dangling = True
 
     if conf.get("basics", "species"):
         species = conf.get("basics", "species")
@@ -36,7 +33,15 @@ def seqpos(workflow, conf):
 
     mdseqpos = attach_back(workflow,
                            ShellCommand(
-            "{tool} -d  -w 600  -p 0.001  -m cistrome.xml -O {output[result_dir]} {input} {param[species]} ",
+            """
+            if [ $(wc -l {input} |cut -f1 -d\" \") -ge 200 ]
+            then
+            echo \"peaks number larger than 200, run motif scan\"
+            {tool} -d  -w 600  -p 0.001  -m cistrome.xml -O {output[result_dir]} {input} {param[species]}
+            else
+            echo \"Warning: peaks number less than 200, skip motif scan\"
+            fi
+            """,
             tool=mdseqpos_bin,
             input=conf.prefix + "_peaks_top_motif.bed",
             output={"result_dir": conf.prefix + "_seqpos", "seqpos": conf.prefix + "_seqpos/" + "motif_list.json"},
@@ -45,6 +50,9 @@ def seqpos(workflow, conf):
     # ERR: note these values are hard-coded!
     # need to make it more universal for all species
     mdseqpos.update(param=conf.items("seqpos"))
+
+    mdseqpos.allow_fail = True
+    mdseqpos.allow_dangling = True
 
     ## QC part
     stat_motif(workflow, conf)

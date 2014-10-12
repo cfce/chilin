@@ -125,6 +125,7 @@ you could use batch mode with a single command::
 Common options
 ---------------------------
 Common options can be used for simple mode, run and batch modes.
+Each step control is tolerant, continue running even tool failed processing.
 
 - --skip, step control, e.g::
 
@@ -142,6 +143,7 @@ Common options can be used for simple mode, run and batch modes.
   - step 10(*can skip*): draw Phastcon scores distribution around peak call summits, if you do not have Phastcon score bigwig files, use --skip 10 or leave chilin.conf blank for that reference
   - step 11(*can skip*): Regulatory potential score calculation on top 10k peaks
   - step 12(*can skip*): use MDSeqPos to perform motif analysis
+  - step 13(*can skip*): generate report
   
 - --dont_resume, by default, each re-run would use previous temporary files to resume from the step it crashed. When dont_resume is on, ChiLin would start from first step, so user do not to clean up the work directory.
 - --dont_remove, keep temporary files

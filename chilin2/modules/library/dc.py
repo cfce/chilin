@@ -28,6 +28,8 @@ def PBC(workflow, conf):  # PBC1
                                output = {"pbc": t + ".pbc",
                                          "hist": t + ".hist"},
                                name = "PBC"))
+        pbc1.allow_fail = True
+        pbc1.allow_dangling = True
 
     ## QC part
     stat_pbc(workflow, conf)

@@ -33,6 +33,8 @@ def fastqc(workflow, conf):
                                          param={"threads": conf.threads},
                                          name = "fastqc"))
             fastqc_run.update(param=conf.items("fastqc"))
+        fastqc.allow_fail = True
+        fastqc.allow_dangling = True
 
     ## QC part of chilin
     ## use conf property conf.long = True

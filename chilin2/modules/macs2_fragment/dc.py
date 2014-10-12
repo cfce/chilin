@@ -29,10 +29,10 @@ def fragment(workflow, conf):
             param = {"prefix": target + "_model.R",
                      "species": 'hs'}))
         fragment_size.update(param = conf.items("macs2"))
-        ## except two few peaks for modeling
+        ## except too few peaks for modeling
         fragment_size.allow_fail = True
         fragment_size.allow_dangling = True
-        
+
     ## extract standard deviation from MACS2 model.R,
     ## use m, p, and pileup value for standard deviation; mean fragment size is provided (choose the one with highest correlation)
     frag_qc = attach_back(workflow, PythonCommand(

@@ -47,7 +47,9 @@ class AbstractCommand(object):
     @property
     def have_dangling(self):
         dangling_inputs = self._dangling_inputs
+
         if dangling_inputs:
+            print(self.allow_dangling)
             if self.allow_dangling:
                 self._print_log("Warn", "Dangling inputs ", dangling_inputs)
             else:
@@ -70,9 +72,14 @@ class AbstractCommand(object):
                 return True
 
             missing_i = self._missing_inputs
+
             if missing_i:
                 self._print_log("Error!", "Missing inputs", missing_i)
-                return False
+                if self.allow_fail:
+                    return True ## allow missing inputs
+                else:
+                    return False
+
             execute_success = self._execute()
             if self.allow_fail:
                 return True
@@ -81,7 +88,6 @@ class AbstractCommand(object):
 
             missing_o = self._missing_outputs
             if missing_o:
-                self._print_log("Error!", "Missing outputs", missing_o)
                 return False
             return True
         except:
@@ -147,6 +153,8 @@ class AbstractCommand(object):
         return ret
 
     def _missing(self, files):
+        """ use step name to identify error step,
+        self.name """
         missing = []
 
         try:
@@ -154,7 +162,7 @@ class AbstractCommand(object):
                 if not os.path.exists(i):
                     missing.append(i)
                     continue
-                if self._allow_zero_byte_file:
+                if self._allow_zero_byte_file: ## default: accept 0 byte file
                     continue
                 if os.path.isfile(i) and os.path.getsize(i) == 0:
                     missing.append(i)
@@ -188,7 +196,7 @@ class AbstractCommand(object):
         (2) can't be found as some commands' output before current command
 
         This Hook method is called:
-        (1) on each leaf before both dry run and real dry
+        (1) on each leaf before both dry run and real run
 
         If current command doesn't belong to a tree, just return missing inputs
         """
@@ -217,7 +225,6 @@ class AbstractCommand(object):
 
         return ret
 
-
     @property
     def _inputs(self):
         """ Return the inputs as a list """
@@ -232,6 +239,7 @@ class AbstractCommand(object):
 class ShellCommand(AbstractCommand):
     def __init__(self, template=None, tool=None, param={}, input=[], output=[], name=""):
         AbstractCommand.__init__(self, template, tool, param, input, output, name)
+
         self.fetch_output = False
 
     def _simulate(self):
@@ -286,6 +294,7 @@ class ShellCommand(AbstractCommand):
         have_dangling = have_dangling_inputs and have_dangling_tool
 
         if have_dangling_tool:
+            # print self.allow_dangling
             if self.allow_dangling:
                 self._print_log("Warn", "Dangling tool ", self.tool)
                 return have_dangling
@@ -296,6 +305,9 @@ class ShellCommand(AbstractCommand):
 
 
 class PythonCommand(AbstractCommand):
+    def __init__(self, template=None, tool=None, param={}, input=[], output=[], name=""):
+        AbstractCommand.__init__(self, template, tool, param, input, output, name)
+
     def _render(self):
         return "%s < %s > %s" % (self.template, self._inputs, self._outputs)
 
@@ -305,17 +317,19 @@ class PythonCommand(AbstractCommand):
 
     def _execute(self):
         cmd_rendered = self._render()
-        can_skip = not self._missing_outputs
+        can_skip = not self._missing_outputs ## output test
         if self.resume:
             if can_skip:
-                #print("Resumed from existing result.. Skip")
+                #print("Resumed from existing result.. Skip") ## suppress information
                 return True
             else:
                 self._print_log("Run", cmd_rendered)
         else:
             self._print_log("Run", cmd_rendered)
-
-        self.template(input=self.input, output=self.output, param=self.param)
+        try:
+            self.template(input=self.input, output=self.output, param=self.param) ## in case python internal error
+        except:
+            pass # ignore all error
         return True
 
 

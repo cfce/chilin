@@ -6,13 +6,17 @@ from pkg_resources import resource_filename
 import os
 
 def tex_fastqc(workflow, conf):
-    attach_back(workflow,
+    quality = attach_back(workflow,
         PythonCommand(
             load_latex,
             input={"json": conf.json_prefix + "_fastqc.json",
                    "template": resource_filename("chilin2.modules.fastqc", "fastqc.tex"),
                    "pdf": conf.prefix + "_raw_sequence_qc.pdf"},
             output={"latex": conf.latex_prefix + "_fastqc.tex"}))
+
+    quality.allow_fail = True
+    quality.allow_dangling = True
+
     #these are name, png pairings
     if not conf.pe:
         gccontent_graphs = [(nm.replace("_"," "),
@@ -24,12 +28,15 @@ def tex_fastqc(workflow, conf):
                              os.path.join(conf.target_dir, "%spair1_100k_fastqc" % nm,
                                           "Images","per_sequence_gc_content.png"))\
                                 for nm in conf.sample_bases]
-    attach_back(workflow,
+    gc = attach_back(workflow,
         PythonCommand(
             load_gc_latex,
             input={"template": resource_filename("chilin2.modules.fastqc", "fastqc_gc.tex"),
                    "gccontent_graphs":gccontent_graphs },
             output={"latex": conf.latex_prefix + "_fastqc_gc.tex"}))
+
+    gc.allow_fail = True
+    gc.allow_dangling = True
 
 def load_latex(input, output, param):
     json_dict = json_load(input["json"])

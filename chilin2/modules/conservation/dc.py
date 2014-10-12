@@ -15,6 +15,9 @@ def conservation(workflow, conf):
                                     param= {"peaks": 5000},
                                     name="top summits for conservation"))
     get_top_peaks.update(param=conf.items("conservation"))
+    get_top_peaks.allow_dangling = True
+    get_top_peaks.allow_fail = True
+
     peaks_input = conf.prefix + "_peaks_top_conserv.bed"
 
     conservation = attach_back(workflow,
@@ -32,8 +35,10 @@ def conservation(workflow, conf):
                                           "width": 400 if conf.get("conservation", "type").lower() == "tf" else 4000},
                                    name="conservation"))
     conservation.update(param=conf.items('conservation'))
+    conservation.allow_fail = True
+    conservation.allow_dangling = True
 
-    attach_back(workflow,
+    conver = attach_back(workflow,
                 ShellCommand(
                     "{tool} -resize 500x500 -density 50  {input[pdf]} {output[pdf]}",
                     tool="convert", ## width differs histone mark and TF
@@ -41,6 +46,8 @@ def conservation(workflow, conf):
                            "R": conf.prefix + "_conserv.R"},
                     output={"pdf": conf.prefix + "_conserv_img.pdf"},
                     name="convert pdf to png"))
+    conver.allow_dangling = True
+    conver.allow_fail = True
 
     ## QC parts
     stat_conservation(workflow, conf)

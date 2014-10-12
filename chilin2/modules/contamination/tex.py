@@ -13,12 +13,14 @@ from chilin2.modules.config.helpers import template_dump, JinjaTemplateCommand, 
 
 def tex_contamination(workflow, conf):
     all_species = [i for i, _ in conf.items("contamination")]
-    attach_back(workflow, PythonCommand(
+    tex = attach_back(workflow, PythonCommand(
         latex_contamination,
         input = {"template": resource_filename("chilin2.modules", "contamination/contamination.tex"),
                  "json": conf.json_prefix + "_contam.json"},
         output = {"latex": conf.latex_prefix + "_contam.tex"},
         param = {'id': conf.id, 'layout': 'c'*(len(all_species)+1)}))
+    tex.allow_dangling = True
+    tex.allow_fail = True
 
 def latex_contamination(input, output, param):
     """

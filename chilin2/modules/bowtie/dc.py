@@ -25,6 +25,8 @@ def bowtie(workflow, conf):   # Mapping
                                        "index": conf.get_path(conf.get("basics", "species"), "genome_index")},
                               name = "bowtie aln"))
         bowtie.update(param = conf.items("bowtie"))
+        bowtie.allow_dangling = True
+        bowtie.allow_fail = True
 
     _bowtie_sam2bam(workflow, conf)
 
@@ -55,6 +57,8 @@ def _bowtie_sam2bam(workflow, conf):  # SAM -> BAM
                                },
                         name = "bowtie sam2dam"))
         workflow.update(param=conf.items("sam2bam"))
+        sam2bam.allow_fail = True
+        sam2bam.allow_dangling = True
 
         #From bwa/dc.py
         sam2bamnochrm = attach_back(workflow,  ## use mapping quality 1 defined by samtools official FAQ
@@ -78,3 +82,5 @@ def _bowtie_sam2bam(workflow, conf):  # SAM -> BAM
                                "genome": conf.get(conf.get("basics", "species"), "chrom_len")},
                         name = "filtering mapping and convert")) # Use 5G memory as default
         sam2bamnochrm.update(param=conf.items("sam2bam"))
+        sam2bamnochrm.allow_dangling = True
+        sam2bamnochrm.allow_fail = True
