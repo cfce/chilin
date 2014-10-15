@@ -101,7 +101,7 @@ def _peaks_parse(input):
     if peaks_info["totalpeak"] >= 200:
         peaks_info["peaksge20ratio"] = peaks_info["peaksge20"] / peaks_info["totalpeak"]
         peaks_info["peaksge10ratio"] = peaks_info["peaksge10"] / peaks_info["totalpeak"]
-    elif peaks_info["totalpeak"] < 200:
+    elif 0 < peaks_info["totalpeak"] < 200:
         peaks_info["peaksge20ratio"] = peaks_info["peaksge20"] / peaks_info["totalpeak"]
         peaks_info["peaksge10ratio"] = peaks_info["peaksge10"] / peaks_info["totalpeak"]
         print >> sys.stderr, "Warning: peaks so few for motif scan"
