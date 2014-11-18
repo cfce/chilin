@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-chilin2.modules --- a ChIP-seq pipeline for benchmarking quality control of the experiment
+a ChIP-seq pipeline for benchmarking quality control of the experiment
 """
 
 import sys
@@ -180,12 +180,19 @@ def clean_up(workflow, conf):
     for target in conf.sample_targets:
         preserved.append(target + ".bam")
     for target in conf.treatment_targets:
+        preserved.append(target + "_peaks.bed")
+        not_moved.append(target + "_peaks.bed")
+        preserved.append(target + "_b_peaks.bed")
+        not_moved.append(target + "_b_peaks.bed")
         preserved.append(target + "_treat.bw")
         not_moved.append(target + "_treat.bw")
         preserved.append(target + "_control.bw")
         not_moved.append(target + "_control.bw")
         preserved.append(target + "_sort_peaks.narrowPeak")
         not_moved.append(target + "_sort_peaks.narrowPeak")
+        preserved.append(target + "_treat_pileup.bdg")
+        preserved.append(target + "_control_lambda.bdg")
+        preserved.append(target + "_100k_fastqc")
         preserved.append(target + "_peaks.xls")
         not_moved.append(target + "_peaks.xls")
         preserved.append(target + "_sort_summits.bed")

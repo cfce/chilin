@@ -3,10 +3,20 @@ Installation
 ===============
 :abbr:`ChiLin (ChIP-seq pipeline)`
 
-ChiLin_ Theoretically, we support all species listed on UCSC, which have masked, non-masked genomics fasta, chromosome information file, and standard RefSeq files.
+ChiLin_ Theoretically, we support all species listed on UCSC, which have genomics sequence in fasta format, chromosome length information text file, and standard RefSeq files.
 The species we have tested includes: hg19, hg38, mm9, mm10. We have successfully deployed on Ubuntu, CentOS, Mac, do not support for Windows.
 
 .. _ChiLin: https://github.com/cfce/chilin
+
+Basic version
+===============
+
+You need to have gcc, g++ and java in place.
+
+Linux
+---------
+
+
 
 Dependent tools Prerequisites
 ==============================

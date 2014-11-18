@@ -1,13 +1,12 @@
 """
-Time-stamp: <2014-08-06 17:52:58 chenfei>
-install ChiLin2 and related program and dependent data
+Time-stamp: <2014-11-13 09:38:31 qqin>
+install ChiLin and related program and dependent data
 """
 import os
 from distribute_setup import use_setuptools
 use_setuptools()
 from setuptools import setup
 from ConfigParser import SafeConfigParser
-
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -37,7 +36,6 @@ def generate_defaults():
     f = open(os.path.join('chilin2','modules','config','chilin.conf'),'w')
     cf.write(f)
     f.close()
-
 
 
 _CHILIN_VERSION="2.0.0"
@@ -79,7 +77,7 @@ def main():
         author='Hanfei Sun, Shenglin Mei, Qian Qin, Len',
         author_email='qianqind@gmail.com',
         description=read("README.md"),
-        scripts = ["chilin2/ChiLin2.py", "chilin2/modules/conservation/conservation_plot.py",
+        scripts = ["chilin2/chilin", "chilin2/modules/conservation/conservation_plot.py",
                    "chilin2/modules/ceas/bedAnnotate.py",
                    "chilin2/modules/ceas/meta_info.sh",
                    "chilin2/modules/interface/sampling_pe_sam.py",
