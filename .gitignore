@@ -11,10 +11,7 @@ slides
 chilin2.egg-info*
 _build
 .DS_Store
-data
-virtualenv.py*
 test
-install.sh
 dist
 distribute-*
 testsuite
@@ -23,5 +20,7 @@ testsuite
 .hgignore
 chilin.conf.filled
 chilin2/modules/config/chilin.conf
-hg19.refGene
 TAGS
+software
+data
+demo

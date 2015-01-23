@@ -24,12 +24,23 @@ def macs2(workflow, conf):
 
     if conf.get("macs2", "type").lower() in ["both", "narrow"]: ## for DNase, H3K4, H2AZ, all acetyl marks, or TF
         macs2_on_merged_narrow = attach_back(workflow, ShellCommand(
-            "{tool} callpeak --SPMR -B -q {param[fdr]} --keep-dup {param[keep_dup]} --extsize={param[extsize]} --nomodel -g {param[species]} {param[format]} {param[treat_opt]} {param[control_opt]} -n {param[description]} && cut -f1,2,3,4,9 {output[peaks]} > {output[bed]}",
+            """
+            {tool} callpeak --SPMR -B -q {param[fdr]} --keep-dup {param[keep_dup]} --extsize={param[extsize]} --nomodel -g {param[species]} {param[format]} {param[treat_opt]} {param[control_opt]} -n {param[description]} && cut -f1,2,3,4,9 {output[peaks]} > {output[bedtmp]}
+            ## remove weird path characters
+            cp {output[peaks]} {output[peakstmp]}
+            cp {output[summits]} {output[summitstmp]}
+            awk \'{{OFS="\\t";n+=1;$4="peak"n;print $0}}\' {output[peakstmp]} > {output[peaks]}
+            awk \'{{OFS="\\t";n+=1;$4=n;print $1,$2,$3,"peak"$4,$5}}\' {output[bedtmp]} > {output[bed]}
+            awk \'{{OFS="\\t";n+=1;$4=n;print $1,$2,$3,"peak"$4,$5}}\' {output[summitstmp]} > {output[summits]}
+            """,
             tool=macs2_bin,
             input={"treat": conf.prefix + "_treatment.bam"},
             output={"peaks": conf.prefix + "_peaks.narrowPeak",
+                    "peakstmp": conf.prefix + "_peaks.narrowPeak.tmp",
                     "bed": conf.prefix + "_peaks.bed",
+                    "bedtmp": conf.prefix + "_peaks.bed.tmp",
                     "summits": conf.prefix + "_summits.bed",
+                    "summitstmp": conf.prefix + "_summits.bed.tmp",
                     "treat_bdg": conf.prefix + "_treat_pileup.bdg",
                     "peaks_xls": conf.prefix + "_peaks.xls",
                     "control_bdg": conf.prefix + "_control_lambda.bdg"},
@@ -70,11 +81,19 @@ def macs2(workflow, conf):
     if conf.get("macs2", "type").lower() in ["both", "broad"]:  # K9, K36, K79 and K27 methylation, both for chromatin regulator, all other histone marks
         macs2_on_merged_broad = attach_back(workflow,
                                             ShellCommand(
-                                                "{tool} callpeak --SPMR -B -q {param[fdr]} {param[treat_opt]} {param[control_opt]} --keep-dup {param[keep_dup]} --broad -g {param[species]} {param[format]} -n {param[description]} && cut -f1,2,3,4,9 {output[peaks]} > {output[bed]} ",
+                                                """
+                                                {tool} callpeak --SPMR -B -q {param[fdr]} {param[treat_opt]} {param[control_opt]} --keep-dup {param[keep_dup]} --broad --broad-cutoff {param[fdr]} -g {param[species]} {param[format]} -n {param[description]} && cut -f1,2,3,4,9 {output[peaks]} > {output[bedtmp]}
+                                                ## remove weird path characters
+                                                cp {output[peaks]} {output[peakstmp]}
+                                                awk \'{{OFS="\\t";n+=1;$4="peak"n;print $0}}\' {output[peakstmp]} > {output[peaks]}
+                                                awk \'{{OFS="\\t";n+=1;$4=n;print $1,$2,$3,"peak"$4,$5}}\' {output[bedtmp]} > {output[bed]}
+                                                """,
                                                 tool=macs2_bin,
                                                 input = {"treat": conf.prefix + "_treatment.bam"},
                                                 output = {"peaks": conf.prefix + "_b_peaks.broadPeak",
+                                                          "peakstmp": conf.prefix + "_b_peaks.broadPeak.tmp",
                                                           "bed": conf.prefix + "_b_peaks.bed",
+                                                          "bedtmp": conf.prefix + "_b_peaks.bed.tmp",
                                                           "treat_bdg": conf.prefix + "_b_treat_pileup.bdg",
                                                           "peaks_xls": conf.prefix + "_b_peaks.xls",
                                                           "control_bdg": conf.prefix + "_b_control_lambda.bdg"},
@@ -174,11 +193,23 @@ def macs2_rep(workflow, conf):
         if conf.get("macs2", "type").lower() in ["both", "narrow"]: ## for DNase, H3K4, H2AZ, all acetyl marks, or TF
             macs2_on_rep_narrow = attach_back(workflow,
                                               ShellCommand(
-                                                  "{tool} callpeak --SPMR -B -q {param[fdr]} --keep-dup {param[keep_dup]} --extsize={param[extsize]} --nomodel -g {param[species]} {param[format]} {param[treat_opt]} {param[control_opt]} -n {param[description]} && cut -f1,2,3,4,9 {output[peaks]} > {output[bed]}",
+                                                  """
+                                                  {tool} callpeak --SPMR -B -q {param[fdr]} --keep-dup {param[keep_dup]} --extsize={param[extsize]} --nomodel -g {param[species]} {param[format]} {param[treat_opt]} {param[control_opt]} -n {param[description]} && cut -f1,2,3,4,9 {output[peaks]} > {output[bedtmp]}
+                                                  ## remove weird path characters
+                                                  cp {output[peaks]} {output[peakstmp]}
+                                                  cp {output[summits]} {output[summitstmp]}
+                                                  awk \'{{OFS="\\t";n+=1;$4="peak"n;print $0}}\' {output[peakstmp]} > {output[peaks]}
+                                                  awk \'{{OFS="\\t";n+=1;$4=n;print $1,$2,$3,"peak"$4,$5}}\' {output[bedtmp]} > {output[bed]}
+                                                  awk \'{{OFS="\\t";n+=1;$4=n;print $1,$2,$3,"peak"$4,$5}}\' {output[summitstmp]} > {output[summits]}
+                                                  """,
                                                   tool=macs2_bin,
                                                   input={"treat": target + ".bam"},
                                                   output={"peaks": target + "_peaks.narrowPeak",
+                                                          "peakstmp": target + "_peaks.narrowPeak.tmp",
+                                                          "summits": target + "_summits.bed",
+                                                          "summitstmp": target + "_summits.bed.tmp",
                                                           "bed": target + "_peaks.bed",
+                                                          "bedtmp": target + "_peaks.bed.tmp",
                                                           "treat_bdg": target + "_treat_pileup.bdg",
                                                           "peaks_xls": target + "_peaks.xls",
                                                           "control_bdg": target + "_control_lambda.bdg"},
@@ -208,14 +239,22 @@ def macs2_rep(workflow, conf):
         if conf.get("macs2", "type").lower() in ["both", "broad"]:  # K9, K36, K79 and K27 methylation, both for chromatin regulator, all other histone marks
             macs2_on_rep_broad = attach_back(workflow,
                                              ShellCommand(
-                                                 "{tool} callpeak --SPMR -B -q {param[fdr]} {param[treat_opt]} {param[control_opt]} --keep-dup {param[keep_dup]} --broad -g {param[species]} {param[format]} -n {param[description]} && cut -f1,2,3,4,9 {output[peaks]} > {output[bed]}",
+                                                 """
+                                                 {tool} callpeak --SPMR -B -q {param[fdr]} {param[treat_opt]} {param[control_opt]} --keep-dup {param[keep_dup]} --broad --broad-cutoff {param[fdr]} -g {param[species]} {param[format]} -n {param[description]} && cut -f1,2,3,4,9 {output[peaks]} > {output[bedtmp]}
+                                                 ## remove weird path characters
+                                                 cp {output[peaks]} {output[peakstmp]}
+                                                 awk \'{{OFS="\\t";n+=1;$4="peak"n;print $0}}\' {output[peakstmp]} > {output[peaks]}
+                                                 awk \'{{OFS="\\t";n+=1;$4=n;print $1,$2,$3,"peak"$4,$5}}\' {output[bedtmp]} > {output[bed]}
+                                                 """,
                                                  tool=macs2_bin,
                                                  input = {"treat": target + ".bam"},
                                                  output = {"peaks": target + "_b_peaks.broadPeak",
+                                                           "peakstmp": target + "_b_peaks.broadPeak.tmp",
                                                            "bed": target + "_b_peaks.bed",
-                                                          "treat_bdg": target + "_b_treat_pileup.bdg",
-                                                          "peaks_xls": target + "_b_peaks.xls",
-                                                          "control_bdg": target + "_b_control_lambda.bdg"},
+                                                           "bedtmp": target + "_b_peaks.bed.tmp",
+                                                           "treat_bdg": target + "_b_treat_pileup.bdg",
+                                                           "peaks_xls": target + "_b_peaks.xls",
+                                                           "control_bdg": target + "_b_control_lambda.bdg"},
                                                  param = {"description": target + "_b",
                                                           "species": "hs",
                                                           "format": format,

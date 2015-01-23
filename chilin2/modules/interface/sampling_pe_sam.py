@@ -10,7 +10,10 @@ use shell to get interface
 
 import sys
 from random import sample
+from random import seed
 import os
+
+seed(999)
 
 if len(sys.argv) < 2:
     print(__doc__)
@@ -18,7 +21,7 @@ if len(sys.argv) < 2:
 
 class Counter(object):
     def __init__(self, number, wanted, header, pair):
-        self.pair = pair
+        self.pair = True if pair == 'True' else False
         self.header = header
         if pair:
             self.number = number/2
@@ -26,7 +29,6 @@ class Counter(object):
         else:
             self.number = number
             self.wanted = wanted
-
 
     def __call__(self):
         r = range(self.number)
@@ -82,4 +84,4 @@ def has_next(iterable):
         del iterable
 
 if __name__ == "__main__":
-    sampling(sys.argv[1], sys.argv[2], "sam", False)
+    sampling(sys.argv[1], sys.argv[2], "sam", sys.argv[3])

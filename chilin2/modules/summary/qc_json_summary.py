@@ -109,6 +109,7 @@ def summary_table(conf):
             table.append(["Fragment size of total reads"] + [ str(stat[s]) for s in samples ])
 
     js = pre + "_enrich_meta.json"
+    samples = conf.sample_bases
     if exist(js):
         stat = _stat(js)
         if conf.down:
@@ -117,6 +118,7 @@ def summary_table(conf):
             table.append(["DHS/Promoter/Exon ratio of total reads"] + [ str(decimal_to_latex_percent(stat[s]['dhs']))+"/"+str(decimal_to_latex_percent(stat[s]['promoter']))+"/"+str(decimal_to_latex_percent(stat[s]['exon']))  for s in samples ])
 
     js = pre + "_frip.json"
+    samples = conf.sample_bases
     if exist(js):
         stat = _stat(js)
         if conf.down:

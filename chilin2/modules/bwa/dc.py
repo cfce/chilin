@@ -85,23 +85,41 @@ def _bwa_sam2bam(workflow, conf):  # SAM -> BAM
     """
     import os
     for target in conf.sample_targets:
-        sam2bam = attach_back(workflow,  ## use mapping quality 1 defined by samtools official FAQ
-                    ShellCommand(
-                        """
-                        {tool} view -bS -t {param[genome]} -q {param[mapq]} {input[sam]} > {param[tmp_bam]} && {tool} sort -m {param[max_mem]} {param[tmp_bam]} {param[output_prefix]}
-                        """,
-                        tool="samtools",
-                        input={"sam": target + ".sam"},
-                        output={"bam":target + ".bam"},
-                        param={"tmp_bam": target + ".tmp.bam", "output_prefix": target,
-                               "mapq": 1,
-                               "genome": conf.get(conf.get("basics", "species"), "chrom_len"),
-                               "max_mem": 4000000000},
-                        name = "filtering mapping and convert")) # Use 5G memory as default
-        sam2bam.update(param=conf.items("sam2bam"))
-        sam2bam.allow_fail = True
-        sam2bam.allow_dangling = True
-
+        if not conf.pe:
+            sam2bam = attach_back(workflow,  ## use mapping quality 1 defined by samtools official FAQ
+                        ShellCommand(
+                            """
+                            {tool} view -bS -t {param[genome]} -q {param[mapq]} {input[sam]} > {param[tmp_bam]} && {tool} sort -m {param[max_mem]} {param[tmp_bam]} {param[output_prefix]}
+                            """,
+                            tool="samtools",
+                            input={"sam": target + ".sam"},
+                            output={"bam":target + ".bam"},
+                            param={"tmp_bam": target + ".tmp.bam", "output_prefix": target,
+                                   "mapq": 1,
+                                   "genome": conf.get(conf.get("basics", "species"), "chrom_len"),
+                                   "max_mem": 4000000000},
+                            name = "filtering mapping and convert")) # Use 5G memory as default
+            sam2bam.update(param=conf.items("sam2bam"))
+            sam2bam.allow_fail = True
+            sam2bam.allow_dangling = True
+        else:
+            sam2bam = attach_back(workflow,  ## use mapping quality 1 defined by samtools official FAQ
+                        ShellCommand(
+                            """
+                            filter_pe_sam_faster.py {input[sam]}
+                            {tool} view -bS -t {param[genome]} -q {param[mapq]} {input[sam]}_PE.sam > {param[tmp_bam]} && {tool} sort -m {param[max_mem]} {param[tmp_bam]} {param[output_prefix]}
+                            """,
+                            tool="samtools",
+                            input={"sam": target + ".sam"},
+                            output={"bam":target + ".bam"},
+                            param={"tmp_bam": target + ".tmp.bam", "output_prefix": target,
+                                   "mapq": 1,
+                                   "genome": conf.get(conf.get("basics", "species"), "chrom_len"),
+                                   "max_mem": 4000000000},
+                            name = "filtering mapping and convert")) # Use 5G memory as default
+            sam2bam.update(param=conf.items("sam2bam"))
+            sam2bam.allow_fail = True
+            sam2bam.allow_dangling = True
 
         ## filter chrM for chromosomoe information, generate uniquely
         ## aligned sam files (prepared for built-in sampling utility)

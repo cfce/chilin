@@ -28,7 +28,6 @@ def groom_sequencing_files(workflow, conf):  # the start of ChiLin
                 attach_back(workflow, make_link_command(orig=os.path.abspath(raw), dest=target + ".fastq"))
                 attach_back(workflow, sampling({"fastq": target + ".fastq"}, {"fastq_sample": target + "_100k.fastq"}, 100000, "fastq", conf))
             else:
-           ##     print(raw, " is neither fastq nor bam file. Skip grooming.")
                 not_groomed.append([raw, target])
         else:
 

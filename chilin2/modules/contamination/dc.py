@@ -118,10 +118,10 @@ def contamination_check(workflow, conf):
                 if conf.mapper == "bwa":
                     output = target + species + ".sam"
                     if conf.pe:
-                        outsai = [target + "pair1.sai", target + "pair2.sai"]
+                        outsai = [target + species + "pair1.sai", target + species + "pair2.sai"]
                         targets = [ target + "pair1", target + "pair2" ]
                     else:
-                        outsai = target + ".sai"
+                        outsai = target + species + ".sai"
                         targets = target
                     bwa(workflow, conf, targets, output, outsai, index)
                 elif conf.mapper == "bowtie":

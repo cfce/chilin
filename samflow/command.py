@@ -328,8 +328,8 @@ class PythonCommand(AbstractCommand):
             self._print_log("Run", cmd_rendered)
         try:
             self.template(input=self.input, output=self.output, param=self.param) ## in case python internal error
-        except:
-            pass # ignore all error
+        except Exception as e:
+            print e
         return True
 
 

@@ -10,25 +10,6 @@ def FRiP(workflow, conf):  # FRiP
     For example: 2 treat, 2 control
     modify: without down sampling read peaks calling, use merged peaks for comparison
     """
-    # macs_4M(workflow, conf)
-    # for t in conf.treatment_targets:
-    #     frip = attach_back(workflow,
-    #                        ShellCommand("""
-    #                                     fr=$(bedtools intersect -f {param[p]} -wa -u -abam {input[reads]} -b {input[peaks]} -bed | wc -l)
-    #                                     total=$(samtools flagstat {input[reads]} | head -1 | cut -d" " -f1)
-    #                                     echo $fr,$total > {output[frip]}
-    #                                     """,
-    #                                     tool="intersectBed",
-    #                                     input={"reads": t + "_4000000.bam", "peaks": t + "_4M_sort_peaks.narrowPeak" if conf.get("macs2", "type") in ["both", "narrow"] else t + "_4M_sort_peaks.broadPeak"},
-    #                                     output={"frip": t + ".frip"},
-    #                                     param={"p": "1E-9"},
-    #                                     name="FRiP score"))
-    #     ## in case that peaks calling on 4M reads may be very poor,
-    #     ## no peaks generated, allow fail and dangling
-    #     frip.allow_fail = True
-    #     frip.allow_dangling = True
-    # frip.update(param=conf.items("bedtools"))
-
     ## use merged peaks for evaluation after removing chrM reads 
     for t in conf.sample_targets:
         if conf.frip: ## sampling 5M reads

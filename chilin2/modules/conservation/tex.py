@@ -11,7 +11,7 @@ def latex_conservation(input, output, param):
         name = "conservation",
         template = input["template"],
         param={"conservation_compare_graph": param["prefix"] + "_conserv_compare.pdf",
-               "conservation_graph": param["prefix"] + "_conserv.pdf",
+               "conservation_graph": param["prefix"] + "_conserv_img.png",
                "render_dump": output["latex"]})
     template_dump(latex)
 

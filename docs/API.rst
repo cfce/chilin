@@ -22,7 +22,6 @@ ChiLin is written with python and shell, it's easy to extend to fit your need.
         output = {"p":conf.prefix + "_sort_peaks_tail_50.narrowPeak"},
         name = "get tail lines"))
 
-* then in chilin2/Chilin2.py,
 
 .. code-block:: python
 

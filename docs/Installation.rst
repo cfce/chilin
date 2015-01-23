@@ -1,22 +1,56 @@
 ===============
 Installation
 ===============
-:abbr:`ChiLin (ChIP-seq pipeline)`
 
-ChiLin_ Theoretically, we support all species listed on UCSC, which have genomics sequence in fasta format, chromosome length information text file, and standard RefSeq files.
-The species we have tested includes: hg19, hg38, mm9, mm10. We have successfully deployed on Ubuntu, CentOS, Mac, do not support for Windows.
+ChiLin Theoretically, we support all species listed on UCSC, which have
+
+- genome index for your species, we recommended bwa index.
+
+- chromosome length information text file.
+
+- standard *RefSeq* files.
+
+- (Optionally)PhastCons conservation bigwiggle files.
+
+- (Optionally)genome sequence in fasta format separated by chromosome, which is used for motif analysis.
+
+The species we have tested includes: hg19, hg38, mm9, mm10. We have successfully deployed on *Ubuntu*, *CentOS*, *Mac*.
 
 .. _ChiLin: https://github.com/cfce/chilin
 
 Basic version
-===============
+=================
 
 You need to have gcc, g++ and java in place.
 
-Linux
+Mac
 ---------
+Install Xcode, java and command line tool(skip if you have them)
+=================================================================
+
+- Install Xcode_ from MacStore.
+- See the instruction of installing java_ for mac.
+- Type `xcode-select --install` to install Command Line Tool.
+- Install MacPorts to help install the dependent modules easier.
+
+Test:
+
+- Type "gcc, g++, java" to check the installation.
+
+.. _Xcode: http://itunes.apple.com/us/app/xcode/id497799835?l=zh&mt=12
+
+.. _java: http://www.java.com/en/download/apple.jsp
+
+.. _macport: http://www.macports.org/
 
 
+Install basic modules dependent software
+==================================================
+
+
+
+Ubuntu and debian
+-----------------------------------
 
 Dependent tools Prerequisites
 ==============================
@@ -53,7 +87,7 @@ For ubuntu or debian system, install as follows:
 		     sudo apt-get install r-base
 		     sudo apt-get install default-jre
 		     sudo apt-get install ghostscript
-                     sudo apt-get install imagemagick --fix-missing
+		     sudo apt-get install imagemagick --fix-missing
 		     sudo apt-get install texlive-latex-base
 		     sudo pip install bx-python
 
@@ -119,32 +153,33 @@ Following installation are tested under the shell under Ubuntu, CentOS, and Mac.
 
 Here is the list of published software and `UCSC binary`_ we have fully tested with ChiLin:
 
-============================      ====================================  ==============
+============================      ====================================  ==================
 Tool Name		          usage                                 version tested
-============================      ====================================  ==============
+============================      ====================================  ==================
 `seqtk`_                            sub-sample FASTQ files              1.0
 `FastQC`_                           sequence quality and gc contents    v0.10.1
 `BWA`_                              mapping Fastq                       0.7.7
 `samtools`_                         convert SAM to BAM                  0.1.19
 `bedtools`_		            operate bed files                   v2.17.0
-`MACS2`_                            peak calling                        2.0.10.2014XXXX
+`MACS2`_                            peak calling                        latest from github
 bedClip                             trim outlier of coordinates 
 bedGraphToBigWig                    convert bedgraph to bigwig          v 4
 wigCorrelate                        calculate reads count correlation
 wigToBigWig                         convert wiggle to bigwig            v 4
 `MDSeqPos`                          motif scan and SeqPos               v 2.01
-============================      ====================================  ==============
+============================      ====================================  ===================
 
 
-.. _virtualenv: https://raw.githubusercontent.com/pypa/virtualenv/1.9.X/virtualenv.py
+..
+   .. _virtualenv: https://raw.githubusercontent.com/pypa/virtualenv/1.9.X/virtualenv.py
 
-0 step is to setup `virtualenv`_, activate virtualenv each time before using `chilin`, use `macports` python2.7 as python virtualenv version:
+   0 step is to setup `virtualenv`_, activate virtualenv each time before using `chilin`, use `macports` python2.7 as python virtualenv version:
 
-     .. code-block:: bash
+	.. code-block:: bash
 
-		     wget -c --no-check-certificate https://raw.githubusercontent.com/pypa/virtualenv/1.9.X/virtualenv.py
-		     python virtualenv.py -p/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python --system-site-packages --distribute chilin_env
-		     source chilin_env/bin/activate
+			wget -c --no-check-certificate https://raw.githubusercontent.com/pypa/virtualenv/1.9.X/virtualenv.py
+			python virtualenv.py -p/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Resources/Python.app/Contents/MacOS/Python --system-site-packages --distribute chilin_env
+			source chilin_env/bin/activate
 
 First, seqtk for sampling fastq/fastq.gz, download from github:
 

@@ -40,11 +40,11 @@ def conservation(workflow, conf):
 
     conver = attach_back(workflow,
                 ShellCommand(
-                    "{tool} -resize 500x500 -density 50  {input[pdf]} {output[pdf]}",
+                    "{tool} -resize 500x500 -density 50  {input[pdf]} {output[png]}",
                     tool="convert", ## width differs histone mark and TF
                     input={"pdf": conf.prefix + "_conserv.pdf",
                            "R": conf.prefix + "_conserv.R"},
-                    output={"pdf": conf.prefix + "_conserv_img.pdf"},
+                    output={"png": conf.prefix + "_conserv_img.png"},
                     name="convert pdf to png"))
     conver.allow_dangling = True
     conver.allow_fail = True

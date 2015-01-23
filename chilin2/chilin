@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 """
 a ChIP-seq pipeline for benchmarking quality control of the experiment
 """
@@ -21,7 +20,7 @@ from chilin2.modules.bwa.dc import bwa
 from chilin2.modules.bowtie.dc import bowtie
 from chilin2.modules.star import star
 from chilin2.modules.interface.dc import groom_sequencing_files
-from chilin2.modules.ceas.dc import bedAnnotate_ceas #bedtools_ceas
+from chilin2.modules.ceas.dc import bedAnnotate_ceas  # bedtools_ceas
 from chilin2.modules.conservation.dc import conservation
 from chilin2.modules.contamination.dc import contamination_check
 from chilin2.modules.fastqc.dc import fastqc
@@ -43,6 +42,7 @@ class FriendlyArgumentParser(argparse.ArgumentParser):
     """
     Override argparse to show full length help information
     """
+
     def error(self, message):
         sys.stderr.write('error: %s\n' % message)
         self.print_help()
@@ -65,29 +65,37 @@ def parse_args(args=None):
 
     ## add gen parser
     parser_gen = sub_parsers.add_parser("gen", help="generate config files")
-    parser_gen.add_argument("-o", "--output", dest = "out", help="name of config file, default: chilin.conf", default="chilin.conf")
+    parser_gen.add_argument("-o", "--output", dest="out", help="name of config file, default: chilin.conf",
+                            default="chilin.conf")
 
     ## add simple mode for chilin
-    #generate a species list
+    # generate a species list
     cf = SafeConfigParser()
-    cf.read(resource_filename('chilin2.modules','config/chilin.conf'))
+    cf.read(resource_filename('chilin2.modules', 'config/chilin.conf'))
     sections_ls = ['basics', 'tool', 'bwa', 'macs2', 'reg', 'conservation',
                    'seqpos', 'qc', 'contamination']
     species_ls = [s for s in cf.sections() if s not in sections_ls]
 
-    parser_simple = sub_parsers.add_parser("simple", help="run simple modes, should prepare species conf files when installing")
-    parser_simple.add_argument("-t", "--treat", dest = "treat", required=True,
-                               help = "treatment data, comma(,) separate replicates, format(fastq,bam) fixed by extension")
-    parser_simple.add_argument("-c","--cont",dest='cont',default = '',
-                               help = "control data, comma(,) separate replicates , format(fastq,bam) fixed by extension" )
-    parser_simple.add_argument("-s", "--species", dest = "species", help="species--from chilin.conf: %s" % species_ls, required=True)
-    parser_simple.add_argument("-u","--user", dest="user", default="anonymous",
+    parser_simple = sub_parsers.add_parser("simple",
+                                           help="run simple modes, should prepare species conf files when installing")
+    parser_simple.add_argument("-t", "--treat", dest="treat", required=True,
+                               help="treatment data, comma(,) separate replicates, format(fastq,bam) fixed by extension")
+    parser_simple.add_argument("-c", "--cont", dest='cont', default='',
+                               help="control data, comma(,) separate replicates , format(fastq,bam) fixed by extension")
+    parser_simple.add_argument("-s", "--species", dest="species", help="species--from chilin.conf: %s" % species_ls,
+                               required=True)
+    parser_simple.add_argument("-u", "--user", dest="user", default="anonymous",
                                help="your name, DEFAULT: anonymous")
 
-    parser_simple.add_argument("-r", "--rtype", dest = "rtype", help="input factor type for conservation", default="tf", choices=["tf", "histone", "dnase"])
-    parser_simple.add_argument("-p", "--type", dest = "ptype", help="input peaks type for macs2 peaks calling, narrow, broad or both", default="both", choices=["narrow", "both", "broad"])
-    parser_simple.add_argument("-o", "--output", dest = "out", help="output directory name", default="output")
-    parser_simple.add_argument("-i", "--id", dest = "id", help="name for your chilin run, suggestion: use your factor name, e.g. ER or MYC", default="run")
+    parser_simple.add_argument("-r", "--rtype", dest="rtype", help="input factor type for conservation", default="tf",
+                               choices=["tf", "histone", "dnase"])
+    parser_simple.add_argument("-p", "--type", dest="ptype",
+                               help="input peaks type for macs2 peaks calling, narrow, broad or both", default="both",
+                               choices=["narrow", "both", "broad"])
+    parser_simple.add_argument("-o", "--output", dest="out", help="output directory name", default="output")
+    parser_simple.add_argument("-i", "--id", dest="id",
+                               help="name for your chilin run, suggestion: use your factor name, e.g. ER or MYC",
+                               default="run")
 
     parser_batch = sub_parsers.add_parser("batch", help="run pipeline for multiple datasets")
     parser_batch.add_argument("-b", "--batch-config", dest="batch_config", required=True, help="batch file")
@@ -107,14 +115,15 @@ def parse_args(args=None):
                        help="Steps to skip, use comma as seperator")
         p.add_argument("--mapper", dest="mapper", default="bwa",
                        choices=["bwa", "bowtie", "star"],
-                       help="choose your mapper") ## should be consistent with the genome index you specified in the gene
+                       help="choose your mapper")  ## should be consistent with the genome index you specified in the gene
         ## new option for use total reads or down sampling 4M
         p.add_argument("--total", dest="down", action="store_false",
-                       default=True, help="default: 4M, down sampling 4M or use total reads, only support PBC, NSC/RSC/Qtag, FRiP")
+                       default=True,
+                       help="default: 4M, down sampling 4M or use total reads, only support PBC, NSC/RSC/Qtag, FRiP")
         p.add_argument("--frip", dest="frip", action="store_true",
-                default=False, help="default: 4M for FRiP, decide using 5M or 4M for FRiP calculation")
-#        p.add_argument("--unsc", dest="unsc", action="store_true",
-#                       default=False, help="default: False, this option can be used with --total, decide using total non redundant uniquely mapped reads NSC or total uniquely mapped reads NSC.")
+                       default=False, help="default: 4M for FRiP, decide using 5M or 4M for FRiP calculation")
+        #        p.add_argument("--unsc", dest="unsc", action="store_true",
+        #                       default=False, help="default: False, this option can be used with --total, decide using total non redundant uniquely mapped reads NSC or total uniquely mapped reads NSC.")
 
         p.add_argument("--dry-run", dest="dry_run", action="store_true",
                        default=False)
@@ -138,6 +147,7 @@ class StepChecker:
     """
     For step control and selection
     """
+
     def __init__(self, start, end, skips):
         self.start = start
         self.end = end
@@ -177,6 +187,8 @@ def clean_up(workflow, conf):
     """
     preserved = []
     not_moved = []
+    added_bed = []
+
     for target in conf.sample_targets:
         preserved.append(target + ".bam")
     for target in conf.treatment_targets:
@@ -190,6 +202,7 @@ def clean_up(workflow, conf):
         not_moved.append(target + "_control.bw")
         preserved.append(target + "_sort_peaks.narrowPeak")
         not_moved.append(target + "_sort_peaks.narrowPeak")
+        added_bed.append(target + "_sort_peaks.narrowPeak")
         preserved.append(target + "_treat_pileup.bdg")
         preserved.append(target + "_control_lambda.bdg")
         preserved.append(target + "_100k_fastqc")
@@ -201,6 +214,7 @@ def clean_up(workflow, conf):
         not_moved.append(target + "_b_peaks.xls")
         preserved.append(target + "_b_sort_peaks.broadPeak")
         not_moved.append(target + "_b_sort_peaks.broadPeak")
+        added_bed.append(target + "_b_sort_peaks.broadPeak")
     if len(conf.treatment_targets) >= 2:
         preserved.append(conf.prefix + "_treatment.bam")
     if len(conf.control_targets) >= 2:
@@ -209,27 +223,38 @@ def clean_up(workflow, conf):
     not_moved.append(conf.prefix + "_treat.bw")
     preserved.append(conf.prefix + "_control.bw")
     not_moved.append(conf.prefix + "_control.bw")
-    preserved.append(conf.prefix + "_conserv.pdf")
+    preserved.append(conf.prefix + "_conserv_img.png")
+    preserved.append(conf.prefix + "_conserv_compare.pdf")
     preserved.append(conf.prefix + "_sort_peaks.narrowPeak")
     not_moved.append(conf.prefix + "_sort_peaks.narrowPeak")
+    added_bed.append(conf.prefix + "_sort_peaks.narrowPeak")
     preserved.append(conf.prefix + "_peaks.xls")
     not_moved.append(conf.prefix + "_peaks.xls")
+    preserved.append(conf.prefix + "_peaks.bed")
+    not_moved.append(conf.prefix + "_peaks.bed")
     preserved.append(conf.prefix + "_sort_summits.bed")
     not_moved.append(conf.prefix + "_sort_summits.bed")
     preserved.append(conf.prefix + "_b_peaks.xls")
     not_moved.append(conf.prefix + "_b_peaks.xls")
     preserved.append(conf.prefix + "_b_sort_peaks.broadPeak")
     not_moved.append(conf.prefix + "_b_sort_peaks.broadPeak")
+    added_bed.append(conf.prefix + "_b_sort_peaks.broadPeak")
     preserved.append(conf.prefix + "_seqpos")
     preserved.append(conf.prefix + "_gene_score.txt")
+    preserved.append(conf.prefix + "_conserv.txt")
+    preserved.append(conf.prefix + "_b_treat_pileup.bdg")
+    preserved.append(conf.prefix + "_b_control_lambda.bdg")
+    preserved.append(conf.prefix + "_treat_pileup.bdg")
+    preserved.append(conf.prefix + "_control_lambda.bdg")
+    preserved.append(conf.prefix + ".tex")
     preserved.append(os.path.join(conf.target_dir, "json"))
     preserved.append(conf.prefix + ".pdf")
     not_moved.append(conf.prefix + ".pdf")
     d_pattern = map(lambda x: os.path.join(conf.target_dir, x), os.listdir(conf.target_dir))
 
     attach_back(workflow, ShellCommand(
-            "if [ ! -d '{output}' ]; then mkdir -p {output}; fi",
-            output=os.path.join(conf.target_dir, "attic")))
+        "if [ ! -d '{output}' ]; then mkdir -p {output}; fi",
+        output=os.path.join(conf.target_dir, "attic")))
 
     for df in d_pattern:
         if not df in preserved:
@@ -244,6 +269,12 @@ def clean_up(workflow, conf):
                              ShellCommand("mv {param[move]} {param[attic]} >/dev/null 2>&1",
                                           param={"move": pf, "attic": os.path.join(conf.target_dir, "attic")}))
             mv.allow_fail = True
+
+    for af in added_bed:
+        add_bed_suffix = attach_back(workflow,
+                                     ShellCommand("mv {param[file1]} {param[file2]} > /dev/null 2>&1",
+                                                  param={"file1": af, "file2": af + ".bed"}))
+        add_bed_suffix.allow_fail = True
 
 
 def create_cleanup(args, conf):
@@ -291,7 +322,7 @@ def create_workflow(args, conf):
     ## DC prepare sampling reads and raw reads fastqs, support Fastq currently
     bld.build(groom_sequencing_files)
 
-    #-------------------------
+    # -------------------------
     ## need input fastq
     # A. reads qc
     if need_run(1):
@@ -299,7 +330,7 @@ def create_workflow(args, conf):
         bld.build(fastqc)
         bld.build(contamination_check)
 
-    if need_run(2): ## this step can not be skipped, provide bam files
+    if need_run(2):  ## this step can not be skipped, provide bam files
         if conf.mapper == "bwa":
             bld.build(bwa)
         if conf.mapper == "bowtie":
@@ -311,41 +342,37 @@ def create_workflow(args, conf):
     #----------------------------
     # B. ChIP qc
     if need_run(3):
-        bld.build(sampling_bam) ## provide sam and bam
+        bld.build(sampling_bam)  ## provide sam and bam
         bld.build(fragment)
 
     if need_run(4):
-        bld.build(sampling_bam) ## provide sam and bam
+        bld.build(sampling_bam)  ## provide sam and bam
         bld.build(PBC)
 
-    if need_run(5): ## if no replicates, skip automatically
+    if need_run(5):  ## if no replicates, skip automatically
         if have_treat_reps:
             bld.build(macs2_rep)
-            # bld.build(washU)
             bld.build(replicates)
-    if need_run(6): ## this step can not skipped if run following steps
+    if need_run(6):  ## this step can not skipped if run following steps
         bld.build(macs2)
-       # bld.build(washU)
 
-       ## following all needs merged peaks or summits
+        ## following all needs merged peaks or summits
         if need_run(7):
-           ## merged peaks FRiP
-            bld.build(FRiP) ## sample and IP qc
-       # --------------------
-       # C. annotation qc
+            ## merged peaks FRiP
+            bld.build(FRiP)  ## sample and IP qc
+            # --------------------
+            # C. annotation qc
         if need_run(8):
-           #bld.build(bedtools_ceas)
             bld.build(bedAnnotate_ceas)
-           ## generate gene.bed, exon.bed for read_enrichment analysis
+            ## generate gene.bed, exon.bed for read_enrichment analysis
             if need_run(9):
-                bld.build(sampling_bam) ## provide sam and bam
+                bld.build(sampling_bam)  ## provide sam and bam
                 bld.build(read_enrichment_on_meta)
-
-       ## following steps dependent on step 6th
+                ## following steps dependent on step 6th
         if need_run(10):
             if has_conservation:
-               ## wig from ucsc and convert to bigwiggle
-               ## make this more common
+                ## wig from ucsc and convert to bigwiggle
+                ## make this more common
                 bld.build(conservation)
         if need_run(11):
             bld.build(reg_potential)
@@ -371,7 +398,7 @@ def main(args=None):
 
         ## edit macs2 section species part to
         ## your specified species effective genome size
-        #handle threads
+        # handle threads
         conf.threads = args.threads
         workflow = create_workflow(args, conf)
 
@@ -382,8 +409,8 @@ def main(args=None):
             allow_dangling=args.allow_dangling,
             allow_fail=args.allow_fail)
 
-        if workflow.invoke(): #invoke returns True on success
-            if args.clean: #clean_up
+        if workflow.invoke():  #invoke returns True on success
+            if args.clean:  #clean_up
                 wkflw = create_cleanup(args, conf)
                 wkflw.invoke()
 
@@ -392,23 +419,23 @@ def main(args=None):
         t = Template(fin.read())
         fin.close()
 
-        #overwrite basics
+        # overwrite basics
         ls = ['USER', 'ID', 'TIME', 'SPECIES', 'FACTOR', 'TREAT', 'CONT', 'OUTPUT']
-        d = dict([(fld,'') for fld in ls])
+        d = dict([(fld, '') for fld in ls])
         d['TIME'] = time.strftime("%Y-%m-%d")
         fout = open(args.out, "w")
         fout.write(t.safe_substitute(d))
         fout.close()
 
     if args.sub_command == "simple":
-        conf = ChiLinConfig(resource_filename("chilin2.modules", "config/chilin.conf"), args) ## pass command parameter
+        conf = ChiLinConfig(resource_filename("chilin2.modules", "config/chilin.conf"), args)  ## pass command parameter
         conf.frip = args.frip
         conf.down = args.down
         conf.long = args.long
         conf.mapper = args.mapper
-#        conf.unsc = args.unsc
+        # conf.unsc = args.unsc
 
-        conf.root_dir = os.path.dirname(args.treat.split(",")[0]) ## input and output should be in the same directory
+        conf.root_dir = os.path.dirname(args.treat.split(",")[0])  ## input and output should be in the same directory
         ## long document or only summary
         #handle threads
         conf.threads = args.threads
@@ -437,14 +464,14 @@ def main(args=None):
 
         ## uniform extension for different types of factors
         if args.rtype.lower() in ['tf', 'histone']:
-            conf.set("macs2","extsize", "146") # for histone and tf, use 146 extsize(73 shiftsize)
+            conf.set("macs2", "extsize", "146")  # for histone and tf, use 146 extsize(73 shiftsize)
         elif args.rtype.lower() == "dnase":
-            conf.set("macs2", "extsize", "100") # for dnase, use 100 extsize(50 shiftsize)
+            conf.set("macs2", "extsize", "100")  # for dnase, use 100 extsize(50 shiftsize)
         else:
-            print >>sys.stderr, "No such factor\n"
+            print >> sys.stderr, "No such factor\n"
 
         #save the conf file
-        f = open('%s.conf'%args.id, 'w')
+        f = open('%s.conf' % args.id, 'w')
         conf.write(f)
         f.close()
         workflow = create_workflow(args, conf)
@@ -455,8 +482,8 @@ def main(args=None):
             allow_dangling=args.allow_dangling,
             allow_fail=args.allow_fail)
 
-        if workflow.invoke(): #invoke returns True on success
-            if args.clean: #clean_up
+        if workflow.invoke():  #invoke returns True on success
+            if args.clean:  #clean_up
                 wkflw = create_cleanup(args, conf)
                 wkflw.invoke()
 
@@ -469,7 +496,7 @@ def main(args=None):
                 conf.down = args.down
                 conf.mapper = args.mapper
                 conf.long = args.long
-#                conf.unsc = args.unsc
+                # conf.unsc = args.unsc
                 conf.threads = args.threads
                 workflow = create_workflow(args, conf)
                 workflow.set_option(
@@ -480,8 +507,8 @@ def main(args=None):
                     allow_fail=args.allow_fail)
 
                 ## one by one clean up
-                if workflow.invoke(): #invoke returns True on success
-                    if args.clean: #clean_up
+                if workflow.invoke():  #invoke returns True on success
+                    if args.clean:  #clean_up
                         wkflw = create_cleanup(args, conf)
                         wkflw.invoke()
 

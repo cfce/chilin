@@ -154,14 +154,14 @@ def sampling(orig, dest, rand, format, conf): # call fastq_sampling
                                 ln -f {input[sam]} {input[sam]}.{param[random_number]}
                                 {tool} view -bS {input[sam]}.{param[random_number]} > {output[samp]}
                             else
-                                sampling_pe_sam.py {input[sam]} {param[random_number]}
+                                sampling_pe_sam.py {input[sam]} {param[random_number]} {param[pair]}
                                 {tool} view -bS {input[sam]}.{param[random_number]} > {output[samp]}
                             fi
                             """,
                             tool = "samtools",
                             input={"sam": orig},
                             output={"samp": dest},
-                            param={"random_number": rand},
+                            param={"random_number": rand, "pair": str(conf.pe)},
                             name = "sampling bam")
 
 

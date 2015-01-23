@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 
 """
-Time: 
+Time:
 Thu Mar  6 14:30:19 EST 2014
 
 Description:
     get enrichment ratio on union DHS, exons and promoters
 
-python version too slow
-bigWigAverageBed only report average values for each regions
-Use CoverageBed with input BAM files to get raw counts in meta regions and ratio over total reads
+import from frip module using intersectBed
 """
 from samflow.command import ShellCommand
 from samflow.workflow import attach_back
@@ -27,63 +25,73 @@ def read_enrichment_on_meta(workflow, conf):
     import os
     for t in conf.sample_targets:
         enrich = attach_back(workflow, ShellCommand(
-            ## use bash modules/ceas/meta_info.sh to get latest annotations
-            ## Qian: coverage should not consider the strand information for promoters and exons, 5 column for reads count
-            ## because of no strand information, we plus the 4th column
             """
-            {tool} -abam {input[bam]} -b {param[exon]} -counts | awk \'{{n+=$4}}END{{print n}}\' - > {output[exon]}
-            {tool} -abam {input[bam]} -b {param[promoter]} -counts | awk \'{{n+=$4}}END{{print n}}\' - > {output[promoter]}
+            exon=$(bedtools intersect -f {param[p]} -wa -u -abam {input[bam]} -b {param[exon]} -bed | wc -l)
+            promoter=$(bedtools intersect -f {param[p]} -wa -u -abam {input[bam]} -b {param[promoter]} -bed | wc -l)
+            total=$(samtools flagstat {input[bam]} | head -1 | cut -d" " -f1)
+            echo $exon,$promoter,$total > {output[meta]}
             """,
             tool = "coverageBed",
             input = {"bam": t + "_4000000.bam" if conf.down else t + ".bam"},
-            output = {"exon":t+".enrich.exon",
-                      "promoter": t+".enrich.promoter"},
-            param = {"promoter": os.path.join(conf.target_dir, "gene.bed_promoter"), "exon": os.path.join(conf.target_dir, "gene.bed_exon")}))
+            output = {"meta":t+".enrich.meta"},
+            param = {"promoter": os.path.join(conf.target_dir, "gene.bed_promoter"), 
+                     "p": "1E-9",
+                     "exon": os.path.join(conf.target_dir, "gene.bed_exon")}))
         enrich.allow_dangling = True
         enrich.allow_fail = True
 
         if has_dhs:
-            ## Qian: dhs has no strand problem, use 4th column as reads count
             dhs = attach_back(workflow, ShellCommand(
-            ## 4 column reads count
             """
-            {tool}  -abam {input[bam]} -b {param[dhs]} -counts | awk \'{{n+=$4}}END{{print n}}\' - > {output[dhs]}
+            dhs=$(bedtools intersect -f {param[p]} -wa -u -abam {input[bam]} -b {param[dhs]} -bed | wc -l)
+            total=$(samtools flagstat {input[bam]} | head -1 | cut -d" " -f1)
+            echo $dhs,$total > {output[dhs]}
             """,
             tool = "coverageBed",
             input = {"bam": t + "_4000000.bam" if conf.down else t + ".bam",
                     "dhs":conf.get_path(conf.get("basics", "species"), "dhs")},
-            output = {"dhs": t+".enrich.dhs"}, param = {"dhs": conf.get_path(conf.get("basics", "species"), "dhs")},
+            output = {"dhs": t+".enrich.dhs"}, param = {"p": "1E-9","dhs": conf.get_path(conf.get("basics", "species"), "dhs")},
             ))
             dhs.allow_fail = True
             dhs.allow_dangling = True
 
     em = attach_back(workflow, PythonCommand(
         enrich_in_meta,
-        input = {"exon":[ t+".enrich.exon" for t in conf.sample_targets ],
-                 "promoter": [ t+".enrich.promoter" for t in conf.sample_targets ],
-                 "mapped": [ t+"_mapped.bwa" for t in conf.sample_targets ]},
+        input = {"meta":[ t+".enrich.meta" for t in conf.sample_targets ],
+                 "mapped": [ t+"_mapped.bwa" for t in conf.sample_targets ]}, ## use 4M reads for down sampling ones, and all reads instead
         output = {"json": conf.json_prefix + "_enrich_meta.json"},
         param = {"samples": conf.sample_bases, "id":conf.id, "has_dhs":has_dhs,
+                 "down": conf.down,
                  "dhs": [ t+".enrich.dhs" for t in conf.sample_targets ]}))
     em.allow_fail = True
     em.allow_dangling = True
 
-
-def enrich_in_meta(input = {'exon':'','dhs':'','promoter':'', "mapped": ""}, output = {"json": ""}, param = {'id':"", 'samples':""}):
+def enrich_in_meta(input = {'meta':'', 'mapped':''}, output = {"json": ""}, param = {'dhs': '', 'down': '', 'has_dhs':'', 'id':"", 'samples':""}):
     """ enrichment in meta regions
     """
     json_dict = {"stat": {}, "input": input, "output": output, "param":param}
-
-
     for n, s in enumerate(param['samples']):
+        ## total mapped reads
 
         mapped = float(open(input["mapped"][n]).readlines()[2].split()[0])
         json_dict['stat'][s] = {}
-        json_dict['stat'][s]['exon'] = float(open(input['exon'][n]).read().strip())/mapped
-        json_dict['stat'][s]['promoter'] = float(open(input['promoter'][n]).read().strip())/mapped
-        if param['has_dhs']:
-            json_dict['stat'][s]['dhs'] = float(open(param['dhs'][n]).read().strip())/mapped
+
+        meta = open(input['meta'][n]).read().strip().split(",")
+        meta = map(float, meta)
+        if not param["down"]:
+            json_dict['stat'][s]['exon'] = meta[0]/mapped
+            json_dict['stat'][s]['promoter'] = meta[1]/mapped ## use all mapped reads
         else:
-            json_dict['stat'][s]['dhs'] = 0
+            json_dict['stat'][s]['exon'] = meta[0]/meta[2]
+            json_dict['stat'][s]['promoter'] = meta[1]/meta[2] ## use 4M reads
+
+        if param['has_dhs']:
+            dhs = open(param["dhs"][n]).read().strip().split(",")
+            dhs = map(float, dhs)
+            if not param["down"]:
+                json_dict['stat'][s]['dhs'] = dhs[0]/mapped
+            else:
+                json_dict['stat'][s]['dhs'] = dhs[0]/dhs[1]
+
     json_dump(json_dict)
 

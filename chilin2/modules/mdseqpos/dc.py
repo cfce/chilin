@@ -31,30 +31,29 @@ def seqpos(workflow, conf):
     else:
         mdseqpos_bin = "MDSeqPos.py"
 
-    mdseqpos = attach_back(workflow,
-                           ShellCommand(
-            """
-            if [ $(wc -l {input} |cut -f1 -d\" \") -ge 200 ]
-            then
-            echo \"peaks number larger than 200, run motif scan\"
-            {tool} -d  -w 600  -p 0.001  -m cistrome.xml -O {output[result_dir]} {input} {param[species]}
-            else
-            echo \"Warning: peaks number less than 200, skip motif scan\"
-            fi
-            """,
-            tool=mdseqpos_bin,
-            input=conf.prefix + "_peaks_top_motif.bed",
-            output={"result_dir": conf.prefix + "_seqpos", "seqpos": conf.prefix + "_seqpos/" + "motif_list.json"},
-            param={"species": species}, name="motif finding"))
+    if conf.get(conf.get("basics", "species"), "genome_dir"): ## tell whether fill genome_dir in conf file
+        mdseqpos = attach_back(workflow,
+                               ShellCommand(
+                """
+                if [ $(wc -l {input} |cut -f1 -d\" \") -ge 200 ]
+                then
+                echo \"peaks number larger than 200, run motif scan\"
+                {tool} -d  -w 600  -p 0.001 -g {param[genome_dir]} -m cistrome.xml -O {output[result_dir]} {input} {param[species]}
+                else
+                echo \"Warning: peaks number less than 200, skip motif scan\"
+                fi
+                """,
+                tool=mdseqpos_bin,
+                input=conf.prefix + "_peaks_top_motif.bed",
+                output={"result_dir": conf.prefix + "_seqpos", "seqpos": conf.prefix + "_seqpos/" + "motif_list.json"},
+                param={"species": species, "genome_dir": conf.get(conf.get("basics", "species"), "genome_dir")}, name="motif finding"))
 
-    # ERR: note these values are hard-coded!
-    # need to make it more universal for all species
-    mdseqpos.update(param=conf.items("seqpos"))
+        mdseqpos.update(param=conf.items("seqpos"))
 
-    mdseqpos.allow_fail = True
-    mdseqpos.allow_dangling = True
+        mdseqpos.allow_fail = True
+        mdseqpos.allow_dangling = True
 
-    ## QC part
-    stat_motif(workflow, conf)
-    if conf.long:
-        tex_motif(workflow, conf)
+        ## QC part
+        stat_motif(workflow, conf)
+        if conf.long:
+            tex_motif(workflow, conf)
