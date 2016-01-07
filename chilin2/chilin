@@ -241,6 +241,7 @@ def clean_up(workflow, conf):
     added_bed.append(conf.prefix + "_b_sort_peaks.broadPeak")
     preserved.append(conf.prefix + "_seqpos")
     preserved.append(conf.prefix + "_gene_score.txt")
+    preserved.append(conf.prefix + "_gene_score_5fold.txt")
     preserved.append(conf.prefix + "_conserv.txt")
     preserved.append(conf.prefix + "_b_treat_pileup.bdg")
     preserved.append(conf.prefix + "_b_control_lambda.bdg")

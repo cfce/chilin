@@ -79,7 +79,6 @@ def prepare_optparser():
     Info("distance = %d bp" %options.distance)
     Info("genome = %s" %options.genome)
     Info("top = %f" %options.top)
-    print
     return options
 
 class PScore:
@@ -170,14 +169,14 @@ class PScore:
         elif self.output_flag == "all":
             sub_geneInfo = self.geneInfo[:]
 
-        outf = open("%s_gene_score.txt"%name, "w")
+        outf = open(name, "w")
         outf.write(self.opts_string)
         outf.write('#chrom\ttxStart\ttxEnd\trefseq\tscore\tstrand\tsymbol\n')
         for line in sub_geneInfo:
             outf.write('%s\t%d\t%d\t%s\t%.3f\t%s\t%s\n'%(
                        line[0], line[2], line[3], line[1], line[6], line[4], line[5]))
         outf.close()
-        Info("Finished! result output to <%s_gene_score.txt>"%name)
+        Info("Finished! result output to <%s>"%name)
 
 def main():
     opts=prepare_optparser()

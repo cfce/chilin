@@ -23,7 +23,7 @@ class Counter(object):
     def __init__(self, number, wanted, header, pair):
         self.pair = True if pair == 'True' else False
         self.header = header
-        if pair:
+        if self.pair:
             self.number = number/2
             self.wanted = wanted/2
         else:
