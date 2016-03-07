@@ -42,8 +42,10 @@ def seqpos(workflow, conf):
                 else
                 echo \"Warning: peaks number less than 200, skip motif scan\"
                 mkdir -p {output[result_dir]}
-                touch {output[result_dir]}/motif.html
-                echo \"<h1>Warning: peak number is less than 200</h1>\" >> {output[result_dir]}/motif.html
+                touch {output[result_dir]}/mdseqpos_index.html
+                echo \"<html><frameset rows=\"60px,100px\" frameborder=\"1\"><frame name=\"ftop\" /><frame name=\"fbottom\" src=\"table.html\" /></frameset></html>\" >> {output[result_dir]}/mdseqpos_index.html
+                touch {output[result_dir]}/table.html
+                echo \"<h1>Warning: peak number is less than 200</h1>\" >> {output[result_dir]}/table.html
                 fi
                 """,
                 tool=mdseqpos_bin,
