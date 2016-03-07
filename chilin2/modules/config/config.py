@@ -1,5 +1,7 @@
 from ConfigParser import ConfigParser, NoSectionError, NoOptionError
 import os
+import logging
+
 class NoTreatmentData(Exception):
     pass
 
@@ -249,3 +251,14 @@ class ChiLinConfig(ConfigParser):
         if not os.path.exists(target_path):
             os.makedirs(target_path)
         return target_path
+
+    @property
+    def log(self):
+        log_path = os.path.join(self.target_dir, 'log')
+        if not os.path.exists(log_path):
+            os.makedirs(log_path)
+        logger = logging.getLogger();
+        handler = logging.FileHandler(os.path.join(log_path, self.id + '.log'))
+        logger.addHandler(handler);
+        logger.setLevel(logging.NOTSET);
+        return logger

@@ -41,6 +41,9 @@ def seqpos(workflow, conf):
                 {tool} -d  -w 600  -p 0.001 -g {param[genome_dir]} -m cistrome.xml -O {output[result_dir]} {input} {param[species]}
                 else
                 echo \"Warning: peaks number less than 200, skip motif scan\"
+                mkdir -p {output[result_dir]}
+                touch {output[result_dir]}/motif.html
+                echo \"<h1>Warning: peak number is less than 200</h1>\" >> {output[result_dir]}/motif.html
                 fi
                 """,
                 tool=mdseqpos_bin,

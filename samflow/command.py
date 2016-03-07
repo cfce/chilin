@@ -6,7 +6,7 @@ from time import strftime, localtime
 from samflow.helper import print_command_details
 
 class AbstractCommand(object):
-    def __init__(self, template=None, tool=None, param={}, input=[], output=[], name=""):
+    def __init__(self, template=None, tool=None, param={}, input=[], output=[], name="", logger=None):
         self.name = name
         self.input = input
         self.output = output
@@ -26,6 +26,9 @@ class AbstractCommand(object):
         self._parent = self
         self._commands = []
         self._allow_zero_byte_file = True
+
+        # include log file
+        self.logger = logger
 
     def add_back(self, command):
         """ For workflow only, add a command into current workflow """
@@ -124,10 +127,10 @@ class AbstractCommand(object):
 
     def _print_log(self, head, *args):
         if isinstance(self, ShellCommand) and head in ["Run", "Dry-run"]:
-            start_with = ""
+            start_with = "shell :"
         else:
-            start_with = "#"
-        print start_with, head, self.name, "[", strftime("%Y-%m-%d %H:%M:%S", localtime()), "]: \n", " ".join(map(str, args))
+            start_with = "python:"
+        self.logger.info(start_with + "\t" + "{0:+^10}".format(self.name + ' at ' + strftime("%Y-%m-%d %H:%M:%S", localtime())) + "\t" + " ".join(map(str, args)))
 
     def _execute(self):
         """
@@ -169,7 +172,7 @@ class AbstractCommand(object):
                     continue
             return missing
         except:
-            print("Exception encountered @", self.name, self.template)
+            self.logger.error("Exception encountered @", self.name, self.template)
             raise
 
     @property
@@ -329,7 +332,7 @@ class PythonCommand(AbstractCommand):
         try:
             self.template(input=self.input, output=self.output, param=self.param) ## in case python internal error
         except Exception as e:
-            print e
+            self.logger.error(e)
         return True
 
 

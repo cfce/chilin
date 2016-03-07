@@ -8,6 +8,8 @@ from jinja2 import Environment, FileSystemLoader
 from samflow.command import AbstractCommand, ShellCommand, PythonCommand
 from pkg_resources import resource_filename
 
+from samflow.workflow import attach_back
+
 env = Environment(loader = FileSystemLoader("/"),
     block_start_string = '\BLOCK{',
     block_end_string = '}',
@@ -193,3 +195,18 @@ def fastq_sampling(input, output, param):   ## a sampling helper
     fastq.close()
 
     print("wrote to %s" % (output["fastq_sample"]))
+
+
+def WriteConf(input="", output="", param={}):
+    conf = param["conf"]
+    f = open(output, 'w')
+    conf.write(f)
+    f.close()
+
+
+def write_conf(workflow, conf):
+    #save the conf file
+    attach_back(workflow, PythonCommand(WriteConf,
+        output=conf.prefix + ".conf",
+        param={"conf": conf}
+    ))

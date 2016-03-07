@@ -9,6 +9,7 @@ import argparse
 from string import Template
 import time
 
+from chilin2.modules.config.helpers import write_conf
 from samflow.command import ShellCommand
 from samflow.workflow import Workflow, attach_back
 from pkg_resources import resource_filename
@@ -320,6 +321,7 @@ def create_workflow(args, conf):
         "if [ ! -d '{output}' ]; then mkdir -p {output}; fi",
         output=conf.target_dir))
 
+    bld.build(write_conf)
     ## DC prepare sampling reads and raw reads fastqs, support Fastq currently
     bld.build(groom_sequencing_files)
 
@@ -407,6 +409,7 @@ def main(args=None):
             verbose_level=args.verbose_level,
             dry_run_mode=args.dry_run,
             resume=args.resume,
+            logger=conf.log,
             allow_dangling=args.allow_dangling,
             allow_fail=args.allow_fail)
 
@@ -434,7 +437,6 @@ def main(args=None):
         conf.down = args.down
         conf.long = args.long
         conf.mapper = args.mapper
-        # conf.unsc = args.unsc
 
         conf.root_dir = os.path.dirname(args.treat.split(",")[0])  ## input and output should be in the same directory
         ## long document or only summary
@@ -471,15 +473,12 @@ def main(args=None):
         else:
             print >> sys.stderr, "No such factor\n"
 
-        #save the conf file
-        f = open('%s.conf' % args.id, 'w')
-        conf.write(f)
-        f.close()
         workflow = create_workflow(args, conf)
         workflow.set_option(
             verbose_level=args.verbose_level,
             dry_run_mode=args.dry_run,
             resume=args.resume,
+            logger=conf.log,
             allow_dangling=args.allow_dangling,
             allow_fail=args.allow_fail)
 
