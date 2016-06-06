@@ -1,0 +1,20 @@
+import os, sys
+import mdseqpos
+
+DEPLOY_DIR = mdseqpos.__path__[0]
+TEMPLATE_DIRS = (DEPLOY_DIR+'/template')
+
+ASSEMBLY_DIR = '/data/static_libraries/assembly/'
+BUILD_DICT = { #"hg17": "humanhg17_May2004/",
+               #"hg18": "humanhg18/",
+               "hg19": "humanhg19/",
+               #"mm7": "UCSC_MM7/",
+               #"mm8": "mousemm8_Mar2006/",
+               "mm9":"UCSC_MM9/",
+               #"ce4":"UCSC_CE4/",               
+               #"ce6":"UCSC_CE6/",
+               #"ce10":"UCSC_CE10/",
+               #"dm3":"UCSC_DM3/",
+               #"rn4":"UCSC_RN4/",
+               #"danRer7":"UCSC_danRer7/"
+               }

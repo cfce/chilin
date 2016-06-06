@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <title>motif focus frame</title>
+  </head>
+  <body>
+    <table>
+      <tr>
+      <td>
+      <a href="../seqLogo/{{motif.id}}.png"><img width="240" height="150" src="../seqLogo/{{motif.id}}.png"></img></a><br />
+      <a href="../seqLogo/{{motif.id}}_rev.png"><img width="240" height="150" src="../seqLogo/{{motif.id}}_rev.png"></img></a><br />
+      </td>
+      <td>
+        id: {{motif.id}}<br />
+        factors: {% if motif.factors %} {{motif.factors|join('|')}} {% endif %}<br />
+        DBD: {{motif.dbd}}<br />
+        hits: {{motif.getnumhits()}}<br />
+        cutoff: {{motif.getcutoff()|float|round(3)}}<br />
+        zscore: {{motif.getzscore()|float|round(3)}}<br />
+        -10log(pval): {{motif.getpvalue()}}<br />
+        <a href="../pssm/{{motif.id}}.html" target="_blank"><button type="button">show pssm of this motif</button></a>
+      </td>
+      </tr>
+    </table>
+  </body>
+</html>

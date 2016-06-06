@@ -1,0 +1,60 @@
+<html>
+  <head>
+    <title>motif table frame</title>
+  </head>
+  <TABLE cellspacing="0" border="1" bordercolor="#FF9900">
+    <THEAD>
+      <TR> 
+        <TD bgcolor="#FFFF99" style="border-right:#E7E7E7 solid 1px;"><B>clusters</B></TD>
+        <TD bgcolor="#FFFF99" style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"><B>collapsed_id</B></TD>
+        <TD bgcolor="#FFFF99" style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"><B>factor</B></TD>
+        <TD bgcolor="#FFFF99" style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"><B>DNA binding domain</B></TD>                
+        <TD bgcolor="#FFFF99" style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"><B>hits</B></TD>    
+        <TD bgcolor="#FFFF99" style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"><B>cutoff</B></TD>    
+        <TD bgcolor="#FFFF99" style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"><B>zscore</B></TD>    
+        <TD bgcolor="#FFFF99" style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"><B>-10*log(pval)</B></TD>    
+        <TD bgcolor="#FFFF99" style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"><B>similarity to top</B></TD>    
+        <TD bgcolor="#FFFF99" style="border-left:#E7E7E7 solid 1px;"><B>mean_position</B></TD>    
+      </TR>
+    </THEAD>
+    <TBODY>
+      {% for motif in motifs %}
+        {% for e in motif.similar_motifs %}
+          {% if not e.similarity_score %}
+          <TR style="border-bottom:#E7E7E7 solid 1px;">
+            <TD rowspan="{{motif.collapse_num}}" style="border-right:#E7E7E7 solid 1px;">{{motif.class_id}}</TD>
+          {% else %}
+          <TR style="border-top:#E7E7E7 solid 1px;border-bottom:#E7E7E7 solid 1px;">
+          {% endif %}
+            <TD style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"><a href="motif/{{e.id}}.html" target="ftop"> {{e.id}} </a></TD>
+            <TD style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"> 
+              {% if e.factors %} 
+              <font color="#000000">{{e.factors|join('|')}}</font>
+              {% endif %} 
+            </TD>
+            <TD style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"> {{e.dbd}} </TD>
+            <TD style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"> {{e.getnumhits()}} </TD>
+            <TD style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"> {{e.getcutoff()|float|round(3)}} </TD>
+            <TD style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"> {{e.getzscore()|float|round(3)}} </TD>
+            <TD style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"> {{e.getpvalue()}} </TD>
+            <TD style="border-right:#E7E7E7 solid 1px;border-left:#E7E7E7 solid 1px;"> {{e.similarity_score}} </TD>
+            <TD style="border-left:#E7E7E7 solid 1px;"> {{e.getmeanposition()|float|round(3)}} </TD>
+          </TR>
+        {% endfor %}
+      {% endfor %}
+    </TBODY>
+  </TABLE>
+
+  <p>The seqLogo and matrix in this page is the observed one, not that one in our database.
+  </p>
+  <p>
+  The MDSeqPos results are classified into several groups depend on their sequence logo similarity.<br />
+  For the "zscore" column with negative number, the smaller means more enriched. e.g. these with zscore < -15 are much much better. <br />
+  For "similarity to top" column, it calculate a similarity score[1] with the top one in this class based on weighted PCC.<br/>
+  </p>
+  
+  <p><b>
+  [1] Jiang P, Singh M. CCAT: Combinatorial Code Analysis Tool for transcriptional regulation. Nucleic Acids Res. 2014 Mar 1;42(5):2833-47.
+  </b></p>
+</html>
+

@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN"
+   "http://www.w3.org/TR/html4/frameset.dtd">
+<html>
+<head>
+   <title>Cistrome Motifs</title>
+   <link href="mdseqpos_out.css" type="text/css" rel="stylesheet"/>
+   <!--<script type="text/javascript" src="prototype.js"></script>-->
+   <script type="text/javascript" src="Utils.js"></script>
+   <script type="text/javascript" src="seedrandom.js"></script>
+   <script type="text/javascript" src="mdseqpos_out.js"></script>
+   <script type="text/javascript" src="dna/goLogo.js"></script>
+   <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+   <script type="text/javascript" src="highcharts.js"></script>
+   <script>
+
+{% autoescape off %}
+Math.seedrandom('{{now}}');
+
+//this needs to be converted--i.e. the nodes need to be made into Motif objs.
+var motifList_json = {{ motifList }}
+var motifDists = {{ motifDists }}
+{% endautoescape %} 
+
+//Convert the json to Motif Objects
+var motifList = []
+for (var i = 0; i < motifList_json.length; i++) {
+   motifList.push(new Motif(motifList_json[i]));
+}
+
+motifModel = new MotifModel(motifList);
+   </script>
+</head>
+  <body onload="initPage();">
+    <span>filter by zscore: more sig. (zscore: <span id="zscoreSldrVal"> </span>, motifs: <span id="numMotifs"></span>)&nbsp;&nbsp;&nbsp;<span id="zMin"></span><input type="range" id="zscoreSlider"/><span id="zMax"></span>&nbsp;&nbsp;&nbsp;less sig.</span>
+    <span>k-means (groups: <span id="grpSldrVal"></span>) <span id="grpMin"></span><input type="range" id="groupsSlider"/><span id="grpMax"></span></span>
+    <br/>
+    <input type="button" value="view tables as text" id="txt_btn"/>
+    <input type="submit" value="click to reset table" id="reset_btn"/>
+    <!--                                                                       
+    <span>filter by species: <select id="species_menu" disabled></select>
+    </span>
+    -->
+    <div id="motif_table"></div>
+  </body>
+</html>

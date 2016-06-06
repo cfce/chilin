@@ -1,0 +1,28 @@
+/* modeled off of table_frame.css */
+td, th {
+   font: 0.8em Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
+.datatable {
+   border: 1px solid #D6DDE6;
+   border-collapse: collapse;
+}
+
+.datatable td {
+   border: 1px solid #D6DDE6;
+   text-align: right;
+   padding: 4px;
+}
+
+.datatable th {
+   border: 1px solid #828282;
+   background-color:#BCBCBC;
+   font-weight: bold;
+   text-align: left;
+   padding: 4px;
+}
+
+.datatable tr.altrow {
+   background-color: #DFE7F2;
+   color: #000000;
+}

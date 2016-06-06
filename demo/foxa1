@@ -1,0 +1,16 @@
+#!/bin/bash 
+
+#SBATCH -n 12  #Number of cores
+#SBATCH -N 1   #node number
+
+#SBATCH -t 3000  #Runtime in minutes 
+
+#SBATCH -p general  #Partition to submit to 
+
+#SBATCH --mem=10600  #Memory per node in MB (see also --mem-per-cpu)
+
+#SBATCH -o foxa1-%A_%a.out
+#SBATCH -J foxa1-%A_%a.err
+
+source ../chilin_env/bin/activate
+chilin simple -u qinq -s hg38 --threads 12 -i local -o local -t foxa1_t1.fastq.gz -c foxa1_c1.fastq.gz -p narrow -r tf --dont_remove

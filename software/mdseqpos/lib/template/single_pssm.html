@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <title>motif pssm page</title>
+  </head>
+  <TABLE cellspacing="0" border="1" bordercolor="#FF9900">
+    <THEAD>
+      <TR>
+        <TD bgcolor="#FFFF99"><B>A</B></TD>
+        <TD bgcolor="#FFFF99"><B>C</B></TD>        
+        <TD bgcolor="#FFFF99"><B>G</B></TD>    
+        <TD bgcolor="#FFFF99"><B>T</B></TD>    
+      </TR>
+    </THEAD>
+    <TBODY>
+    {% for line in motif.seqpos_results.pssm %}
+	<TR>
+	    {% for pos in line %}
+		<TD>{{pos}}</TD>
+        {% endfor %}
+	</TR>
+	{% endfor %}
+    </TBODY>
+  </TABLE>
+  <p>
+    If you would like to input this motif into our 'Screen all motifs' tool: <br />
+    OPTION A: <br />
+    1. copy the text below, and <br />
+    2. paste it into "PSSM Raw Text" in the Motif:Screen All Motifs tool <br />
+    --OR-- <br />
+    OPTION B: <br />
+    1. copy and paste the txt below into a text file <br />
+    2. upload the file onto cistrome, and <br />
+    3. run Motif:Screen All Motifs selecting the text file as the PSSM file <br />
+  </p>
+  [
+  {% for line in motif.seqpos_results.pssm %}
+  [{{line[0]}}, {{line[1]}}, {{line[2]}}, {{line[3]}}],<br />
+  {% endfor %}
+  ]
+</html>
+
+
