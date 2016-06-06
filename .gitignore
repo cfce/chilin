@@ -21,6 +21,6 @@ testsuite
 chilin.conf.filled
 chilin2/modules/config/chilin.conf
 TAGS
-software
 data
-demo
+.o*
+chilin_env

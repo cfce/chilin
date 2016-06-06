@@ -2,10 +2,7 @@
 Installation
 ===============
 
-The github version https://github.com/cfce/chilin/ and bitbucket version https://bitbucket.org/Alvin_Qin/chilin are only used for installing chilin pipeline without solving software dependency.
-We have packaged all dependent software and species-specific data into **.tar.gz**.
-
-* We recommend downloading this chilin package <http://cistrome.org/chilin/_downloads/chilin.tgz>
+The two clones are synchronized between https://github.com/cfce/chilin/ and http://cistrome.org/chilin/_downloads/chilin.tgz. We have packaged all dependent software and species-specific data into **.tar.gz**.
 
 Before installation, make sure that you have gcc, g++, make and java in place, we provide the installation for common system for these dependency.
 
@@ -16,7 +13,7 @@ Dependent software list
 
 .. note::
 
-   python must be 2.7 version for macs2 support..
+   python must be 2.7 version for macs2 support.
 
 ============================   ==============================      ======================================
 Tool                           debian/centos/mac                     Usage for ChiLin
@@ -25,7 +22,7 @@ python dev header              apt-get or yum or port              prerequisites
 python setuptools              apt-get or yum or port              prerequisites 
 python numpy package           apt-get or yum or port              prerequisites 
 cython                         apt-get or yum or port              prerequisites 
-R                              apt-get or yum or manually          prerequisites 
+`R`_                              apt-get or yum or manually          prerequisites 
 java/gcc/g++                   apt-get/yum install/Xcode           prerequisites 
 `ghostscript`_                 apt-get or yum or manually          prerequisites 
 texlive-latex                  apt-get or yum or manually          prerequisites 
@@ -41,7 +38,7 @@ bedClip                        built-in                            `UCSC binary`
 bedGraphToBigWig               built-in                            `UCSC binary`_ (packaged into chilin)
 wigCorrelate                   built-in                            `UCSC binary`_ (packaged into chilin)
 wigToBigWig                    built-in                            `UCSC binary`_ (packaged into chilin)
-`mdseqpos`_                    built-in                             packaged into chilin
+mdseqpos                       built-in                             packaged into chilin
 ============================   ==============================      ======================================
 
 
@@ -171,6 +168,9 @@ After solving the :ref:`dependent prerequisites<dependentsoft>`, install chilin 
      .. code-block:: bash
 
                      wget -c http://cistrome.org/chilin/_downloads/chilin.tgz
+                     # or
+                     git clone http://github.com/cfce/chilin/
+
                      tar xvfz chilin.tgz
                      cd chilin
                      python setup.py install -f
@@ -179,7 +179,7 @@ After solving the :ref:`dependent prerequisites<dependentsoft>`, install chilin 
 If any error encountered, continue with
 
 .. code-block:: bash
-   
+
                 source chilin_env/bin/activate && pip install cython numpy --upgrade && python setup.py install -f
 
 Then, check your installation::
@@ -188,9 +188,21 @@ Then, check your installation::
                 # check ChiLin dependent software and data
                 python setup.py -l
 
-If any software can not be installed, look into their official documentation.
-Most of time, , see dependentsoft_ to check whether all prerequisites are installed or not, usually it's the problem of numpy, cython or gcc compiler problem, try apt-get, yum, port and pypi to install cython, numpy.
-Take a look at all software in the *software* directory to see what's going on.
+If any software can not be installed, look into their official documentation. Most of time, see dependentsoft_ to check whether all prerequisites are installed or not, usually it's the problem of numpy, cython or gcc compiler problem, or R package `seqLogo` problem. Take a look at all software in the *software* directory to see what's going on, and try apt-get, yum, port and pypi to fix the issue.
+
+Lastly, user may need to check the installation of mdseqpos dependency of R `seqLogo` package, open R console and install dependent R packages:
+
+              .. code-block:: bash
+
+                              R -e "source('http://bioconductor.org/biocLite.R');biocLite('seqLogo');library(seqLogo)"
+
+
+
+- Remember to source your `python virtual environment` "chilin_env/bin/activate " everytime or put them into your ${HOME}/.bashrc or ${HOME}/.bash_profile.
+
+.. note::
+
+   After installation, the config file is auto-generated and set the species specific data directory default to `db` under the code root directory.
 
 
 Download dependent data for hg38_, hg19_, mm9_, or mm10_
@@ -210,11 +222,15 @@ Download dependent data for hg38_, hg19_, mm9_, or mm10_
                   #wget -c http://cistrome.org/chilin/_downloads/mm9.tgz.md5
                   #wget -c http://cistrome.org/chilin/_downloads/mm10.tgz
                   #wget -c http://cistrome.org/chilin/_downloads/mm10.tgz.md5
+
+                  # check the md5sum for completeness
                   md5sum -c hg19.tgz
                   tar xvfz hg19.tgz
+
                   #tar xvfz mm9.tgz
                   #tar xvfz mm10.tgz
                   #tar xvfz hg38.tgz
+
                   # download mycoplasma that you are afraid of contaminating your samples
                   wget -c http://cistrome.org/chilin/_downloads/mycoplasma.tgz
                   wget -c http://cistrome.org/chilin/_downloads/mycoplasma.tgz.md5
@@ -226,7 +242,6 @@ Download dependent data for hg38_, hg19_, mm9_, or mm10_
      
                   # check your data, default, if download is ok, skip `add species support in chilin`
                   python setup.py -l
-
 
 
 .. _hg38:  http://cistrome.org/chilin/_downloads/hg38.tgz
@@ -258,14 +273,6 @@ after conf, see details about this in :envvar:`[species] <[species]>`.
 
 .. literalinclude:: ../chilin.conf
 
-
-Lastly, Installation of `mdseqpos`_ needs R `seqLogo` package, open R console and install dependent R packages:
-
-     .. code-block:: bash
-
-                     R -e "source('http://bioconductor.org/biocLite.R');biocLite('seqLogo');library(seqLogo)"
-
-The last step of installation is running `source chilin_env/bin/activate && python setup.py install`. Remember to source your "chilin_env/bin/activate " everytime or put them into your .bashrc.
 
 Test installation
 -----------------

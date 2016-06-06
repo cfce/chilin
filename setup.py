@@ -196,7 +196,7 @@ def install():
         license='MIT',
         platforms='linux/unix',
         author='Hanfei Sun, Shenglin Mei, Qian Qin, Len Taing',
-        author_email='qianqind@gmail.com',
+        author_email='1410771@tongji.edu.cn',
         description=read("README.md"),
         scripts = ["chilin2/chilin", "chilin2/modules/conservation/conservation_plot.py",
 		   "chilin2/modules/conservation/conservation_onebw_plot.py",
@@ -207,6 +207,7 @@ def install():
                    "chilin2/modules/regulatory/RegPotential.py"],
         install_requires=['jinja2','argparse','macs2','numpy','cython'])
 
+
 def install_full():
     if not os.path.exists("chilin_env"):
 	    setup_env = subprocess.call(
@@ -215,11 +216,9 @@ def install_full():
 	    python virtualenv.py -ppython2.7 --system-site-packages --distribute chilin_env --relocatable
 	    """, shell=True)
     execfile("chilin_env/bin/activate_this.py", dict(__file__="chilin_env/bin/activate_this.py"))
-
-
     setup_env = subprocess.call(
         """
-        . chilin_env/bin/activate
+        source chilin_env/bin/activate
         cd software
         if [ ! -s chilin_env/bin/bedtools ] 
         then
@@ -233,7 +232,7 @@ def install_full():
 
 
     if platform.system() == 'Linux':
-        setup_env = subprocess.call(
+        setup_env = subprocess.check_call(
             """
             cp chilin2/chilin chilin_env/bin/
             . chilin_env/bin/activate
@@ -241,27 +240,31 @@ def install_full():
             chmod 755 ucsc/linux/*
             cp -f ucsc/linux/* ../chilin_env/bin
             chmod -R 755 ../chilin_env/bin
-            """, shell=True)
+            """, shell=True, executable='/bin/bash')
     else:
-        setup_env = subprocess.call(
+        setup_env = subprocess.check_call(
             """
             . chilin_env/bin/activate
             cd software
             chmod 755 ucsc/mac/*
             cp -f ucsc/mac/* ../chilin_env/bin
             chmod -R 755 ../chilin_env/bin
-            """, shell=True)
+            """, shell=True, executable='/bin/bash')
 
-    execfile("chilin_env/bin/activate_this.py", dict(__file__="chilin_env/bin/activate_this.py"))
-    install()
+    #execfile("chilin_env/bin/activate_this.py", dict(__file__="chilin_env/bin/activate_this.py"))
+    #install()
 
-    setup_env = subprocess.call(
+    setup_env = subprocess.check_call(
         """
-        . chilin_env/bin/activate
+        source chilin_env/bin/activate
+        python setup.py install
         cd software
         cd bx-python && python setup.py install && cd ..
         cd mdseqpos && python setup.py install && cd ..
-        """, shell=True)
+
+        which R && R -e "source('http://bioconductor.org/biocLite.R');biocLite('seqLogo');library(seqLogo)"
+        """, shell=True, executable='/bin/bash')
+
 
 class FriendlyArgumentParser(argparse.ArgumentParser):
     """

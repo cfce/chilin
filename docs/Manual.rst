@@ -1,7 +1,6 @@
-
-==============
+=================
 Instructions
-==============
+=================
 
 
 Through the pipeline, several temporary files will be generated, some of them are only used for settings
@@ -42,17 +41,17 @@ Demo data command is as follows::
 
 See skip_ option for details.
 
-This is major and the easiest mode to run ChiLin for single end data with default bwa mapper, for single end data use comma to separate sample replicates for IP and inputa::
+This is major and the easiest mode to run ChiLin for single end data with default bwa mapper, for single end data using comma to separate sample replicates for IP and input ChIP-seq sample::
 
   chilin  simple -u your_name -s your_species --threads 8 -i id -o output -t treat1.fastq,treat2.fastq -c control1.fastq,control2.fastq  -p narrow -r tf
 
-For pair end data, use semicolon to separate sample replicates, use comma to separate pairs, do not forget to add quotes of your sample file path::
+For pair end data, use semicolon to separate sample replicates, use comma to separate pairs, do not forget to add `quotes(")` of your sample file path::
 
   chilin simple --threads 8 -i H3K27me3_PairEnd -o /n/home03/qqin/holy/H3K27me3_PairEnd -u you -s mm9 -t "GSM905438.fastq_R1.gz,GSM905438.fastq_R2.gz" -c "GSM905434.fastq_R1.gz,GSM905434.fastq_R2.gz;GSM905436.fastq_R1.gz,GSM905436.fastq_R2.gz" -p both --pe
 
 See more options about *simple* by::
 
-  chilin  simple -h
+  chilin simple -h
 
 .. _simple-mode:
 
@@ -63,7 +62,7 @@ simple mode useful option
 * -c In simple mode, this is the options for specifying path to control.
 * -p peaks calling type, narrow or broad or both, #e.g., If your factor is transcription factor, and you want to call narrow peaks only, or broad histone mark with broad peak calling
 * -i prefix of the output name
-* -o output directory
+* -o output results directory
 * -s species, must be filled, the -s option is corresponding to your filled python config file [section], see section for details, :envvar:`[species] <[species]>`.
 * -u user
 * --pe pair end mode
@@ -72,8 +71,9 @@ simple mode useful option
 * --threads threads number for mapping tool
 * -r factor type, some default settings for three factor types, tf,histone,dnase
 
-gen mode
+(optional) gen mode
 ------------------------------
+
 This mode is to generate config file for `run-mode`_. A config file is look like this,
 
 - The major section user needs to fill is the :envvar:`[basics] <[basics]>` section.
@@ -95,7 +95,6 @@ This mode is to generate config file for `run-mode`_. A config file is look like
 		output = output_directory
 		version = 2.0.0
 
-
 run mode usage
 ------------------------------
 
@@ -109,7 +108,8 @@ After configurating the config files above, you could use run mode with a single
 
 batch mode usage
 ------------------------------
-This mode help user run dataset one by one.
+
+This mode help user run dataset one by one with one process.
 
 After configurating a batch of the config files above, such as e.g. 1.conf, 2.conf, 3.conf, then you fill in a file called *batch.conf*::
 
@@ -151,7 +151,7 @@ Each step control is tolerant, continue running even tool failed processing.
 - --dont_remove, keep temporary files
 - --dry-run, mimic run chilin command
 - --threads, BWA, Bowtie and FastQC multithreads options.
-- --mapper, to choose mapping tools, should match your genome index in :envvar:
+- --mapper, to choose mapping tools, should match your genome index in :envvar:`genome index<genome_index>`
 
 Instructions to config file
 ==============================
@@ -390,7 +390,7 @@ ChiLin has some user-defined parameters for macs2, regulatory potential, conserv
 
     .. envvar:: seqpos_mdscan_top_peaks_refine
 
-                seqpos and mdscan top paeks refine, see mdseqpos
+                seqpos and mdscan top peaks refine, see mdseqpos
 
     .. envvar:: db
 
@@ -403,297 +403,15 @@ ChiLin has some user-defined parameters for macs2, regulatory potential, conserv
 .. _Instructions_table:
 .. _Instructions_results:
 
+
 Instructions to results
-~~~~~~~~~~~~~~~~~~~~~~~
+=========================
 
 The output prefix is from:
 
 * `simple-mode`_ -i id specified, or `run-mode`_ filled in :envvar:`[basics] <[basics]>` section :envvar:`id <id>` part.
 * The output directory is `simple mode` -o output specified or 2. `run-mode`_  filled in :envvar:`[basics] <[basics]>` section :envvar:`output <output>` part.
-* For a fully test dataset with replicates of treatments and replicates of controls, the results folder are like following, which are generated with *-dont_remove* option
-
-.. code-block:: ini
-   
-                output
-                |-- json  ## qc statistics
-                |   |-- id_conserv.json  ## conservation scores
-                |   |-- id_contam.json   ## library contamination evaluation
-                |   |-- id_dhs.json      ## union dhs overlap
-                |   |-- id_enrich_meta.json ## meta regions reads ratio
-                |   |-- id_fastqc.json      ## fastqc evaluation
-                |   |-- id_frag.json        ## fragment size evaluation
-                |   |-- id_frip.json        ## FRiP scores
-                |   |-- id_macs2.json       ## merged macs2 peak calling number
-                |   |-- id_macs2_rep.json   ## macs2 replicates peaks number
-                |   |-- id_map.json         ## mapping ratio statistics
-                |   |-- id_meta.json        ## peak meta regions distribution
-                |   |-- id_pbc.json         ## PBC score
-                |   `-- id_rep.json         ## replicates consistency
-                |-- latex  ## rendered latex document
-                |   |-- id_begin.tex       
-                |   |-- id_conserv.tex
-                |   |-- id_contam.tex
-                |   |-- id_end.tex
-                |   |-- id_fastqc.tex
-                |   |-- id_fastqc_gc.tex
-                |   |-- id_frip.tex
-                |   |-- id_map.tex
-                |   `-- id_summary_table.tex
-                |-- id.aux ## latex log file
-                |-- id.cor ## correlation analysis temporary file
-                |-- id.dhs ## dhs overlap analysis temporary file
-                |-- id.log ## latex log file
-                |-- id.meta ## meta regions peak distribution temporary file
-                |-- id.out  ## latex log file
-                |-- id.pdf  ## pdf document generated
-                |-- id.tex  ## file latex file
-                |-- id_0_1.overlap  ## replicates peak overlap
-                |-- id_bwa_compare.R ## R script for comparing new data to historic data
-                |-- id_bwa_compare.pdf ## pdf generated by R script above
-                |-- id_conserv.R  ## conservation plot R code
-                |-- id_conserv.pdf ## pdf generated by R script above
-                |-- id_conserv.txt ## 7 or 5 point conservation scores around summits
-                |-- id_conserv_cluster.R ## conservation scores clustering plot
-                |-- id_conserv_compare.pdf  ## conservation pdf generated by R script above
-                |-- id_conserv_img.pdf  ## low resolution image of conservation plot
-                |-- id_control.bam      ## merged control bam files
-                |-- id_control.bw       ## control bigwiggle file
-                |-- id_control_lambda.bdg  ## control bedgraph file
-                |-- id_control_lambda.bdg.tmp  ## bedClip filtered bedgraph file
-                |-- id_control_rep1.bam   ## sorted, mapping quality 1 filtered replicate 1st bam file 
-                |-- id_control_rep1.enrich.dhs   ## reads ratio in DHS regions
-                |-- id_control_rep1.enrich.exon  ## reads ratio in exon regions
-                |-- id_control_rep1.enrich.promoter  ## reads ratio in promoter regions
-                |-- id_control_rep1.fastq  ## copied fastq file
-                |-- id_control_rep1.frip   ## FRiP score from replicate control 1st
-                |-- id_control_rep1.hist   ## read locations histogram of replicate control 1st 
-                |-- id_control_rep1.nochrM  ## chromosome information without chrM
-                |-- id_control_rep1.pbc  ## bwa PBC score
-                |-- id_control_rep1.sai  ## bwa sai file
-                |-- id_control_rep1.sam  ## bwa sam file
-                |-- id_control_rep1.tmp.bam     ## mapping quality filtered bam files, without sorting
-                |-- id_control_rep1_100k.fastq  ## subsampled fastq reads
-                |-- id_control_rep1_100k_fastqc ## fastqc temporary results
-                |   |-- Icons
-                |   |   |-- error.png
-                |   |   |-- fastqc_icon.png
-                |   |   |-- tick.png
-                |   |   `-- warning.png
-                |   |-- Images
-                |   |   |-- duplication_levels.png
-                |   |   |-- kmer_profiles.png
-                |   |   |-- per_base_gc_content.png
-                |   |   |-- per_base_n_content.png
-                |   |   |-- per_base_quality.png
-                |   |   |-- per_base_sequence_content.png
-                |   |   |-- per_sequence_gc_content.png
-                |   |   |-- per_sequence_quality.png
-                |   |   `-- sequence_length_distribution.png
-                |   |-- fastqc_data.txt
-                |   |-- fastqc_report.html
-                |   `-- summary.txt
-                |-- id_control_rep1_100k_fastqc.zip 
-                |-- id_control_rep1_4000000.bam   ## subsampled 4M reads bam file
-                |-- id_control_rep1_4000000_nochrM.bam  ## subsampled non-chrM 4M reads bam file
-                |-- id_control_rep1_mapped.bwa  ## replicate control 1st mapped reads statistics
-                |-- id_control_rep1_nochrM.bam  ## sorted, mapping quality filtered bam file
-                |-- id_control_rep1_nochrM.sam  ## mapped sam files without chrM
-                |-- id_control_rep1_nochrM.sam.4000000  ## subsampled 4M reads without chrM
-                |-- id_control_rep1_total.bwa  ## total reads statistics from bwa
-                |-- id_control_rep1_u.sam  ## unique reads SAM file
-                |-- id_control_rep1_u.sam.4000000  ## subsampled unique reads SAM file
-                |-- id_control_rep1mbr.bam  ## cross species mapping to mbr, or species you specified
-                |-- id_control_rep1mbr.sai  
-                |-- id_control_rep1mbr.sam
-                |-- id_control_rep1mbr.tmp.bam
-                |-- id_control_rep1mbr_mapped.bwa
-                |-- id_control_rep1mbr_total.bwa
-                |-- id_control_rep2.bam   ## control replicates 2nd bam file
-                |-- id_control_rep2.enrich.dhs 
-                |-- id_control_rep2.enrich.exon
-                |-- id_control_rep2.enrich.promoter
-                |-- id_control_rep2.fastq
-                |-- id_control_rep2.frip
-                |-- id_control_rep2.hist
-                |-- id_control_rep2.nochrM
-                |-- id_control_rep2.pbc
-                |-- id_control_rep2.sai
-                |-- id_control_rep2.sam
-                |-- id_control_rep2.tmp.bam
-                |-- id_control_rep2_100k.fastq
-                |-- id_control_rep2_100k_fastqc
-                |   |-- Icons
-                |   |   |-- error.png
-                |   |   |-- fastqc_icon.png
-                |   |   |-- tick.png
-                |   |   `-- warning.png
-                |   |-- Images
-                |   |   |-- duplication_levels.png
-                |   |   |-- kmer_profiles.png
-                |   |   |-- per_base_gc_content.png
-                |   |   |-- per_base_n_content.png
-                |   |   |-- per_base_quality.png
-                |   |   |-- per_base_sequence_content.png
-                |   |   |-- per_sequence_gc_content.png
-                |   |   |-- per_sequence_quality.png
-                |   |   `-- sequence_length_distribution.png
-                |   |-- fastqc_data.txt
-                |   |-- fastqc_report.html
-                |   `-- summary.txt
-                |-- id_control_rep2_100k_fastqc.zip
-                |-- id_control_rep2_4000000.bam
-                |-- id_control_rep2_4000000_nochrM.bam
-                |-- id_control_rep2_mapped.bwa
-                |-- id_control_rep2_nochrM.bam
-                |-- id_control_rep2_nochrM.sam
-                |-- id_control_rep2_nochrM.sam.4000000
-                |-- id_control_rep2_total.bwa
-                |-- id_control_rep2_u.sam
-                |-- id_control_rep2_u.sam.4000000
-                |-- id_control_rep2mbr.bam
-                |-- id_control_rep2mbr.sai
-                |-- id_control_rep2mbr.sam
-                |-- id_control_rep2mbr.tmp.bam
-                |-- id_control_rep2mbr_mapped.bwa
-                |-- id_control_rep2mbr_total.bwa
-                |-- id_gene_score.txt  ## regulatory potential for top 10000 peaks
-                |-- id_peaks.narrowPeak  ## merged peak call for narrowPeak or broadPeak
-                |-- id_peaks.xls ## macs2 excel file 
-                |-- id_peaks_top_conserv.bed  ## top peaks for conservation plot
-                |-- id_peaks_top_reg.bed  ## top peaks for regulatory potential score calculation
-                |-- id_raw_sequence_qc.R  ## median raw sequence quality plot
-                |-- id_raw_sequence_qc.pdf
-                |-- id_sort_peaks.narrowPeak ## sorted merged peak calling
-                |-- id_sort_summits.bed  ## sorted summits of peaks
-                |-- id_summary.txt  ## plain text for qc summary
-                |-- id_summits.bed  ## merged peak calling summits file
-                |-- id_treat.bw  ## merged pileup treatment bigwiggle file
-                |-- id_treat_pileup.bdg  ## merged pileup treatment bedgraph file
-                |-- id_treat_pileup.bdg.tmp  ## merged pileup treatment bedgraph temporary file
-                |-- id_treat_rep1   ## MACS2 predictd R script
-                |-- id_treat_rep1.bam  ## bam file generated by bwa and samtools
-                |-- id_treat_rep1.enrich.dhs
-                |-- id_treat_rep1.enrich.exon
-                |-- id_treat_rep1.enrich.promoter
-                |-- id_treat_rep1.fastq
-                |-- id_treat_rep1.frip
-                |-- id_treat_rep1.hist
-                |-- id_treat_rep1.nochrM
-                |-- id_treat_rep1.pbc
-                |-- id_treat_rep1.sai
-                |-- id_treat_rep1.sam
-                |-- id_treat_rep1.tmp.bam
-                |-- id_treat_rep1_100k.fastq
-                |-- id_treat_rep1_100k_fastqc
-                |   |-- Icons
-                |   |   |-- error.png
-                |   |   |-- fastqc_icon.png
-                |   |   |-- tick.png
-                |   |   `-- warning.png
-                |   |-- Images
-                |   |   |-- duplication_levels.png
-                |   |   |-- kmer_profiles.png
-                |   |   |-- per_base_gc_content.png
-                |   |   |-- per_base_n_content.png
-                |   |   |-- per_base_quality.png
-                |   |   |-- per_base_sequence_content.png
-                |   |   |-- per_sequence_gc_content.png
-                |   |   |-- per_sequence_quality.png
-                |   |   `-- sequence_length_distribution.png
-                |   |-- fastqc_data.txt
-                |   |-- fastqc_report.html
-                |   `-- summary.txt
-                |-- id_treat_rep1_100k_fastqc.zip
-                |-- id_treat_rep1_4000000.bam
-                |-- id_treat_rep1_4000000_nochrM.bam
-                |-- id_treat_rep1_control.bw
-                |-- id_treat_rep1_control_lambda.bdg
-                |-- id_treat_rep1_control_lambda.bdg.tmp
-                |-- id_treat_rep1_frag_sd.R  ## fragment analysis script for parsing macs2 R script
-                |-- id_treat_rep1_mapped.bwa
-                |-- id_treat_rep1_model.R  ## MACS2 R script for analyzing fragment size
-                |-- id_treat_rep1_nochrM.bam
-                |-- id_treat_rep1_nochrM.sam
-                |-- id_treat_rep1_nochrM.sam.4000000
-                |-- id_treat_rep1_peaks.narrowPeak  ## replicate 1 peak calling
-                |-- id_treat_rep1_peaks.xls
-                |-- id_treat_rep1_sort_peaks.narrowPeak
-                |-- id_treat_rep1_summits.bed
-                |-- id_treat_rep1_total.bwa
-                |-- id_treat_rep1_treat.bw
-                |-- id_treat_rep1_treat_pileup.bdg
-                |-- id_treat_rep1_treat_pileup.bdg.tmp
-                |-- id_treat_rep1_u.sam  ## uniquely mapping sam file, defined by mapping quality above 1
-                |-- id_treat_rep1_u.sam.4000000
-                |-- id_treat_rep1mbr.bam
-                |-- id_treat_rep1mbr.sai
-                |-- id_treat_rep1mbr.sam
-                |-- id_treat_rep1mbr.tmp.bam
-                |-- id_treat_rep1mbr_mapped.bwa
-                |-- id_treat_rep1mbr_total.bwa
-                |-- id_treat_rep2
-                |-- id_treat_rep2.bam
-                |-- id_treat_rep2.enrich.dhs
-                |-- id_treat_rep2.enrich.exon
-                |-- id_treat_rep2.enrich.promoter
-                |-- id_treat_rep2.fastq
-                |-- id_treat_rep2.frip
-                |-- id_treat_rep2.hist
-                |-- id_treat_rep2.nochrM
-                |-- id_treat_rep2.pbc
-                |-- id_treat_rep2.sai
-                |-- id_treat_rep2.sam
-                |-- id_treat_rep2.tmp.bam
-                |-- id_treat_rep2_100k.fastq
-                |-- id_treat_rep2_100k_fastqc
-                |   |-- Icons
-                |   |   |-- error.png
-                |   |   |-- fastqc_icon.png
-                |   |   |-- tick.png
-                |   |   `-- warning.png
-                |   |-- Images
-                |   |   |-- duplication_levels.png
-                |   |   |-- kmer_profiles.png
-                |   |   |-- per_base_gc_content.png
-                |   |   |-- per_base_n_content.png
-                |   |   |-- per_base_quality.png
-                |   |   |-- per_base_sequence_content.png
-                |   |   |-- per_sequence_gc_content.png
-                |   |   |-- per_sequence_quality.png
-                |   |   `-- sequence_length_distribution.png
-                |   |-- fastqc_data.txt
-                |   |-- fastqc_report.html
-                |   `-- summary.txt
-                |-- id_treat_rep2_100k_fastqc.zip
-                |-- id_treat_rep2_4000000.bam
-                |-- id_treat_rep2_4000000_nochrM.bam
-                |-- id_treat_rep2_control.bw
-                |-- id_treat_rep2_control_lambda.bdg
-                |-- id_treat_rep2_control_lambda.bdg.tmp
-                |-- id_treat_rep2_frag_sd.R
-                |-- id_treat_rep2_mapped.bwa
-                |-- id_treat_rep2_model.R
-                |-- id_treat_rep2_nochrM.bam
-                |-- id_treat_rep2_nochrM.sam
-                |-- id_treat_rep2_nochrM.sam.4000000
-                |-- id_treat_rep2_peaks.narrowPeak
-                |-- id_treat_rep2_peaks.xls
-                |-- id_treat_rep2_sort_peaks.narrowPeak
-                |-- id_treat_rep2_summits.bed
-                |-- id_treat_rep2_total.bwa
-                |-- id_treat_rep2_treat.bw
-                |-- id_treat_rep2_treat_pileup.bdg
-                |-- id_treat_rep2_treat_pileup.bdg.tmp
-                |-- id_treat_rep2_u.sam   ## uniquely mapping sam file, defined by mapping quality above 1
-                |-- id_treat_rep2_u.sam.4000000
-                |-- id_treat_rep2mbr.bam
-                |-- id_treat_rep2mbr.sai
-                |-- id_treat_rep2mbr.sam
-                |-- id_treat_rep2mbr.tmp.bam
-                |-- id_treat_rep2mbr_mapped.bwa
-                |-- id_treat_rep2mbr_total.bwa
-                `-- id_treatment.bam  ## samtools merged filtered bam files
-
+* For a fully test dataset with replicates of treatments and replicates of controls, the results folder are like following, which are generated with *-dont_remove* option, to preserve all temporary files, use *-dont_remove* option.
 
 .. _cleaner:
 
@@ -739,7 +457,293 @@ Without `--dont_remove` option, the work directory would be cleaned up::
   `-- id_treat_rep2_treat.bw
 
 
+With `--dont_remove` option,
+
+   .. code-block:: bash
+
+                   output
+                   |-- json  ## qc statistics
+                   |   |-- id_conserv.json  ## conservation scores
+                   |   |-- id_contam.json   ## library contamination evaluation
+                   |   |-- id_dhs.json      ## union dhs overlap
+                   |   |-- id_enrich_meta.json ## meta regions reads ratio
+                   |   |-- id_fastqc.json      ## fastqc evaluation
+                   |   |-- id_frag.json        ## fragment size evaluation
+                   |   |-- id_frip.json        ## FRiP scores
+                   |   |-- id_macs2.json       ## merged macs2 peak calling number
+                   |   |-- id_macs2_rep.json   ## macs2 replicates peaks number
+                   |   |-- id_map.json         ## mapping ratio statistics
+                   |   |-- id_meta.json        ## peak meta regions distribution
+                   |   |-- id_pbc.json         ## PBC score
+                   |   `-- id_rep.json         ## replicates consistency
+                   |-- latex  ## rendered latex document
+                   |   |-- id_begin.tex       
+                   |   |-- id_conserv.tex
+                   |   |-- id_contam.tex
+                   |   |-- id_end.tex
+                   |   |-- id_fastqc.tex
+                   |   |-- id_fastqc_gc.tex
+                   |   |-- id_frip.tex
+                   |   |-- id_map.tex
+                   |   `-- id_summary_table.tex
+                   |-- id.aux ## latex log file
+                   |-- id.cor ## correlation analysis temporary file
+                   |-- id.dhs ## dhs overlap analysis temporary file
+                   |-- id.log ## latex log file
+                   |-- id.meta ## meta regions peak distribution temporary file
+                   |-- id.out  ## latex log file
+                   |-- id.pdf  ## pdf document generated
+                   |-- id.tex  ## file latex file
+                   |-- id_0_1.overlap  ## replicates peak overlap
+                   |-- id_bwa_compare.R ## R script for comparing new data to historic data
+                   |-- id_bwa_compare.pdf ## pdf generated by R script above
+                   |-- id_conserv.R  ## conservation plot R code
+                   |-- id_conserv.pdf ## pdf generated by R script above
+                   |-- id_conserv.txt ## 7 or 5 point conservation scores around summits
+                   |-- id_conserv_cluster.R ## conservation scores clustering plot
+                   |-- id_conserv_compare.pdf  ## conservation pdf generated by R script above
+                   |-- id_conserv_img.pdf  ## low resolution image of conservation plot
+                   |-- id_control.bam      ## merged control bam files
+                   |-- id_control.bw       ## control bigwiggle file
+                   |-- id_control_lambda.bdg  ## control bedgraph file
+                   |-- id_control_lambda.bdg.tmp  ## bedClip filtered bedgraph file
+                   |-- id_control_rep1.bam   ## sorted, mapping quality 1 filtered replicate 1st bam file 
+                   |-- id_control_rep1.enrich.dhs   ## reads ratio in DHS regions
+                   |-- id_control_rep1.enrich.exon  ## reads ratio in exon regions
+                   |-- id_control_rep1.enrich.promoter  ## reads ratio in promoter regions
+                   |-- id_control_rep1.fastq  ## copied fastq file
+                   |-- id_control_rep1.frip   ## FRiP score from replicate control 1st
+                   |-- id_control_rep1.hist   ## read locations histogram of replicate control 1st 
+                   |-- id_control_rep1.nochrM  ## chromosome information without chrM
+                   |-- id_control_rep1.pbc  ## bwa PBC score
+                   |-- id_control_rep1.sai  ## bwa sai file
+                   |-- id_control_rep1.sam  ## bwa sam file
+                   |-- id_control_rep1.tmp.bam     ## mapping quality filtered bam files, without sorting
+                   |-- id_control_rep1_100k.fastq  ## subsampled fastq reads
+                   |-- id_control_rep1_100k_fastqc ## fastqc temporary results
+                   |   |-- Icons
+                   |   |   |-- error.png
+                   |   |   |-- fastqc_icon.png
+                   |   |   |-- tick.png
+                   |   |   `-- warning.png
+                   |   |-- Images
+                   |   |   |-- duplication_levels.png
+                   |   |   |-- kmer_profiles.png
+                   |   |   |-- per_base_gc_content.png
+                   |   |   |-- per_base_n_content.png
+                   |   |   |-- per_base_quality.png
+                   |   |   |-- per_base_sequence_content.png
+                   |   |   |-- per_sequence_gc_content.png
+                   |   |   |-- per_sequence_quality.png
+                   |   |   `-- sequence_length_distribution.png
+                   |   |-- fastqc_data.txt
+                   |   |-- fastqc_report.html
+                   |   `-- summary.txt
+                   |-- id_control_rep1_100k_fastqc.zip 
+                   |-- id_control_rep1_4000000.bam   ## subsampled 4M reads bam file
+                   |-- id_control_rep1_4000000_nochrM.bam  ## subsampled non-chrM 4M reads bam file
+                   |-- id_control_rep1_mapped.bwa  ## replicate control 1st mapped reads statistics
+                   |-- id_control_rep1_nochrM.bam  ## sorted, mapping quality filtered bam file
+                   |-- id_control_rep1_nochrM.sam  ## mapped sam files without chrM
+                   |-- id_control_rep1_nochrM.sam.4000000  ## subsampled 4M reads without chrM
+                   |-- id_control_rep1_total.bwa  ## total reads statistics from bwa
+                   |-- id_control_rep1_u.sam  ## unique reads SAM file
+                   |-- id_control_rep1_u.sam.4000000  ## subsampled unique reads SAM file
+                   |-- id_control_rep1mbr.bam  ## cross species mapping to mbr, or species you specified
+                   |-- id_control_rep1mbr.sai  
+                   |-- id_control_rep1mbr.sam
+                   |-- id_control_rep1mbr.tmp.bam
+                   |-- id_control_rep1mbr_mapped.bwa
+                   |-- id_control_rep1mbr_total.bwa
+                   |-- id_control_rep2.bam   ## control replicates 2nd bam file
+                   |-- id_control_rep2.enrich.dhs 
+                   |-- id_control_rep2.enrich.exon
+                   |-- id_control_rep2.enrich.promoter
+                   |-- id_control_rep2.fastq
+                   |-- id_control_rep2.frip
+                   |-- id_control_rep2.hist
+                   |-- id_control_rep2.nochrM
+                   |-- id_control_rep2.pbc
+                   |-- id_control_rep2.sai
+                   |-- id_control_rep2.sam
+                   |-- id_control_rep2.tmp.bam
+                   |-- id_control_rep2_100k.fastq
+                   |-- id_control_rep2_100k_fastqc
+                   |   |-- Icons
+                   |   |   |-- error.png
+                   |   |   |-- fastqc_icon.png
+                   |   |   |-- tick.png
+                   |   |   `-- warning.png
+                   |   |-- Images
+                   |   |   |-- duplication_levels.png
+                   |   |   |-- kmer_profiles.png
+                   |   |   |-- per_base_gc_content.png
+                   |   |   |-- per_base_n_content.png
+                   |   |   |-- per_base_quality.png
+                   |   |   |-- per_base_sequence_content.png
+                   |   |   |-- per_sequence_gc_content.png
+                   |   |   |-- per_sequence_quality.png
+                   |   |   `-- sequence_length_distribution.png
+                   |   |-- fastqc_data.txt
+                   |   |-- fastqc_report.html
+                   |   `-- summary.txt
+                   |-- id_control_rep2_100k_fastqc.zip
+                   |-- id_control_rep2_4000000.bam
+                   |-- id_control_rep2_4000000_nochrM.bam
+                   |-- id_control_rep2_mapped.bwa
+                   |-- id_control_rep2_nochrM.bam
+                   |-- id_control_rep2_nochrM.sam
+                   |-- id_control_rep2_nochrM.sam.4000000
+                   |-- id_control_rep2_total.bwa
+                   |-- id_control_rep2_u.sam
+                   |-- id_control_rep2_u.sam.4000000
+                   |-- id_control_rep2mbr.bam
+                   |-- id_control_rep2mbr.sai
+                   |-- id_control_rep2mbr.sam
+                   |-- id_control_rep2mbr.tmp.bam
+                   |-- id_control_rep2mbr_mapped.bwa
+                   |-- id_control_rep2mbr_total.bwa
+                   |-- id_gene_score.txt  ## regulatory potential for top 10000 peaks
+                   |-- id_peaks.narrowPeak  ## merged peak call for narrowPeak or broadPeak
+                   |-- id_peaks.xls ## macs2 excel file 
+                   |-- id_peaks_top_conserv.bed  ## top peaks for conservation plot
+                   |-- id_peaks_top_reg.bed  ## top peaks for regulatory potential score calculation
+                   |-- id_raw_sequence_qc.R  ## median raw sequence quality plot
+                   |-- id_raw_sequence_qc.pdf
+                   |-- id_sort_peaks.narrowPeak ## sorted merged peak calling
+                   |-- id_sort_summits.bed  ## sorted summits of peaks
+                   |-- id_summary.txt  ## plain text for qc summary
+                   |-- id_summits.bed  ## merged peak calling summits file
+                   |-- id_treat.bw  ## merged pileup treatment bigwiggle file
+                   |-- id_treat_pileup.bdg  ## merged pileup treatment bedgraph file
+                   |-- id_treat_pileup.bdg.tmp  ## merged pileup treatment bedgraph temporary file
+                   |-- id_treat_rep1   ## MACS2 predictd R script
+                   |-- id_treat_rep1.bam  ## bam file generated by bwa and samtools
+                   |-- id_treat_rep1.enrich.dhs
+                   |-- id_treat_rep1.enrich.exon
+                   |-- id_treat_rep1.enrich.promoter
+                   |-- id_treat_rep1.fastq
+                   |-- id_treat_rep1.frip
+                   |-- id_treat_rep1.hist
+                   |-- id_treat_rep1.nochrM
+                   |-- id_treat_rep1.pbc
+                   |-- id_treat_rep1.sai
+                   |-- id_treat_rep1.sam
+                   |-- id_treat_rep1.tmp.bam
+                   |-- id_treat_rep1_100k.fastq
+                   |-- id_treat_rep1_100k_fastqc
+                   |   |-- Icons
+                   |   |   |-- error.png
+                   |   |   |-- fastqc_icon.png
+                   |   |   |-- tick.png
+                   |   |   `-- warning.png
+                   |   |-- Images
+                   |   |   |-- duplication_levels.png
+                   |   |   |-- kmer_profiles.png
+                   |   |   |-- per_base_gc_content.png
+                   |   |   |-- per_base_n_content.png
+                   |   |   |-- per_base_quality.png
+                   |   |   |-- per_base_sequence_content.png
+                   |   |   |-- per_sequence_gc_content.png
+                   |   |   |-- per_sequence_quality.png
+                   |   |   `-- sequence_length_distribution.png
+                   |   |-- fastqc_data.txt
+                   |   |-- fastqc_report.html
+                   |   `-- summary.txt
+                   |-- id_treat_rep1_100k_fastqc.zip
+                   |-- id_treat_rep1_4000000.bam
+                   |-- id_treat_rep1_4000000_nochrM.bam
+                   |-- id_treat_rep1_control.bw
+                   |-- id_treat_rep1_control_lambda.bdg
+                   |-- id_treat_rep1_control_lambda.bdg.tmp
+                   |-- id_treat_rep1_frag_sd.R  ## fragment analysis script for parsing macs2 R script
+                   |-- id_treat_rep1_mapped.bwa
+                   |-- id_treat_rep1_model.R  ## MACS2 R script for analyzing fragment size
+                   |-- id_treat_rep1_nochrM.bam
+                   |-- id_treat_rep1_nochrM.sam
+                   |-- id_treat_rep1_nochrM.sam.4000000
+                   |-- id_treat_rep1_peaks.narrowPeak  ## replicate 1 peak calling
+                   |-- id_treat_rep1_peaks.xls
+                   |-- id_treat_rep1_sort_peaks.narrowPeak
+                   |-- id_treat_rep1_summits.bed
+                   |-- id_treat_rep1_total.bwa
+                   |-- id_treat_rep1_treat.bw
+                   |-- id_treat_rep1_treat_pileup.bdg
+                   |-- id_treat_rep1_treat_pileup.bdg.tmp
+                   |-- id_treat_rep1_u.sam  ## uniquely mapping sam file, defined by mapping quality above 1
+                   |-- id_treat_rep1_u.sam.4000000
+                   |-- id_treat_rep1mbr.bam
+                   |-- id_treat_rep1mbr.sai
+                   |-- id_treat_rep1mbr.sam
+                   |-- id_treat_rep1mbr.tmp.bam
+                   |-- id_treat_rep1mbr_mapped.bwa
+                   |-- id_treat_rep1mbr_total.bwa
+                   |-- id_treat_rep2
+                   |-- id_treat_rep2.bam
+                   |-- id_treat_rep2.enrich.dhs
+                   |-- id_treat_rep2.enrich.exon
+                   |-- id_treat_rep2.enrich.promoter
+                   |-- id_treat_rep2.fastq
+                   |-- id_treat_rep2.frip
+                   |-- id_treat_rep2.hist
+                   |-- id_treat_rep2.nochrM
+                   |-- id_treat_rep2.pbc
+                   |-- id_treat_rep2.sai
+                   |-- id_treat_rep2.sam
+                   |-- id_treat_rep2.tmp.bam
+                   |-- id_treat_rep2_100k.fastq
+                   |-- id_treat_rep2_100k_fastqc
+                   |   |-- Icons
+                   |   |   |-- error.png
+                   |   |   |-- fastqc_icon.png
+                   |   |   |-- tick.png
+                   |   |   `-- warning.png
+                   |   |-- Images
+                   |   |   |-- duplication_levels.png
+                   |   |   |-- kmer_profiles.png
+                   |   |   |-- per_base_gc_content.png
+                   |   |   |-- per_base_n_content.png
+                   |   |   |-- per_base_quality.png
+                   |   |   |-- per_base_sequence_content.png
+                   |   |   |-- per_sequence_gc_content.png
+                   |   |   |-- per_sequence_quality.png
+                   |   |   `-- sequence_length_distribution.png
+                   |   |-- fastqc_data.txt
+                   |   |-- fastqc_report.html
+                   |   `-- summary.txt
+                   |-- id_treat_rep2_100k_fastqc.zip
+                   |-- id_treat_rep2_4000000.bam
+                   |-- id_treat_rep2_4000000_nochrM.bam
+                   |-- id_treat_rep2_control.bw
+                   |-- id_treat_rep2_control_lambda.bdg
+                   |-- id_treat_rep2_control_lambda.bdg.tmp
+                   |-- id_treat_rep2_frag_sd.R
+                   |-- id_treat_rep2_mapped.bwa
+                   |-- id_treat_rep2_model.R
+                   |-- id_treat_rep2_nochrM.bam
+                   |-- id_treat_rep2_nochrM.sam
+                   |-- id_treat_rep2_nochrM.sam.4000000
+                   |-- id_treat_rep2_peaks.narrowPeak
+                   |-- id_treat_rep2_peaks.xls
+                   |-- id_treat_rep2_sort_peaks.narrowPeak
+                   |-- id_treat_rep2_summits.bed
+                   |-- id_treat_rep2_total.bwa
+                   |-- id_treat_rep2_treat.bw
+                   |-- id_treat_rep2_treat_pileup.bdg
+                   |-- id_treat_rep2_treat_pileup.bdg.tmp
+                   |-- id_treat_rep2_u.sam   ## uniquely mapping sam file, defined by mapping quality above 1
+                   |-- id_treat_rep2_u.sam.4000000
+                   |-- id_treat_rep2mbr.bam
+                   |-- id_treat_rep2mbr.sai
+                   |-- id_treat_rep2mbr.sam
+                   |-- id_treat_rep2mbr.tmp.bam
+                   |-- id_treat_rep2mbr_mapped.bwa
+                   |-- id_treat_rep2mbr_total.bwa
+                   `-- id_treatment.bam  ## samtools merged filtered bam files
+
+
+
 Built-in tools
-++++++++++++++
+=================
 * conservation_plot.py for generating conservation profiles
 * bedAnnotate.py is used to calculate meta gene distribuiton.

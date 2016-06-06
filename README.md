@@ -1,39 +1,51 @@
-Cistrome ChiLin ver. 2.0, db 1.0
-=================================
+Cistrome ChiLin
+================
+It is a python package for one-in-all solution of processing ChIP-seq and DNase-seq data.
 
-installing
-========================
-To install the tool, you will first have to cp chilin.conf to chilin.conf.filled
-and modify chilin.conf to define site-wide defaults for your system.
+Quick Start
+===============
 
-In chilin.conf, there are three main sections-- tools, references, and params.
+See if you have gcc, g++, java, R, python-dev installed (http://cistrome.org/chilin/Installation.html#dependent-software-list).
 
-In the tools section, you will have to define the absolute paths to the various
-sub-tools or modules in the analysis pipeline.
+then install through:
 
-In the references section, you will have to define the absolute paths to the
-reference files (e.g. assembly, DHS file, gene regions, etc.) for the species
-you wish to support.  Please read 'Generating Species References' below for
-information on how to generate files for your species of interest.
+``` sh
+git clone https://github.com/cfce/chilin && cd chilin
+python setup.py clean && python setup.py install -f
+```
 
-In the params section, you will have the ability to fine-tune and define
-site-wide defaults for some of the sub-tools/modules.  NOTE: the defaults
-should work for almost all installations--only make modifications only if you
-are sure!
+source virtual environment and use:
 
-After tailoring chilin.conf to suit your system's needs, simple type:
-python setup.py install
+``` sh
+source chilin_env/bin/activate
+chilin -h
+```
 
-NOTE: if you are installing system-wide, you may want to add 'sudo' in front
-of that command
+fetch `hg19` reference data, and test on `demo` data:
 
-Generating Species References
-=============================
+``` sh
+# change to default directory
+cd db
+# all hg19 reference data
+wget -c http://cistrome.org/chilin/_downloads/hg19.tgz
+wget -c http://cistrome.org/chilin/_downloads/hg19.tgz.md5 ## check md5
+md5sum -c hg19.tgz
+tar xvfz hg19.tgz
+# download mycoplasma for judgement of contamination in your samples
+wget -c http://cistrome.org/chilin/_downloads/mycoplasma.tgz
+wget -c http://cistrome.org/chilin/_downloads/mycoplasma.tgz.md5
+md5sum -c mycoplasma.tgz.md5
+tar xvfz mycoplasma.tgz
 
-Finally, don't forget to add your species to chilin.conf.
+# check all installation
+cd .. && python setup.py -l
+cd demo && bash foxa1
+```
 
+For details about the [dependency data](https://github.com/cfce/chilin/wiki/Appendix#data-details) and [software](http://cistrome.org/chilin/Installation.html#dependent-software-list)
 
-Detailed Document
-=============================
+Documentation
+================
+full documentation: http://cistrome.org/chilin
+github wiki: https://github.com/cfce/chilin/wiki
 
-cistrome chilin document: http://cistrome.org/chilin

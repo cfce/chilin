@@ -9,15 +9,17 @@ ChIP-seq Data quality and Analysis Pipeline
 
 Introduction
 ============
-* ChIP-seq experiment has been a mature and wide-spread technique for detecting the TF, histone modification and chromatin regulators distribution on the genome scale.
+* ChIP-seq experiment has been a mature and wide-spread technique for detecting the transcription factor, histone modification and chromatin regulator distribution on the genome scale. DNase-seq is a high-throughput technoque for finding the markers of open chromatin regions.
+
 * Along with the popularity of the technique and the increasingly huge number of highthroughput datasets, it may be confusing for biologists to get a quick and easy access to understand their biological meaning, and the same important thing is the unbiased judgement of the data quality. So, it's necessary for us to establish a universal and user-friendly ChIP-seq data analysis pipeline for biologists.
-* For bioinformaticians, this is one of the most extensible and flexible ChIP-seq pipeline implemented with python so far.
-* ChiLin has been used in many Cistrome related projects which generated thousands of ChIP-seq datasets.
+
+* For bioinformaticians, this may be one of the most extensible and flexible ChIP-seq and DNase-seq pipeline implemented with python so far.
+
+* ChiLin has been used in many Cistrome related projects which generated thousands of ChIP-seq and DNase-seq datasets.
 
 **Features**
 
-ChiLin_ provides a more flexible handle for understanding the ChIP-seq analysis workflow. ChiLin_ is part of the Cistrome_ project. ChiLin has been fully tested on Ubuntu, CentOS, and Mac, and validate nearly 9000 datasets on centos 6.0 with _slurm system, the metrics will be released after the publish of ChiLin paper.
-Cistrome related quality metrics will be released along with the paper.
+ChiLin_ provides a more flexible solution for understanding the ChIP-seq analysis workflow. ChiLin_ is intimately part of the Cistrome_ project. ChiLin has been fully tested on Ubuntu, CentOS, and Mac, and validate nearly 9000 datasets on centos 6.0 with slurm_ system, the metrics will be released after the publish of ChiLin paper. Cistrome related quality metrics will be released along with the paper.
 
 .. _ChiLin: http://cistrome.org/chilin
 .. _Cistrome: http://cistrome.org
@@ -25,7 +27,7 @@ Cistrome related quality metrics will be released along with the paper.
 
 * :download:`QC report Summary Table instructions<../chilin2/modules/summary/instructions.pdf>`
 
-* :download:`PDF version manual <_build/latex/ChiLin.pdf>`
+.. * :download:`PDF version manual <_build/latex/ChiLin.pdf>`
 
 * :ref:`Instructions to data analysis results<Instructions_results>`
 
@@ -52,5 +54,6 @@ Manuscript is being submitted.
 Others
 ======
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
+
+.. * :ref:`modindex`
