@@ -23,4 +23,5 @@ chilin2/modules/config/chilin.conf
 TAGS
 data
 .o*
+*.o
 chilin_env

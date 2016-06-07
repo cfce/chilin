@@ -93,8 +93,9 @@ class AbstractCommand(object):
             if missing_o:
                 return False
             return True
-        except:
+        except Exception as e:
             print("Exception encountered @", self.name)
+            print(e)
             print_command_details(self)
             raise
 
@@ -130,7 +131,8 @@ class AbstractCommand(object):
             start_with = "shell :"
         else:
             start_with = "python:"
-        self.logger.info(start_with + "\t" + "{0:+^10}".format(self.name + ' at ' + strftime("%Y-%m-%d %H:%M:%S", localtime())) + "\t" + " ".join(map(str, args)))
+        if self.logger:
+            self.logger.info(start_with + "\t" + "{0:+^10}".format(self.name + ' at ' + strftime("%Y-%m-%d %H:%M:%S", localtime())) + "\t" + " ".join(map(str, args)))
 
     def _execute(self):
         """
@@ -172,7 +174,8 @@ class AbstractCommand(object):
                     continue
             return missing
         except:
-            self.logger.error("Exception encountered @", self.name, self.template)
+            if self.logger:
+                self.logger.error("Exception encountered @", self.name, self.template)
             raise
 
     @property
@@ -242,7 +245,6 @@ class AbstractCommand(object):
 class ShellCommand(AbstractCommand):
     def __init__(self, template=None, tool=None, param={}, input=[], output=[], name=""):
         AbstractCommand.__init__(self, template, tool, param, input, output, name)
-
         self.fetch_output = False
 
     def _simulate(self):
@@ -332,7 +334,8 @@ class PythonCommand(AbstractCommand):
         try:
             self.template(input=self.input, output=self.output, param=self.param) ## in case python internal error
         except Exception as e:
-            self.logger.error(e)
+            if self.logger:
+                self.logger.error(e)
         return True
 
 

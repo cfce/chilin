@@ -64,9 +64,13 @@ def template_dump(jinja_template):
         f.write(jinja_template.result)
 
 def r_exec(jinja_template_r):
-    ShellCommand(template="Rscript {input}",
+    ShellCommand("{tool} {input}",
+        tool = "Rscript",
+        name = 'Rscript',
         input=jinja_template_r.param["render_dump"],
+        param={},
         output=jinja_template_r.param["pdf"]).invoke()
+
 
 def json_dump(json_dict):   # json
     """

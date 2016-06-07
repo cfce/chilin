@@ -31,6 +31,7 @@ def stat_fastqc(workflow, conf):  # collect raw reads quality and GC contents
     if conf.long:  ## prepare long document images and tex
         long_collect = attach_back(workflow,
                     PythonCommand(fastqc_detailed_figure,
+                      name = 'fastqc',
                       input = {"dbaccessor": resource_filename("chilin2.modules.dbaccessor", "ChiLinQC.db"),
                                "template": resource_filename("chilin2.modules.summary", "R_culmulative_plot.R"), 
                                "json": conf.json_prefix + "_fastqc.json"},

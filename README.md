@@ -7,10 +7,15 @@ Quick Start
 
 See if you have gcc, g++, java, R, python-dev installed (http://cistrome.org/chilin/Installation.html#dependent-software-list).
 
-then install through:
+First, clone:
 
 ``` sh
 git clone https://github.com/cfce/chilin && cd chilin
+```
+
+then install through:
+
+``` sh
 python setup.py clean && python setup.py install -f
 ```
 
@@ -23,9 +28,14 @@ chilin -h
 
 fetch `hg19` reference data, and test on `demo` data:
 
+under the root of the chilin code.
+
 ``` sh
 # change to default directory
+mkdir -p db
+
 cd db
+
 # all hg19 reference data
 wget -c http://cistrome.org/chilin/_downloads/hg19.tgz
 wget -c http://cistrome.org/chilin/_downloads/hg19.tgz.md5 ## check md5
@@ -42,10 +52,17 @@ cd .. && python setup.py -l
 cd demo && bash foxa1
 ```
 
-For details about the [dependency data](https://github.com/cfce/chilin/wiki/Appendix#data-details) and [software](http://cistrome.org/chilin/Installation.html#dependent-software-list)
+Uninstall
+===============
+
+``` sh
+python setup.py clean
+deactivate
+```
 
 Documentation
 ================
 full documentation: http://cistrome.org/chilin
+
 github wiki: https://github.com/cfce/chilin/wiki
 

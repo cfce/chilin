@@ -2,7 +2,7 @@
 Installation
 ===============
 
-The two clones are synchronized between https://github.com/cfce/chilin/ and http://cistrome.org/chilin/_downloads/chilin.tgz. We have packaged all dependent software and species-specific data into **.tar.gz**.
+The two clones are synchronized between https://github.com/cfce/chilin/. We have packaged all dependent software and species-specific data into **.tar.gz**.
 
 Before installation, make sure that you have gcc, g++, make and java in place, we provide the installation for common system for these dependency.
 
@@ -22,7 +22,7 @@ python dev header              apt-get or yum or port              prerequisites
 python setuptools              apt-get or yum or port              prerequisites 
 python numpy package           apt-get or yum or port              prerequisites 
 cython                         apt-get or yum or port              prerequisites 
-`R`_                              apt-get or yum or manually          prerequisites 
+`R`_                           apt-get or yum or manually          prerequisites 
 java/gcc/g++                   apt-get/yum install/Xcode           prerequisites 
 `ghostscript`_                 apt-get or yum or manually          prerequisites 
 texlive-latex                  apt-get or yum or manually          prerequisites 
@@ -136,19 +136,7 @@ For mac, we suggest using `macports`_, before install macport, user need to have
 
 .. _macports: http://www.macports.org/
 
-.. note::
-
-       Install one the of dependent software `mdseqpos`_ on mac should use gcc copiler (use port) instead of llvm-gcc.
-
 Install R_, MacTex, ImageMagick_ and ghostscript_ manually.
-
-See the method to use gcc on mac instead llvm <http://stackoverflow.com/questions/8361002/how-to-use-the-gcc-installed-in-macports/8372496#8372496> and <http://stackoverflow.com/questions/837992/update-gcc-on-osx>
-
-.. code-block:: python
-
-                port search gcc
-                sudo port install gcc49
-                sudo port select --set gcc mp-gcc49
 
 Then continue to install :ref:`chilin <install_chilin>`.
 
@@ -165,22 +153,13 @@ Test and install pipeline software
 - Type "which gcc g++ java make gs convert pdflatex R cython" to check the installation.
 
 After solving the :ref:`dependent prerequisites<dependentsoft>`, install chilin as followings,
+
      .. code-block:: bash
 
-                     wget -c http://cistrome.org/chilin/_downloads/chilin.tgz
-                     # or
                      git clone http://github.com/cfce/chilin/
-
-                     tar xvfz chilin.tgz
                      cd chilin
                      python setup.py install -f
 
-
-If any error encountered, continue with
-
-.. code-block:: bash
-
-                source chilin_env/bin/activate && pip install cython numpy --upgrade && python setup.py install -f
 
 Then, check your installation::
 
@@ -197,8 +176,7 @@ Lastly, user may need to check the installation of mdseqpos dependency of R `seq
                               R -e "source('http://bioconductor.org/biocLite.R');biocLite('seqLogo');library(seqLogo)"
 
 
-
-- Remember to source your `python virtual environment` "chilin_env/bin/activate " everytime or put them into your ${HOME}/.bashrc or ${HOME}/.bash_profile.
+Remember to source your `python virtual environment` "source ${ChiLin_ROOT}/chilin_env/bin/activate" everytime or put them into your ${HOME}/.bashrc or ${HOME}/.bash_profile.
 
 .. note::
 
@@ -208,28 +186,32 @@ Lastly, user may need to check the installation of mdseqpos dependency of R `seq
 Download dependent data for hg38_, hg19_, mm9_, or mm10_
 ---------------------------------------------------------
 
+under the ChiLin source code root directory,
+
   .. code-block:: bash
 
                   # download from our cistrome server
+                  mkdir -p db
+
                   # change directory to db
                   cd db
+
                   # download the one you need, this would be over 10 GB, make sure your internet access is over 100k/s, or it's too slow..
+                  # human
                   wget -c http://cistrome.org/chilin/_downloads/hg19.tgz
                   wget -c http://cistrome.org/chilin/_downloads/hg19.tgz.md5 ## check md5
                   #wget -c http://cistrome.org/chilin/_downloads/hg38.tgz
                   #wget -c http://cistrome.org/chilin/_downloads/hg38.tgz.md5
+
+                  # mouse
                   #wget -c http://cistrome.org/chilin/_downloads/mm9.tgz
                   #wget -c http://cistrome.org/chilin/_downloads/mm9.tgz.md5
                   #wget -c http://cistrome.org/chilin/_downloads/mm10.tgz
                   #wget -c http://cistrome.org/chilin/_downloads/mm10.tgz.md5
 
-                  # check the md5sum for completeness
+                  # check the md5sum for completeness of hg19
                   md5sum -c hg19.tgz
                   tar xvfz hg19.tgz
-
-                  #tar xvfz mm9.tgz
-                  #tar xvfz mm10.tgz
-                  #tar xvfz hg38.tgz
 
                   # download mycoplasma that you are afraid of contaminating your samples
                   wget -c http://cistrome.org/chilin/_downloads/mycoplasma.tgz
@@ -239,8 +221,8 @@ Download dependent data for hg38_, hg19_, mm9_, or mm10_
 
                   # change back
                   cd ..
-     
-                  # check your data, default, if download is ok, skip `add species support in chilin`
+
+                  # check your data and software installation, if download is ok
                   python setup.py -l
 
 
@@ -252,8 +234,8 @@ Download dependent data for hg38_, hg19_, mm9_, or mm10_
 If you
 
 * want to know more about dependent data
-* want to prepare by yourself
-* you have species not in our list
+* want to prepare new version of reference data by yourself
+* you have species assembly not in our list
 
 see details about the :ref:`dependent data<dependentdata>`.
 
@@ -290,6 +272,7 @@ Test installation with demo data,
                      sbatch foxa1
 
 Check demo data results,
+
      .. code-block:: bash
 
                      du -h local/local.pdf ## quality report

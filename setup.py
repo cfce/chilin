@@ -152,9 +152,7 @@ def clean():
     """
     import os
     clean_up = os.system("""
-source chilin_env/bin/activate
 cd software
-cd bx-python && python setup.py clean --all && cd ..
 cd mdseqpos && python setup.py clean --all && cd ..
 for i in bedtools-2.17.0  bowtie  bwa samtools-0.1.19  seqtk
 do
@@ -205,16 +203,19 @@ def install():
                    "chilin2/modules/interface/sampling_pe_sam.py",
                    "chilin2/modules/interface/filter_pe_sam_faster.py",
                    "chilin2/modules/regulatory/RegPotential.py"],
-        install_requires=['jinja2','argparse','macs2','numpy','cython'])
+        install_requires=['jinja2','argparse','macs2','numpy','cython', 'bx-python'])
 
 
 def install_full():
     if not os.path.exists("chilin_env"):
 	    setup_env = subprocess.call(
 	    """
-	    python virtualenv.py -ppython2.7 --system-site-packages --distribute chilin_env
-	    python virtualenv.py -ppython2.7 --system-site-packages --distribute chilin_env --relocatable
+	    python virtualenv.py -ppython2.7  chilin_env
+	    python virtualenv.py -ppython2.7  chilin_env --relocatable
+	    #python virtualenv.py -ppython2.7 --system-site-packages --distribute chilin_env
+	    #python virtualenv.py -ppython2.7 --system-site-packages --distribute chilin_env --relocatable
 	    """, shell=True)
+
     execfile("chilin_env/bin/activate_this.py", dict(__file__="chilin_env/bin/activate_this.py"))
     setup_env = subprocess.call(
         """
@@ -261,7 +262,6 @@ def install_full():
         cd software
         cd bx-python && python setup.py install && cd ..
         cd mdseqpos && python setup.py install && cd ..
-
         which R && R -e "source('http://bioconductor.org/biocLite.R');biocLite('seqLogo');library(seqLogo)"
         """, shell=True, executable='/bin/bash')
 

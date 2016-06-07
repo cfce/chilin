@@ -35,7 +35,7 @@ def seqpos(workflow, conf):
         mdseqpos = attach_back(workflow,
                                ShellCommand(
                 """
-                if [ $(wc -l {input} |cut -f1 -d\" \") -ge 200 ]
+                if [ $(wc -l {input} | awk '{{IFS=\" \"; print $1}}') -ge 200 ]
                 then
                 echo \"peaks number larger than 200, run motif scan\"
                 {tool} -d  -w 600  -p 0.001 -g {param[genome_dir]} -m cistrome.xml -O {output[result_dir]} {input} {param[species]}

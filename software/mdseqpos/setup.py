@@ -3,6 +3,7 @@
 import os
 import sys
 import stat
+import numpy
 from distutils.core import setup, Extension
 from Cython.Distutils import build_ext
 
@@ -62,7 +63,8 @@ def main():
                                    'lib/seqpos/genomescan_Markov0_3.c',
                                    ],
                         include_dirs = ['lib/seqpos',
-                                        NUMPY_PATH + '/core/include'
+                                        #NUMPY_PATH + '/core/include'
+                                        numpy.get_include()
                                         ]
                         ),
               Extension('mdseqpos._MDmod',
@@ -70,7 +72,8 @@ def main():
                                    'lib/MDmodule/keywd.c',
                                    ],
                         include_dirs = ['lib/seqpos',
-                                        NUMPY_PATH + '/core/include'
+                                        #NUMPY_PATH + '/core/include'
+                                        numpy.get_include()
                                         ]
                         ),
               ],

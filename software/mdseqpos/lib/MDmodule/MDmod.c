@@ -486,7 +486,7 @@ static PyObject *MDmod( PyObject *self, PyObject *args, PyObject *keywds ){
 */
 
   if (!PyArg_ParseTupleAndKeywords( args, keywds, "O!O!|iiiiiis", kwlist, &PyList_Type, &(input.isp), &PyList_Type, &(input.bsp), &(input.w), &(input.bgmkv), &(input.top), &(input.scan), &(input.iterate),  &(input.report), &(input.seed) ))
-     return;
+     return NULL;
 
   gettimeofday(&begintv, NULL);
   initRand();
@@ -2734,6 +2734,6 @@ int main(int argc, char *argv[]){
     t = Py_BuildValue( "OO", seq, seq );
     MDmod( NULL, t, NULL );
 
-    return;
+    return 0;
 }
 
