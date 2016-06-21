@@ -210,10 +210,8 @@ def install_full():
     if not os.path.exists("chilin_env"):
 	    setup_env = subprocess.call(
 	    """
-	    python virtualenv.py -ppython2.7  chilin_env
-	    python virtualenv.py -ppython2.7  chilin_env --relocatable
-	    #python virtualenv.py -ppython2.7 --system-site-packages --distribute chilin_env
-	    #python virtualenv.py -ppython2.7 --system-site-packages --distribute chilin_env --relocatable
+            python virtualenv.py -ppython2.7 chilin_env 
+	    python virtualenv.py -ppython2.7 --system-site-packages --distribute chilin_env
 	    """, shell=True)
 
     execfile("chilin_env/bin/activate_this.py", dict(__file__="chilin_env/bin/activate_this.py"))
@@ -235,8 +233,7 @@ def install_full():
     if platform.system() == 'Linux':
         setup_env = subprocess.check_call(
             """
-            cp chilin2/chilin chilin_env/bin/
-            . chilin_env/bin/activate
+            source chilin_env/bin/activate
             cd software
             chmod 755 ucsc/linux/*
             cp -f ucsc/linux/* ../chilin_env/bin
@@ -245,7 +242,7 @@ def install_full():
     else:
         setup_env = subprocess.check_call(
             """
-            . chilin_env/bin/activate
+            source chilin_env/bin/activate
             cd software
             chmod 755 ucsc/mac/*
             cp -f ucsc/mac/* ../chilin_env/bin
@@ -260,7 +257,6 @@ def install_full():
         source chilin_env/bin/activate
         python setup.py install
         cd software
-        cd bx-python && python setup.py install && cd ..
         cd mdseqpos && python setup.py install && cd ..
         which R && R -e "source('http://bioconductor.org/biocLite.R');biocLite('seqLogo');library(seqLogo)"
         """, shell=True, executable='/bin/bash')

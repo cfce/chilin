@@ -1,30 +1,11 @@
-%% Bowtie is an ultrafast, memory-efficient alignment program for aligning short DNA sequence reads to large genomes.\footnote{Langmead B, Trapnell C, Pop M, Salzberg SL: Ultrafast and memory-efficient alignment of short DNA sequences to the human genome. Genome Biology 2009, 10(3):R25}
-%% Short DNA sequence reads sample: AAAGGGCTGAGCTGAATGACTCAT.
-%% Total reads: all reads sequenced in one ChIP-seq experiment.
-%% Mappable reads: reads can align to large genomes when 2 mismatches at most allowed.
-%% Unique mappable reads: reads that can only map to one location.
-%% Unique mappable locations: locations that can only be mapped %% by one read.
-%% Unique reads ratio: percentage of unique mappable reads in mappable reads. The bigger the percentage is, the better.For QC judgement, Here we set 5 mega as a cutoff for unique mappable reads. if unique mappable reads is more than 5 mega, the datasets can pass mapping QC.(Table ~\ref{basicqc})
-%% \begin{table}[h!]
-%% \caption{Basic QC statistics} \label{basicqc}
-%% \begin{tabular}{ lllc }
-%% \hline
-%% Sample & Total reads & Unique Mappable reads & Unique Mappable rate \\
-%% \hline
-%% \BLOCK{ for line in basic_map_table }
-%% \VAR{line|join(' & ')} \\
-%% \BLOCK{ endfor }
-%% \hline
-%% \end{tabular}
-%% \end{table}
-%# -------mappable reads ratio---------
-\section*{Basic mapping QC statistics}
-We draw the cumulative percentage plot of the mappability rate of all historic data and show how your new data compare.(Figure: ~\ref{fig:mappinratio}). 
-The mappability rate is defined by the number of aligned reads divided by the number of total reads.  In this plot, the x axis is the mappable rates and the y axis represents the percentage of this mappable rate among all the data.  
+\part{Basic mapping QC statistics}
+We draw the cumulative percentage plot of the mappability rate of all historic data and show how your new data compare.(Figure: ~\ref{fig:mappinratio}).
+The mappability rate is defined by the number of aligned reads divided by the number of total reads.  In this plot, the x axis is the mappable rates and the y axis represents the percentage of this mappable rate among all the data. Three color range represent good, medium, and bad quality region.
 \begin{figure}[h]
 \setlength{\abovecaptionskip}{0pt}
 \setlength{\belowcaptionskip}{1pt}
 \caption{Mappable reads ratio} \label{fig:mappinratio}
 \centering
-    {\includegraphics[width=0.5\textwidth]{\VAR{mappable_ratio_graph}}}
+    {\includegraphics[width=0.6\textwidth]{\VAR{mappable_ratio_graph}}}
 \end{figure}
+\newpage

@@ -69,13 +69,15 @@ def latex_summary_table(input, output, param):
 
 
 def summary_table_latex(workflow, conf):
+    n = len(conf.sample_bases)
+    width = 1/float(n+1)-0.05
     summary_tab = attach_back(workflow,
          PythonCommand(
              latex_summary_table,
              input={"template": resource_filename("chilin2.modules.summary", "summary_table.tex")},
              output={"latex": conf.latex_prefix + "_summary_table.tex"},
              param={"conf": conf,
-                    "layout": "l"+"c"*(1+len(conf.sample_bases))}))
+                    "layout": "m{%s\\linewidth}"%(width)+">{\\centering\\arraybackslash}m{%s\\linewidth}"%(width)*(len(conf.sample_bases))}))
     summary_tab.allow_fail = True
     summary_tab.allow_dangling = True
 

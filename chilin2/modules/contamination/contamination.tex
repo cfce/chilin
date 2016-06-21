@@ -1,9 +1,7 @@
-%%#\section*{Reads Genomic Mapping QC measurement}
-%Modern high throughput sequencers can generate tens of millions of sequences in a single run. Before analysing this sequence to draw biological conclusions you should always perform some simple quality control checks to ensure that the raw data looks good and there are no problems or biases in your data which may affect how you can usefully use it.
-
-\section*{Library contamination}
+\part{Library contamination}
 To check for cross-species contamination of the sample, we randomly select 100K reads from your files, and try to map it to the species defined in the contamination module (in the configuration file).  We report the mapping rates (of the random sub-sample) for the various species.(Table ~\ref{libcontamin})
 \begin{table}[H]
+\centering
 \caption{Library contamination}\label{libcontamin}
 \begin{tabular}{\VAR{layout}}
 \hline

@@ -52,6 +52,14 @@ cd .. && python setup.py -l
 cd demo && bash foxa1
 ```
 
+Update the configuration
+==============================
+If you modify the code or update any part of the configuration file *chilin.conf.filled*, such as different aligner's genome index, union DHS BED file, reinstall the package itself only.
+
+``` sh
+source chilin_env/bin/activate && python setup.py install 
+```
+
 Uninstall
 ===============
 

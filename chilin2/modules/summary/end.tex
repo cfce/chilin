@@ -1,4 +1,55 @@
 %# Summary QC -----------
 %- if section_name == "ending"
+\appendix
+\part{QC result instruction}
+\begin{enumerate}
+\item{\textbf{FastQC} is the sample's median sequence quality scores. ChiLin calculates these scores using the FastQC software\footnote{http://www.bioinformatics.babraham.ac.uk/projects/fastqc/}. A good sequence quality score is $\geq$ 25.}
+\item{\textbf{Original total reads} is the sample's raw total reads number.}
+\item{\textbf{Uniquely mapped reads} is the number of reads with mapping quality above 1. First, ChiLin aligns reads onto user-specified genomes. Then, it filters the SAM files. The uniquely mapped RATIO is the uniquely mapped reads divided by the total reads. A good uniquely mapped ratio is $\geq$ 60$\%$}.
+\item{\textbf{Unique locations of 4M reads} is the number of genomic locations with one or more uniquely mapped reads (unique locations) from sub-sampled 4M reads. Unique locations ratio unique locations number divided by total number of uniquely mapped reads. ChiLin estimates NRF by dividing the number of unique locations by 4M sampled uniquely mapped reads. If reads are less than 4M, then ChiLin uses the total reads instead. ChiLin reports number of unique locations and the unique locations ratio. A good unique locations of 4M reads should be $\geq$ 70$\%$. }
+\item{\textbf{Locations with only 1 read from 4M reads number (ratio)} is the number of locations with read number equal to 1 (N1). The ratio is N1 divided by 4M reads unless the total reads is less than 4M, in which case the total reads is used. A good score for this metric is $>$ 70$\%$.}
+\item{\textbf{PBC of 4M reads} is N1 (see 5) divided by unique locations (see 4). A good PBC score is $\geq$ 80$\%$.}
+  
+% \item{ENCODE metrics}: \href{}{4M reads PBC, FRiP, NSC,RSC, Qtag} are standard ENCODE ChIP-seq metrics for understanding library complexity and signal enrichment,but ours are more comparable with all sampling down to 4 million reads.
+% \item{\textbf{NSC\footnote{ENCODE} of 4M reads} is the normalized strand cross-correlation coefficient. NSC is calculated as: $NSC=\frac{cc(fragment length)}{min(cc)}$, where cc is the cross-correlation. A good NSC score should be $\geq$ 1.1. This score is not useful for histone marks, such as H3K27me3.}
+% \item{\textbf{RSC\footnote{ENCODE} of 4M reads} is the relative strand cross-correlation coefficient. RSC is calculated as: $RSC=\frac{cc(fragment length)-min(cc)}{cc(read length)-min(cc)}$, where cc is the cross-correlation. A good RSC score should be $\geq$ 1.0.}
+% \item{\textbf{Qtag\footnote{ENCODE} of 4M reads} is a thresholded version of RSC. Qtag is defined by the following step function: RSC $\in {0, 0.25} $, QC $=$ -2; RSC $\in$ {0.25, 0.50}, QC $=$ -1; RSC $\in {0.50, 1.00} $, QC $=$ 0; RSC $\in$ {1, 1.50}, QC = 1; RSC $>$ 1.5, QC $=$ 2. A good Qtag score is $\geq$ 1. The Qtag scores of the IP samples should be larger than the control samples.}
+\item{\textbf{Fragment size of 4M reads} is in silico estimation of your size selection through maximum cross correlation. The estimation should to be close to the size selected in your experiment.}
+\item{\textbf{Exon/DHS/Promoter ratio of 4M reads} is the estimated ratio of reads falling in these regions (from a 4M reads sub-sample). Exons regions are defined as the merged exons regions from the RefSeq gene table. Promoter regions are defined as the RefSeq TSS +/- 2kb regions. Union DHS regions are called from ENCODE II UW DNase-seq Hypersensitive regions. The IP group samples should have higher reads ratios than the control group samples.}
+
+\item{\textbf{FRiP\footnote{ChIP-seq guidelines and practices of the ENCODE and modENCODE consortia} of 4M non-chrM reads} is used for evaluating the signal to noise ratio. First, ChiLin removes chrM reads from the total reads. Then ChiLin sub-samples 4M of these reads. Finally, it calculates the ratio of the sub-sample which fall under the called peaks. A good FRiP score is $\geq$ 1$\%$}.
+
+ \item{\textbf{Replicates total peaks} are the total peaks number called by MACS2 with fixed extension size and q value cutoff. A good peaks number depends on your experiment.}
+ \item{\textbf{Replicates 10 fold confident peaks} are the number of peaks called by MACS2 where the fold change is $\geq$ 10.}
+ \item{\textbf{Replicates 20 fold confident peaks} are the number of peaks called by MACS2 where the fold change is $\geq$ 20.}   
+
+ \item{\textbf{Replicates reads correlation} is the whole genome reads pearson correlation for all replicates with resolution 146. A good correlation score is $\geq$ 0.6.}
+ \item{\textbf{Replicates peaks overlap} is the replicates peaks overlapping number.}
+
+ \item{\textbf{Top peaks not overlap with blacklist regions ratio} is the ratio of the merged top 5000 peaks (ordered by MACS2 -log (qvalue)) which do not overlap with blacklist region\footnote{https://sites.google.com/site/anshulkundaje/projects/blacklists}. This is expected to be $\geq$ 90$\%$.}
+   
+ \item{\textbf{Top peaks overlap with union DHS number (ratio)} is the ratio of the merged top 5000 peaks (ordered by MACS2 -log (qvalue)) which overlap with union DHS regions. Union DHS regions are obtained from ENCODE II UW DNase-seq Hypersensitive regions. The union DHS regions was collected from 122 human datasets or 53 mouse datasets, we do not have union DHS of other species. Union DHS generation methods is consisted of three steps: 1.for peaks length longer than 300bp, trim macs2 peaks length to 300bp around macs2 summits, 2.if less than 300bp, preserve the original length, 3.merge the peaks overlap each other. This is expected to be $\geq$ 70$\%$.}
+
+ \item{\textbf{Exon/Intron/Integenic/Promoter ratio of peak summits} is calculated using the summits of the merged peaks. ChiLin reports the ratio of overlap with exon, intron, intergenic, and promoter regions for these summits.\newline}
+   We list the background Exon/Intron/Integenic/Promoter ratio here: \newline
+   \begin{center}
+   \begin{tabular}{ccccc}
+     \toprule
+     Assembly & Exon & Intron & Intergenic & Promoter \\
+     \midrule
+     hg19 & 1.92$\%$ & 36.39$\%$ & 58.37$\%$ & 3.32$\%$ \\
+     \midrule
+     hg38 & 1.95$\%$ & 36.30$\%$ & 58.27$\%$ & 3.47$\%$ \\
+     \midrule
+     mm9 & 1.91$\%$ & 32.28$\%$ & 62.38$\%$ & 3.44$\%$ \\
+     \midrule
+     mm10 & 1.91$\%$ & 32.48$\%$ & 62.14$\%$ & 3.46$\%$ \\
+     \bottomrule
+   \end{tabular}
+   \end{center}
+
+ \item{\textbf{Top peaks conservation plot} is the Phastcons conservation scores distribution around +/- 2kb of the top 5000 merged peak summits. Phastcons conservation scores are from placental mammals multiple alignment. For TFs and active histone mark the plot should be shown as a sharp peak in the center.}
+ \item{\textbf{Top peaks motif analysis} is the motif analysis performed on the top 5000 merged peak summits. These summits are used for discovering highly enriched motifs with MDSeqPos.}, {\bf Z-score}: a statistical measure of the motif credibility. A good motif will usuaull have a z-score of less than -15. {\bf Hits}: number of times the motif occurs in the top 1000 regions. \\*
+\end{enumerate}
 \end{document}
 %- endif

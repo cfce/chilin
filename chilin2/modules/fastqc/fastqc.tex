@@ -1,27 +1,9 @@
-%%
-%%
-%% \begin{table}[H]
-%% \caption{FastQC measurement}\label{fastqctable}
-%% \begin{tabular}{lllc}
-%% \hline
-%% Sample name & Sequence length & Sequence quality score \\
-%% \hline
-%% \BLOCK{ for line in fastqc_table }
-%% \VAR{line|join(' & ')} \\
-%% \BLOCK{ endfor }
-%% \hline
-%% \end{tabular}
-%% \end{table}
-
-
-\section*{FastQC score distribution}
-The FastQC score is a score of sequence quality.  This score will help you determine whether there were problems in sequencing the sample.  The higher the score the better.
-\subsection*{Figure 1: FastQC score distribution}
+\part{FastQC}
+\section{FastQC score distribution}
 We draw the cumulative percentage plot of the FastQC sequence quality scores of all historic data and show how your new data compare(Figure ~\ref{fastqcplot}).
 \begin{figure}[ht]
-
 \caption{FastQC score distribution plot} \label{fastqcplot}
 \centering
-{\includegraphics[width=0.5\textwidth]{\VAR{fastqc_graph}}}
+{\includegraphics[width=0.6\textwidth]{\VAR{fastqc_graph}}}
 \end{figure}
 \newpage

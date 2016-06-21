@@ -166,32 +166,32 @@ def summary_table(conf):
     if exist(js):
         stat = _stat(js)
         table.append(
-            ["Top peaks not overlap with blacklist regions ratio"] + ['\multicolumn{%s}{c}{%s}' % (str(len(conf.sample_bases)), decimal_to_latex_percent(stat))])
+            ["Top peaks not overlap with blacklist regions ratio"] + ['\multicolumn{%s}{c}{\parbox[c][][c]{2.2cm}{%s}}' % (str(len(conf.sample_bases)), decimal_to_latex_percent(stat))])
 
     js = pre + "_dhs.json"
     if exist(js):
         stat = _stat(js)
         table.append(
-            ["Top peaks overlap with union DHS number (ratio)"] + ['\multicolumn{%s}{c}{%s (%s) }' % (str(len(conf.sample_bases)), stat["overlap"], decimal_to_latex_percent(float(stat["overlap"])/stat["number"]))])
+            ["Top peaks overlap with union DHS number (ratio)"] + ['\multicolumn{%s}{c}{\parbox[c][][c]{2.2cm}{%s (%s)}}' % (str(len(conf.sample_bases)), stat["overlap"], decimal_to_latex_percent(float(stat["overlap"])/stat["number"]))])
 
     js = pre + "_meta.json"
     if exist(js):
         stat = _stat(js)
-        table.append(["Exon/Intron/Intergenic/Promoter ratio of peak summits"] + ['\multicolumn{%s}{c}{%s}' % (str(len(conf.sample_bases)), "/".join(map(decimal_to_latex_percent, [stat["exon"], stat["intron"], stat["inter"], stat["promoter"]])))])
+        table.append(["Exon/Intron/Intergenic/Promoter ratio of peak summits"] + ['\multicolumn{%s}{c}{\parbox[c][][c]{2.2cm}{%s}}' % (str(len(conf.sample_bases)), "/".join(map(decimal_to_latex_percent, [stat["exon"], stat["intron"], stat["inter"], stat["promoter"]])))])
 
     js = pre + "_conserv.json"
     if exist(js):
         stat = _stat(js)
-        table.append(["Top peaks conservation plot"] + ['\multicolumn{%s}{c}{\includegraphics[scale=0.21]{%s}}\\' % (str(len(conf.sample_bases)), conf.prefix + "_conserv.pdf")])
+        table.append(["Top peaks conservation plot"] + ['\multicolumn{%s}{c}{\parbox[c][][c]{2in}{\includegraphics[scale=0.25]{%s}}}\\' % (str(len(conf.sample_bases)), conf.prefix + "_conserv.pdf")])
 
     js = pre + "_seqpos.json"
     if exist(js):
         stat = _stat(js)['satisfied_motifs']
         ## multicolumn of latex motif row
         try:
-            table.append(["Top peaks motif analysis"] + ['\multicolumn{%s}{c}{%s}' % (str(len(conf.sample_bases)), ' , '.join(stat[0]['factors']) + " "+ str(round(stat[0]['seqpos_results']['zscore'], 1)))])
+            table.append(["Top peaks motif analysis"] + ['\multicolumn{%s}{c}{\parbox[c][][c]{2in}{%s}}' % (str(len(conf.sample_bases)), ' , '.join(stat[0]['factors']) + " "+ str(round(stat[0]['seqpos_results']['zscore'], 1)))])
         except IndexError:
-            table.append(["Top peaks motif analysis"] + ['\multicolumn{%s}{c}{%s}' % (str(len(conf.sample_bases)), "No significant motif found")])
+            table.append(["Top peaks motif analysis"] + ['\multicolumn{%s}{c}{\parbox[c][][c]{2.2cm}{%s}}' % (str(len(conf.sample_bases)), "No significant motif found")])
             pass
 
     return table

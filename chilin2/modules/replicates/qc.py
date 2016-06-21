@@ -32,3 +32,4 @@ def json_reps(input, output, param):
     json_dict['stat']['cor'] = [ float(i.strip().split()[2]) for i in open(input['cor']).readlines() ]
     json_dict["stat"]['overlap'] = [ float(open(i).read().strip()) for i in input['overlap'] ]
     json_dump(json_dict)
+

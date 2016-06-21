@@ -1,20 +1,12 @@
-%%
-% \documentclass[11pt,a4paper,oneside]{report}
-% \usepackage{hyperref}
-% \begin{document}
+\part{Summary Table}
 
-
-\section*{Summary Table}
-
-\begin{table}[H]\scriptsize
+\begin{table}[H]\footnotesize
     \centering
 \begin{tabular}{\VAR{layout}} \toprule
 \BLOCK{ for line in summary_table }
 \VAR{line|join(' & ')} \\
 \midrule
 \BLOCK{ endfor }
-\bottomrule
-
 \end{tabular}
 \end{table}
 \newpage
