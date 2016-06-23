@@ -9,8 +9,8 @@
 
 #SBATCH --mem=10600  #Memory per node in MB (see also --mem-per-cpu)
 
-#SBATCH -o foxa1-%A_%a.out
-#SBATCH -J foxa1-%A_%a.err
+#SBATCH -o S11-%A_%a.out
+#SBATCH -J S11-%A_%a.err
 
 source ../chilin_env/bin/activate
-chilin simple -u qinq -s hg19 --threads 12 -i local -o local -t GSM392049/SRR038978.fastq,GS -c foxa1_c1.fastq.gz,foxa1_c1.fastq.gz -p narrow -r tf --dont_remove
+chilin simple -u qinq -s mm10 --threads 8 -i RAG2_S11 -o S11 -t GSM530318/SRR039351.fastq -p narrow -r tf --dont_remove

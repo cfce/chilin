@@ -106,7 +106,8 @@ class ChiLinConfig(ConfigParser):
     def to_abs_path(self, path):
         abs_path = path
         if not os.path.isabs(path):
-            abs_path = os.path.join(self.root_dir, abs_path)
+            #abs_path = os.path.join(self.root_dir, abs_path)
+            abs_path = os.path.abspath(abs_path)
         return abs_path
 
     @property

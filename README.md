@@ -68,6 +68,11 @@ python setup.py clean
 deactivate
 ```
 
+Troubleshooting
+==================
+
+If any error of the dependent software occur, try to upgrade the corresponding software.
+
 Documentation
 ================
 full documentation: http://cistrome.org/chilin

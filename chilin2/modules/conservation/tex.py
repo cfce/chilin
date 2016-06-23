@@ -7,13 +7,14 @@ from chilin2.modules.config.helpers import JinjaTemplateCommand, template_dump, 
 from pkg_resources import resource_filename
 
 def latex_conservation(input, output, param):
-    latex = JinjaTemplateCommand(
-        name = "conservation",
-        template = input["template"],
-        param={"conservation_compare_graph": param["prefix"] + "_conserv_compare.pdf",
-               "conservation_graph": param["prefix"] + "_conserv_img.png",
-               "render_dump": output["latex"]})
-    template_dump(latex)
+    if os.path.exists(param["prefix"] + "_conserv_compare.pdf"):
+        latex = JinjaTemplateCommand(
+            name = "conservation",
+            template = input["template"],
+            param={"conservation_compare_graph": param["prefix"] + "_conserv_compare.pdf",
+                   "conservation_graph": param["prefix"] + "_conserv_img.png",
+                   "render_dump": output["latex"]})
+        template_dump(latex)
 
 def tex_conserv(workflow, conf):
     tex = attach_back(workflow,

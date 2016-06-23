@@ -1,0 +1,19 @@
+\begin{thebibliography}{1}
+
+\bibitem{Velcro}
+ENCODE consortium.
+\newblock blacklists.
+\newblock {\em
+  https://sites.google.com/site/anshulkundaje/projects/blacklists}, 2012.
+
+\bibitem{FastQC}
+FastQC.
+\newblock http://www.bioinformatics.babraham.ac.uk/projects/fastqc/.
+
+\bibitem{Landt2012}
+SG~Landt and GK~Marinov.
+\newblock {ChIP-seq guidelines and practices of the ENCODE and modENCODE
+  consortia}.
+\newblock {\em Genome \ldots}, (Park 2009):1813--1831, 2012.
+
+\end{thebibliography}

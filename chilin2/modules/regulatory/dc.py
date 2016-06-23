@@ -11,7 +11,7 @@ def reg_potential(workflow, conf):
         get_fold5_peaks = attach_back(workflow, 
                                       ShellCommand(
                                         """
-                                        {tool} \'($1 != "chr" && $1 !="#" && $8>=5)\' {input} | awk \'($1,$2,$3,$10,$9)\' -f 1,2,3,10,9 > {output}
+                                        {tool} \'($1 != "chr" && $1 !="#" && $8>=5)\' {input} | awk \'{{OFS="\\t"; print $1,$2,$3,$10,$9}}\' > {output}
                                         """,
                                         tool = 'awk',
                                         input = conf.prefix + '_peaks.xls',

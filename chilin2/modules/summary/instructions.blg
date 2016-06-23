@@ -1,0 +1,49 @@
+This is BibTeX, Version 0.99c (TeX Live 2009/Debian)
+The top-level auxiliary file: instructions.aux
+The style file: plain.bst
+Database file #1: ref.bib
+Warning--empty journal in FastQC
+Warning--empty year in FastQC
+Warning--there's a number but no volume in Landt2012
+You've used 3 entries,
+            2118 wiz_defined-function locations,
+            513 strings with 4323 characters,
+and the built_in function-call counts, 776 in all, are:
+= -- 74
+> -- 27
+< -- 0
++ -- 11
+- -- 8
+* -- 50
+:= -- 141
+add.period$ -- 8
+call.type$ -- 3
+change.case$ -- 13
+chr.to.int$ -- 0
+cite$ -- 6
+duplicate$ -- 31
+empty$ -- 64
+format.name$ -- 8
+if$ -- 152
+int.to.chr$ -- 0
+int.to.str$ -- 3
+missing$ -- 3
+newline$ -- 17
+num.names$ -- 6
+pop$ -- 16
+preamble$ -- 1
+purify$ -- 10
+quote$ -- 0
+skip$ -- 19
+stack$ -- 0
+substring$ -- 46
+swap$ -- 2
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 12
+warning$ -- 3
+while$ -- 8
+width$ -- 4
+write$ -- 30
+(There were 3 warnings)

@@ -13,11 +13,16 @@ def summary_table(conf):
     exist = os.path.exists
     pre = conf.json_prefix
     samples = conf.sample_bases
+    print(conf.control_targets)
 
     ## summary table header
-    table.append(["Metrics ",
-                  "&".join(['treat' + str(i) for i in range(1, len(conf.treatment_targets)+1)]),
-                  "&".join([ 'control' + str(i) for i in range(1, len(conf.control_targets)+1)])])
+    if len(conf.control_targets) > 0:
+        table.append(["Metrics ",
+                      "&".join(['treat' + str(i) for i in range(1, len(conf.treatment_targets)+1)]),
+                      "&".join(['control' + str(i) for i in range(1, len(conf.control_targets)+1)])])
+    else:
+        table.append(["Metrics ",
+                      "&".join(['treat' + str(i) for i in range(1, len(conf.treatment_targets)+1)])])
 
     js = pre + "_fastqc.json"
     ## not skip fastqc and do exist json file
