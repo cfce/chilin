@@ -26,6 +26,7 @@ ChiLin_ provides a more flexible solution for understanding the ChIP-seq analysi
 .. _slurm: https://computing.llnl.gov/linux/slurm/
 
 * :download:`QC report Summary Table instructions<../chilin2/modules/summary/instructions.pdf>`
+* :download:`demo reports<FileS.tgz>`
 
 .. * :download:`PDF version manual <_build/latex/ChiLin.pdf>`
 

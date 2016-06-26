@@ -80,10 +80,11 @@ Data Name                       Used by                Data Source
 Mycoplasma genome
 ---------------------
 
-It seems that Mycoplasma_ contamination would be a major source of contamination, so we recommended downloading the Mycoplasma fasta for indexing, data is in the link of the `mycoplasma genome`_.
+It seems that Mycoplasma_ contamination would be a major source of contamination, so we recommended downloading the Mycoplasma fasta for indexing, data is in the link of the `mycoplasma genome`_. Or look at `NCBI Nucleotide database`_.
 
 .. _Mycoplasma: http://www.biodatamining.org/content/7/1/3/abstract?utm_campaign=22_05_14_BioDataMining_ArticleMailing_EBM_PA_REG_BMCUP&utm_content=8772920153&utm_medium=BMCemail&utm_source=Emailvision
 .. _mycoplasma genome: http://mycoplasma.genome.uab.edu/genomes.asp
+.. _NCBI Nucleotide database: http://www.ncbi.nlm.nih.gov/nuccore/108885074?report=fasta
 
 Then index with `bwa index -a is mycoplasma.fasta`.
 
