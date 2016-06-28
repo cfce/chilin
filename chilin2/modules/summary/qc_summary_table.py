@@ -5,7 +5,6 @@ from pkg_resources import resource_filename
 from chilin2.modules.summary.qc_json_summary import summary_table
 
 
-
 def latex_environ(workflow, conf):
     """
     write out begin and end document
@@ -52,7 +51,7 @@ def merge_latex(workflow, conf):
     merge_cmd = attach_back(workflow,
                             ShellCommand(
                                 "cat {param[tex]} > {output}",
-                                output=conf.prefix + ".tex"))
+                                output=conf.prefix + "_report.tex"))
     merge_cmd.allow_fail = True
     merge_cmd.param = {"tex": " ".join(latex_list)}
 
@@ -92,11 +91,12 @@ def render_pdf(workflow, conf, long = True):
                     "{tool} -output-directory {output[dir]} -jobname={param[name]} {input} \
                     && {tool} -output-directory {output[dir]} -jobname={param[name]} {input}",
                     tool="pdflatex",
-                    input=conf.prefix + ".tex",
+                    input=conf.prefix + "_report.tex", 
                     # output[pdf] should use "conf.prefix" to have the absolute path
-                    output={"dir": conf.target_dir, "pdf": conf.prefix + ".pdf"},
+                    output={"dir": conf.target_dir, "pdf": conf.prefix + "_report.pdf"},
                     # param[name] should use "conf.id" to avoid using absolute path
-                    param={"name": conf.id},
+                    param={"name": conf.id + "_report"},
                     name="report"))
 
     render.allow_fail = True
+

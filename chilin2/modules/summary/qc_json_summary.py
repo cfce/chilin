@@ -28,7 +28,14 @@ def summary_table(conf):
     ## not skip fastqc and do exist json file
     if exist(js):
         stat = _stat(js)
-        table.append(["FastQC"] + [stat[s]["median"] for s in samples])
+        fastqc = ["FastQC"]
+        for s in samples:
+            fastqc_s = stat[s]['median']
+            if  fastqc_s >= 25:
+                fastqc.append("\color{blue} %s" % fastqc_s)
+            else:
+                fastqc.append("\color{red} %s" % fastqc_s)
+        table.append(fastqc)
 
     ## not skip fastqc and do exist json file
     mapped = None
@@ -36,12 +43,23 @@ def summary_table(conf):
     if exist(js):
         stat = _stat(js)
         if conf.pe:
-            table.append(["Original total reads (PE)"] + [ count_in_million(stat[s]["total"]) for s in samples ])
-            table.append(["Unique mapped reads (PE)"] + [ "%s (%s)" % (count_in_million(stat[s]["mapped"]), decimal_to_latex_percent(float(stat[s]["mapped"])/stat[s]["total"])) for s in samples ])
+            labels = '(PE)'
         else:
-            table.append(["Original total reads"] + [ count_in_million(stat[s]["total"]) for s in samples ])
-            table.append(["Unique mapped reads"] + [ "%s (%s)" % (count_in_million(stat[s]["mapped"]), decimal_to_latex_percent(float(stat[s]["mapped"])/stat[s]["total"])) for s in samples ])
-        ## table.append(["Mapped reads"] + [ count_in_million(stat[s]["total"]) for s in samples ])
+            labels = ''
+
+        table.append(["Original total reads %s" % labels] + [ count_in_million(stat[s]["total"]) for s in samples ])
+
+        mapping = ["Unique mapped reads %s" % labels]
+        for s in samples:
+            ratio = float(stat[s]["mapped"])/stat[s]["total"]
+            if stat[s]["mapped"] >= 4e6 and ratio >= 0.6:
+                color = 'blue'
+            else:
+                color = 'red'
+
+            mapping.append("\color{%s} %s (%s)" % (color, count_in_million(stat[s]["mapped"]), decimal_to_latex_percent(ratio)))
+
+        table.append(mapping)
         mapped = stat[s]['mapped']
 
     js = pre + "_pbc.json"
@@ -60,9 +78,19 @@ def summary_table(conf):
         if mapped:
             if conf.down:
                 ## distinct location => unique locations(with reads >= 1)
-                table.append(["Unique locations of 4M reads"] + [ "%s (%s)" % (count_in_million(stat[s]["Nd"]), decimal_to_latex_percent(NRF(stat[s]['Nd'],float(mapped)))) for s in samples ])
-                ## N1 locations
-                table.append(["Locations with only 1 read from 4M reads, number (ratio)"] + [ "%s (%s)" % (count_in_million(stat[s]["N1"]), decimal_to_latex_percent(NRF(stat[s]['N1'],float(mapped)))) for s in samples ])
+                nrf = ["Unique locations of 4M reads"] 
+                n1 = ["Locations with only 1 read from 4M reads, number (ratio)"]
+                for s in samples:
+                    nrf_s = NRF(stat[s]['Nd'],float(mapped))
+                    if nrf_s >= 0.7:
+                        labels = 'blue'
+                    else:
+                        labels = 'red'
+                    nrf.append("\color{%s} %s (%s)" % (labels, count_in_million(stat[s]["Nd"]), decimal_to_latex_percent(nrf_s)))
+                    ## N1 locations
+                    n1.append("%s (%s)" % (count_in_million(stat[s]["N1"]), decimal_to_latex_percent(NRF(stat[s]['N1'],float(mapped)))))
+                table.append(nrf)
+                table.append(n1)
             else:
                 ## distinct location => unique locations(with reads >= 1)
                 table.append(["Unique locations of total reads"] + [ "%s (%s)" % (count_in_million(stat[s]["Nd"]), decimal_to_latex_percent(NRF(stat[s]['Nd'],float(mapped)))) for s in samples ])
@@ -75,8 +103,15 @@ def summary_table(conf):
 
         ## PBC1 = N1/Nd
         if conf.down:
-            table.append(
-                ["PBC of 4M reads"] + [ decimal_to_latex_percent(stat[s]["PBC"]) for s in samples ])
+            pbcs = ["PBC of 4M reads"]
+            for s in samples:
+                pbc = stat[s]["PBC"]
+                if pbc >= 0.8:
+                    color = 'blue'
+                else:
+                    color = 'red'
+                pbcs.append("\color{%s} %s" % (color, decimal_to_latex_percent(pbc)))
+            table.append(pbcs)
         else:
             table.append(
                 ["PBC of total reads"] + [ decimal_to_latex_percent(stat[s]["PBC"]) for s in samples ])
@@ -128,12 +163,20 @@ def summary_table(conf):
         stat = _stat(js)
         if conf.down:
             if conf.frip:
-                frip = ["FRiP of 5M non-chrM reads"] + [ str(decimal_to_latex_percent(stat[s]['frip'])) for s in samples ]
+                label = '5M'
             else:
-                frip = ["FRiP of 4M non-chrM reads"] + [ str(decimal_to_latex_percent(stat[s]['frip'])) for s in samples ]
+                label = '4M'
+            frips = ["FRiP of %s non-chrM reads" % label]
+            for s in samples:
+                frip = stat[s]['frip']
+                if frip >= 0.01:
+                    color = 'blue'
+                else:
+                    color = 'red'
+                frips.append("\color{%s} %s" % (color, str(decimal_to_latex_percent(frip))))
         else:
-            frip = ["FRiP of total non-chrM reads"] + [ str(decimal_to_latex_percent(stat[s]['frip'])) for s in samples ]
-        table.append(frip)
+            frips = ["FRiP of total non-chrM reads"] + [ str(decimal_to_latex_percent(stat[s]['frip'])) for s in samples ]
+        table.append(frips)
 
     ## IP layer
     samples = conf.treatment_bases
@@ -155,9 +198,12 @@ def summary_table(conf):
     if exist(js):
         stat = _stat(js)
 
+        if stat["cor"][0] >= 0.6:
+            color = 'blue'
+        else:
+            color = 'red'
         table.append(["Replicates reads correlation/replicates peaks overlap"] + \
-                     ['\multicolumn{%s}{c}{%s}' % (str(len(conf.sample_bases)), "Correlation " + '\t'.join(map(lambda x: str(round(x,2)), stat["cor"])) + '/Overlap ' + '\t'.join(map(lambda x:str(int(x)), stat["overlap"]))) ])
-
+                     ['\multicolumn{%s}{c}{%s}' % (str(len(conf.sample_bases)), '\color{%s} ' % (color) + "Correlation " + '\t'.join(map(lambda x: str(round(x,2)), stat["cor"])) + '/Overlap ' + '\t'.join(map(lambda x:str(int(x)), stat["overlap"]))) ])
 
     ## Pool layer
     js = pre + "_macs2.json"
@@ -176,8 +222,14 @@ def summary_table(conf):
     js = pre + "_dhs.json"
     if exist(js):
         stat = _stat(js)
+        ratio = float(stat["overlap"])/stat["number"]
+        if ratio >= 0.7:
+            color = 'blue'
+        else:
+            color = 'red'
+
         table.append(
-            ["Top peaks overlap with union DHS number (ratio)"] + ['\multicolumn{%s}{c}{\parbox[c][][c]{2.2cm}{%s (%s)}}' % (str(len(conf.sample_bases)), stat["overlap"], decimal_to_latex_percent(float(stat["overlap"])/stat["number"]))])
+            ["Top peaks overlap with union DHS number (ratio)"] + ['\multicolumn{%s}{c}{\parbox[c][][c]{2.2cm}{\color{%s} %s (%s)}}' % (str(len(conf.sample_bases)), color, stat["overlap"], decimal_to_latex_percent(float(stat["overlap"])/stat["number"]))])
 
     js = pre + "_meta.json"
     if exist(js):

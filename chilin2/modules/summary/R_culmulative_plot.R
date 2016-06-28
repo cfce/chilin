@@ -1,6 +1,7 @@
 %# value
 
-col=c('#FFB5C5','#5CACEE','#7CFC00','#FFD700','#8B475D','#8E388E','#FF6347','#FF83FA','#EEB422','#CD7054')
+cols = colors()
+col=cols[c(12, 24, 30, 31, 32, 47, 101, 386, 376, 621)]
 pch=c(21,22,24,25,21,22,24,25,21,22,24,25,21,22,24,25)
 
 value = c(\VAR{current_data | join(", ")})
