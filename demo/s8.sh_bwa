@@ -13,4 +13,4 @@
 #SBATCH -J S8-%A_%a.err
 
 source ../chilin_env/bin/activate
-chilin simple -u qinq -s hg38 --threads 8 -i STAT6_S8 -o S8 -t GSM445803/SRR039652.fastq -p narrow -r tf --dont_remove
+chilin simple -u qinq -s hg38 --threads 8 -i STAT6_S8 -o S8 -t GSM445803/SRR039652.fastq -p narrow -r tf --dont_remove --dry-run
