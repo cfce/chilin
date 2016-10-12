@@ -25,7 +25,7 @@ def macs2(workflow, conf):
     if conf.get("macs2", "type").lower() in ["both", "narrow"]: ## for DNase, H3K4, H2AZ, all acetyl marks, or TF
         macs2_on_merged_narrow = attach_back(workflow, ShellCommand(
             """
-            {tool} callpeak --SPMR -B -q {param[fdr]} --keep-dup {param[keep_dup]} --extsize={param[extsize]} --nomodel -g {param[species]} {param[format]} {param[treat_opt]} {param[control_opt]} -n {param[description]} && cut -f1,2,3,4,9 {output[peaks]} > {output[bedtmp]}
+            {tool} callpeak --SPMR -B -q {param[fdr]} --keep-dup {param[keep_dup]} -g {param[species]} {param[format]} {param[treat_opt]} {param[control_opt]} -n {param[description]} && cut -f1,2,3,4,9 {output[peaks]} > {output[bedtmp]}
             ## remove weird path characters
             cp {output[peaks]} {output[peakstmp]}
             cp {output[summits]} {output[summitstmp]}
@@ -82,7 +82,7 @@ def macs2(workflow, conf):
         macs2_on_merged_broad = attach_back(workflow,
                                             ShellCommand(
                                                 """
-                                                {tool} callpeak --SPMR -B -q {param[fdr]} {param[treat_opt]} {param[control_opt]} --keep-dup {param[keep_dup]} --broad --broad-cutoff {param[fdr]} -g {param[species]} {param[format]} -n {param[description]} && cut -f1,2,3,4,9 {output[peaks]} > {output[bedtmp]}
+                                                {tool} callpeak --SPMR -B -q {param[fdr]} {param[treat_opt]} {param[control_opt]} --keep-dup {param[keep_dup]} --extsize={param[extsize]} --nomodel --broad --broad-cutoff {param[fdr]} -g {param[species]} {param[format]} -n {param[description]} && cut -f1,2,3,4,9 {output[peaks]} > {output[bedtmp]}
                                                 ## remove weird path characters
                                                 cp {output[peaks]} {output[peakstmp]}
                                                 awk \'{{OFS="\\t";n+=1;$4="peak"n;print $0}}\' {output[peakstmp]} > {output[peaks]}
