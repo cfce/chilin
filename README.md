@@ -97,7 +97,10 @@ deactivate
 Troubleshooting
 ==================
 
-If any error of the dependent software occur, try to upgrade the corresponding software.
+If any error of the dependent software occur, try to upgrade the corresponding software. 
+Those *warnings* generated in *pdflatex* step is ok.
+There is one known issue of mm9 chrom-info in CentOS. ChiLin is suggested to be used under Ubuntu.
+If *sys_platform* error occurs, uninstall the system setuptools and install the latest setuptools manually.
 
 Documentation
 ================

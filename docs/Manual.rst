@@ -441,7 +441,7 @@ Without `--dont_remove` option, the work directory would be cleaned up::
   |   |-- id_treat_rep1.bam
   |   |-- id_treat_rep2.bam
   |   `-- id_treatment.bam
-  |-- id.pdf
+  |-- id_report.pdf
   |-- id_control.bw
   |-- id_peaks.xls
   |-- id_sort_peaks.narrowPeak
@@ -492,7 +492,7 @@ With `--dont_remove` option,
                    |-- id.log ## latex log file
                    |-- id.meta ## meta regions peak distribution temporary file
                    |-- id.out  ## latex log file
-                   |-- id.pdf  ## pdf document generated
+                   |-- id_report.pdf  ## pdf document generated
                    |-- id.tex  ## file latex file
                    |-- id_0_1.overlap  ## replicates peak overlap
                    |-- id_bwa_compare.R ## R script for comparing new data to historic data

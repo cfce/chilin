@@ -204,8 +204,9 @@ def clean_up(workflow, conf):
         preserved.append(target + "_sort_peaks.narrowPeak")
         not_moved.append(target + "_sort_peaks.narrowPeak")
         added_bed.append(target + "_sort_peaks.narrowPeak")
-        preserved.append(target + "_treat_pileup.bdg")
-        preserved.append(target + "_control_lambda.bdg")
+        # remove bedgraph
+        #preserved.append(target + "_treat_pileup.bdg")
+        #preserved.append(target + "_control_lambda.bdg")
         preserved.append(target + "_100k_fastqc")
         preserved.append(target + "_peaks.xls")
         not_moved.append(target + "_peaks.xls")
@@ -244,10 +245,12 @@ def clean_up(workflow, conf):
     preserved.append(conf.prefix + "_gene_score.txt")
     preserved.append(conf.prefix + "_gene_score_5fold.txt")
     preserved.append(conf.prefix + "_conserv.txt")
-    preserved.append(conf.prefix + "_b_treat_pileup.bdg")
-    preserved.append(conf.prefix + "_b_control_lambda.bdg")
-    preserved.append(conf.prefix + "_treat_pileup.bdg")
-    preserved.append(conf.prefix + "_control_lambda.bdg")
+
+    # remove bedgraph
+    #preserved.append(conf.prefix + "_b_treat_pileup.bdg")
+    #preserved.append(conf.prefix + "_b_control_lambda.bdg")
+    #preserved.append(conf.prefix + "_treat_pileup.bdg")
+    #preserved.append(conf.prefix + "_control_lambda.bdg")
     preserved.append(conf.prefix + ".tex")
     preserved.append(os.path.join(conf.target_dir, "json"))
     preserved.append(conf.prefix + ".pdf")
