@@ -210,8 +210,8 @@ def install_full():
     if not os.path.exists("chilin_env"):
 	    setup_env = subprocess.call(
 	    """
-            python virtualenv.py -ppython2.7 chilin_env 
-	    python virtualenv.py -ppython2.7 --system-site-packages --distribute chilin_env
+            virtualenv -ppython2.7 chilin_env 
+	    virtualenv -ppython2.7 --system-site-packages --distribute chilin_env
 	    """, shell=True)
 
     execfile("chilin_env/bin/activate_this.py", dict(__file__="chilin_env/bin/activate_this.py"))

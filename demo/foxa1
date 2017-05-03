@@ -13,5 +13,5 @@
 #SBATCH -J foxa1-%A_%a.err
 
 source ../chilin_env/bin/activate
-chilin simple -u qinq -s hg19 --threads 12 -i local -o local -t foxa1_t1.fastq.gz,foxa1_t1.fastq.gz -c foxa1_c1.fastq.gz,foxa1_c1.fastq.gz -p narrow -r tf --dont_remove
+chilin simple -u qinq -s hg38 --threads 12 -i local -o local -t foxa1_t1.fastq.gz,foxa1_t1.fastq.gz -c foxa1_c1.fastq.gz,foxa1_c1.fastq.gz -p narrow -r tf --dont_remove
 
