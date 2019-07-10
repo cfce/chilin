@@ -22,15 +22,14 @@ def conservation(workflow, conf):
     peaks_input = conf.prefix + "_peaks_top_conserv.bed"
 
     if os.path.isdir(conf.get_path(conf.get("basics", "species"), "conservation")):
-            conserv_bin = resource_filename("chilin2.modules", "conservation/conservation_plot.py")
+            conserv_bin = "conservation_plot.py"
     elif os.path.isfile(conf.get_path(conf.get("basics", "species"), "conservation")):
-            conserv_bin = resource_filename("chilin2.modules", "conservation/conservation_onebw_plot.py")
+            conserv_bin = "conservation_onebw_plot.py"
 
     if os.path.exists(conf.get_path(conf.get("basics", "species"), "conservation")):
 	    conservation = attach_back(workflow,
 				       ShellCommand(
-					   "{tool} -t Conservation_at_summits \
-					   -d {input[phast]} -o {param[prefix]} -l Peak_summits {input[bed]} -w {param[width]} > {output[score]}",
+					   "{tool} -t Conservation_at_summits -d {input[phast]} -o {param[prefix]} -l Peak_summits {input[bed]} -w {param[width]} > {output[score]}",
 					   tool=conserv_bin,
 					   input={"bed": peaks_input,
 						  "phast": conf.get_path(conf.get("basics", "species"), "conservation")},

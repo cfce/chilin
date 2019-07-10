@@ -136,7 +136,9 @@ def macs2(workflow, conf):
     import os
     bdg_trim_control = attach_back(workflow,
                                    ShellCommand(
-                                       '{tool} intersect -a {input[bdg]} -b {param[chrom_bed]} -wa -f 1.00 > {output}',
+                                       '''
+                                       {tool} intersect -a {input[bdg]} -b {param[chrom_bed]} -wa -f 1.00 | bedtools sort -i - > {output}
+                                       ''',
                                        tool="bedtools",
                                        input={"bdg": cont_bdg},
                                        param = {"chrom_bed": os.path.join(conf.target_dir, "chrom.bed")},
@@ -293,7 +295,7 @@ def macs2_rep(workflow, conf):
         import os
         bdg_trim_controlrep = attach_back(workflow,
                                           ShellCommand(
-                                              '{tool} intersect -a {input} -b {param[chrom_bed]} -wa -f 1.00 > {output}',
+                                              '{tool} intersect -a {input} -b {param[chrom_bed]} -wa -f 1.00 | bedtools sort -i - > {output}',
                                               tool="bedtools",
                                               input=cont_bdg,
                                               output=cont_bdg + ".tmp",

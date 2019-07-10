@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 
 """
 SYNOPSIS: This tool searches for known and new (denovo) motifs that are in

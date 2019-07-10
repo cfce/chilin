@@ -33,7 +33,7 @@ class Counter(object):
     def __call__(self):
         r = range(self.number)
         if len(r) < self.wanted:
-            raise Exception, "total reads pairs is less than your sampling number"
+            raise Exception
         self.rand_num = sample(r, self.wanted)
         if self.pair:
             rand_num = range(self.header) + [ 2*n+self.header for n in self.rand_num ] + [ 2*n+1+self.header for n in self.rand_num ]
@@ -51,7 +51,7 @@ def sampling(sam, number,format, pair=True, name_order=True):
     h = os.popen("samtools view -SH %s | wc -l |cut -d' ' -f1 " % sam)
     count = int(n.read().strip())
     header = int(h.read().strip())
-    print count,header
+    print(count,header)
     n.close()
     h.close()
 
@@ -82,6 +82,10 @@ def has_next(iterable):
         return None
     finally:
         del iterable
+
+
+def main():
+    sampling(sys.argv[1], sys.argv[2], "sam", sys.argv[3])
 
 if __name__ == "__main__":
     sampling(sys.argv[1], sys.argv[2], "sam", sys.argv[3])

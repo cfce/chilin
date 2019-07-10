@@ -2,19 +2,19 @@
 Time-stamp: <2014-11-13 09:38:31 qqin>
 install ChiLin and related program and dependent data
 """
-from pkg_resources import resource_filename
+from glob import glob
+#from pkg_resources import resource_filename
 import os
-from distribute_setup import use_setuptools
-import platform
+#from distribute_setup import use_setuptools
+#import platform
 import argparse
 from argparse import RawDescriptionHelpFormatter
 from pprint import pprint
 import sys
 import subprocess
 
-use_setuptools()
-
-from setuptools import setup
+#use_setuptools()
+from setuptools import setup, find_packages
 from ConfigParser import SafeConfigParser
 
 def which(program):
@@ -147,29 +147,38 @@ def default_species_section():
     f.close()
     return
 
-def clean():
-    """ clean up 
-    """
-    import os
-    clean_up = os.system("""
-cd software
-cd mdseqpos && python setup.py clean --all && cd ..
-for i in bedtools-2.17.0  bowtie  bwa samtools-0.1.19  seqtk
-do
-  cd $i && make clean && cd ..
-done
-cd ..
-rm -rf build chilin2.egg-info chilin.iml dist distribute-0.6.49-py2.6.egg distribute-0.6.49-py2.7.egg distribute-0.6.49.tar.gz flycheck_setup.py TAGS
-rm -rf chilin_env
-""")
-    return
+#def clean():
+#    """ clean up 
+#    """
+#    import os
+#    clean_up = os.system("""
+#cd software
+#cd mdseqpos && python setup.py clean --all && cd ..
+#for i in bedtools-2.17.0  bowtie  bwa samtools-0.1.19  seqtk
+#do
+#  cd $i && make clean && cd ..
+#done
+#cd ..
+#rm -rf build chilin2.egg-info chilin.iml dist distribute-0.6.49-py2.6.egg distribute-0.6.49-py2.7.egg distribute-0.6.49.tar.gz flycheck_setup.py TAGS
+#rm -rf chilin_env
+#""")
+#    return
 
 def install():
+    setup_env = subprocess.check_call(
+        """
+        #source chilin_env/bin/activate
+        #python setup.py install
+        cd software
+        cd mdseqpos && python setup.py install && cd ..
+        which R && R -e "source('http://bioconductor.org/biocLite.R');biocLite('seqLogo');library(seqLogo)"
+        cd ..
+        """, shell=True, executable='/bin/bash')
     setup(
         name='chilin2',
         #LEN: please set the version number above
         version=_CHILIN_VERSION,
-        packages=['chilin2', 'chilin2.modules', 'chilin2.modules.bwa',
+        packages=['chilin2', 'chilin2.modules', 'chilin2.modules.bwa', 'chilin2',
                   'chilin2.modules.bowtie', 'chilin2.modules.ceas',
                   'chilin2.modules.config', 'chilin2.modules.conservation',
                   'chilin2.modules.enrichment', 'chilin2.modules.macs2_fragment',
@@ -181,7 +190,19 @@ def install():
                   'chilin2.modules.star',
                   'chilin2.modules.replicates', 'chilin2.modules.summary', 'chilin2.modules.washU',
                   'samflow'],
-
+        entry_points={
+                'console_scripts': [
+                    'chilin = chilin2:main',
+                    'RegPotential.py = chilin2.modules.regulatory.RegPotential:main',
+                    'conservation_onebw_plot.py = chilin2.modules.conservation.conservation_onebw_plot:main',
+                    'conservation_plot.py = chilin2.modules.conservation.conservation_plot:main',
+                    'bedAnnotate.py = chilin2.modules.ceas.bedAnnotate:main',
+                    'sampling_pe_sam.py = chilin2.modules.interface.sampling_pe_sam:main',
+                    'filter_pe_sam_faster.py = chilin2.modules.interface.filter_pe_sam_faster:main',
+                ],
+            
+        },
+        scripts= ["chilin2/modules/ceas/meta_info.sh"],
         package_dir = {'chilin2': 'chilin2',
                        'samflow': 'samflow'},
         package_data = {"chilin2.modules" : ["config/*.conf", "dbaccessor/ChiLinQC.db",
@@ -190,76 +211,12 @@ def install():
                                              "phantompeak/*tex", "bwa/*tex", "conservation/*tex", "contamination/*tex",
                                              "summary/*cls", "fastqc/*tex", "frip/*tex",
                                              "summary/CFCE_Logo_Final.jpg"]},
-        url='http://cistrome.org/chilin/',
-        license='MIT',
+        url='http://cistrome.org/chilin/', zip_safe=False,
         platforms='linux/unix',
         author='Hanfei Sun, Shenglin Mei, Qian Qin, Len Taing',
         author_email='1410771@tongji.edu.cn',
         description=read("README.md"),
-        scripts = ["chilin2/chilin", "chilin2/modules/conservation/conservation_plot.py",
-		   "chilin2/modules/conservation/conservation_onebw_plot.py",
-                   "chilin2/modules/ceas/bedAnnotate.py",
-                   "chilin2/modules/ceas/meta_info.sh",
-                   "chilin2/modules/interface/sampling_pe_sam.py",
-                   "chilin2/modules/interface/filter_pe_sam_faster.py",
-                   "chilin2/modules/regulatory/RegPotential.py"],
-        install_requires=['jinja2','argparse','macs2','numpy','cython', 'bx-python'])
-
-
-def install_full():
-    if not os.path.exists("chilin_env"):
-	    setup_env = subprocess.call(
-	    """
-            virtualenv -ppython2.7 chilin_env 
-	    virtualenv -ppython2.7 --system-site-packages --distribute chilin_env
-	    """, shell=True)
-
-    execfile("chilin_env/bin/activate_this.py", dict(__file__="chilin_env/bin/activate_this.py"))
-    setup_env = subprocess.call(
-        """
-        source chilin_env/bin/activate
-        cd software
-        if [ ! -s chilin_env/bin/bedtools ] 
-        then
-		cd FastQC && chmod 755 * && cp -rf * ../../chilin_env/bin && cd ..
-		cd bwa && make clean && make && cp bwa ../../chilin_env/bin && cd ..
-		cd seqtk && make clean && make && cp seqtk ../../chilin_env/bin && cd ..
-		cd samtools* && make clean && make && cp samtools ../../chilin_env/bin && cd ..
-		cd bedtools* && make clean && make && cp bin/* ../../chilin_env/bin && cd ..
-        fi
-        """, shell=True)
-
-
-    if platform.system() == 'Linux':
-        setup_env = subprocess.check_call(
-            """
-            source chilin_env/bin/activate
-            cd software
-            chmod 755 ucsc/linux/*
-            cp -f ucsc/linux/* ../chilin_env/bin
-            chmod -R 755 ../chilin_env/bin
-            """, shell=True, executable='/bin/bash')
-    else:
-        setup_env = subprocess.check_call(
-            """
-            source chilin_env/bin/activate
-            cd software
-            chmod 755 ucsc/mac/*
-            cp -f ucsc/mac/* ../chilin_env/bin
-            chmod -R 755 ../chilin_env/bin
-            """, shell=True, executable='/bin/bash')
-
-    #execfile("chilin_env/bin/activate_this.py", dict(__file__="chilin_env/bin/activate_this.py"))
-    #install()
-
-    setup_env = subprocess.check_call(
-        """
-        source chilin_env/bin/activate
-        python setup.py install
-        cd software
-        cd mdseqpos && python setup.py install && cd ..
-        which R && R -e "source('http://bioconductor.org/biocLite.R');biocLite('seqLogo');library(seqLogo)"
-        """, shell=True, executable='/bin/bash')
+        install_requires=['jinja2','argparse','bx-python'])
 
 
 class FriendlyArgumentParser(argparse.ArgumentParser):
@@ -281,35 +238,32 @@ def main():
     p = FriendlyArgumentParser(description=__doc__, formatter_class=RawDescriptionHelpFormatter, usage='setup.py [list|install]')
 
     p.add_argument("install", nargs="?", help="install chilin")
-    p.add_argument("--list", '-l', default=False, action="store_true", help="list chilin dependent software")
-    p.add_argument("--full", '-f', default=False, action="store_true", help="install dependent software")
+#    p.add_argument("--list", '-l', default=False, action="store_true", help="list chilin dependent software")
+#    p.add_argument("--full", '-f', default=False, action="store_true", help="install dependent software")
     args = p.parse_args()
 
-    if not (args.list or args.install):
-       p.print_help()
-       sys.exit(1)
-    if args.list:
-        if os.path.exists("chilin_env/bin/activate_this.py"):
-            execfile("chilin_env/bin/activate_this.py", dict(__file__="chilin_env/bin/activate_this.py"))
-        module_list()
-        sys.exit(0)
-
-    if not args.install in ["install", "develop", "clean"]:
-        pprint("maybe typo, use `install` to install or `develop` to develop or `-l` to list or clean to clean up")
-        p.print_help()
-        sys.exit(1)
-
+#    if not (args.list or args.install):
+#       p.print_help()
+#       sys.exit(1)
+#    if args.list:
+#        if os.path.exists("chilin_env/bin/activate_this.py"):
+#            execfile("chilin_env/bin/activate_this.py", dict(__file__="chilin_env/bin/activate_this.py"))
+#        module_list()
+#        sys.exit(0)
+#
+#    if not args.install in ["install", "develop", "clean"]:
+#        pprint("maybe typo, use `install` to install or `develop` to develop or `-l` to list or clean to clean up")
+#        p.print_help()
+#        sys.exit(1)
+#
     if args.install:
-        if args.install == "clean":
-            clean()
-            return
+        #if args.install == "clean":
+        #    clean()
+        #    return
         if os.path.exists('chilin.conf'):
             generate_defaults()
-            if args.full:
-                default_species_section()
-                install_full()
-            else:
-                install()
+            default_species_section()
+            install()
 
 if __name__ == '__main__':
     main()

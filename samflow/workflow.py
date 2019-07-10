@@ -66,6 +66,7 @@ class Workflow(AbstractCommand):
         for cmd in self:
             success_invoked = cmd.invoke()
             if not success_invoked:
+                print(cmd.name, cmd._render())
                 print("{0:!^80}".format("Error happened! Workflow stopped!"))
                 return False
         print("{0:-^80}".format("Workflow finished successfully"))
