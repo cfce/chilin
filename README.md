@@ -16,7 +16,6 @@ git clone https://github.com/cfce/chilin
 then install through with the system-wide python and pip, e.g., /usr/bin/python or /usr/local/bin/python,
 
 ``` sh
-<<<<<<< HEAD
 wget -c https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh
 
@@ -30,11 +29,6 @@ conda install bwa=0.7.13 samtools=0.1.19 bedtools=2.17.0 seqtk ucsc-bedclip ucsc
 
 easy_install pip
 python setup.py install
-
-=======
-pip install virtualenv
-python setup.py clean && python setup.py install -f
->>>>>>> e042fe5a91ee2ebcd39b5de6a00d3158132b26dc
 ```
 
 source virtual environment and use:
@@ -103,17 +97,12 @@ If you modify the code or update any part of the configuration file *chilin.conf
 python setup.py install 
 ```
 
-
-<<<<<<< HEAD
-PdfLatex Troubleshooting
-=======
 TODO
 ================
 An conda or docker version is under development.
 
-Troubleshooting
->>>>>>> e042fe5a91ee2ebcd39b5de6a00d3158132b26dc
-==================
+PdfLatex Troubleshooting
+==========================
 If any error of the dependent software occur, try to upgrade the corresponding software. 
 Those *warnings* generated in *pdflatex* step is ok.
 There is one known issue of mm9 chrom-info in CentOS. ChiLin is suggested to be used under Ubuntu.
