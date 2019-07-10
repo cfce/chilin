@@ -13,9 +13,10 @@ First, clone:
 git clone https://github.com/cfce/chilin
 ```
 
-then install through:
+then install through with the system-wide python and pip, e.g., /usr/bin/python or /usr/local/bin/python,
 
 ``` sh
+<<<<<<< HEAD
 wget -c https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 bash Miniconda3-latest-Linux-x86_64.sh
 
@@ -30,6 +31,10 @@ conda install bwa=0.7.13 samtools=0.1.19 bedtools=2.17.0 seqtk ucsc-bedclip ucsc
 easy_install pip
 python setup.py install
 
+=======
+pip install virtualenv
+python setup.py clean && python setup.py install -f
+>>>>>>> e042fe5a91ee2ebcd39b5de6a00d3158132b26dc
 ```
 
 source virtual environment and use:
@@ -88,7 +93,7 @@ For pair end data, use semicolon to separate sample replicates, use comma to sep
 chilin simple --threads 8 -i H3K27me3_PairEnd -o H3K27me3_PairEnd -u you -s mm9 -t "GSM905438.fastq_R1.gz,GSM905438.fastq_R2.gz" -c "GSM905434.fastq_R1.gz,GSM905434.fastq_R2.gz;GSM905436.fastq_R1.gz,GSM905436.fastq_R2.gz" -p both --pe
 ```
 
-Currently, only bwa support pair end processing. bwa supports both fastq.gz and fastq file, bowtie only support fastq file, the pipeline should use the corresponding aligner's genome index configured in the [configuration files](http://cistrome.org/chilin/Manual.html#species).
+Currently, only bwa support pair end processing. bwa supports both fastq.gz and fastq file, bowtie only support fastq file, the pipeline should use the corresponding aligner's genome index configured in the [configuration files](http://cistrome.org/chilin/Manual.html#species). For library contamination evaluation, user need to fill in the bwa genome index for the e.coli or mycoplasma or other species' genomes.
 
 Update the configuration
 ==============================
@@ -99,7 +104,15 @@ python setup.py install
 ```
 
 
+<<<<<<< HEAD
 PdfLatex Troubleshooting
+=======
+TODO
+================
+An conda or docker version is under development.
+
+Troubleshooting
+>>>>>>> e042fe5a91ee2ebcd39b5de6a00d3158132b26dc
 ==================
 If any error of the dependent software occur, try to upgrade the corresponding software. 
 Those *warnings* generated in *pdflatex* step is ok.
