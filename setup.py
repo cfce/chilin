@@ -216,7 +216,7 @@ def install():
         author='Hanfei Sun, Shenglin Mei, Qian Qin, Len Taing',
         author_email='1410771@tongji.edu.cn',
         description=read("README.md"),
-        install_requires=['MarkupSafe==1.1.1', 'jinja2 ==2.9','argparse','bx-python'])
+        install_requires=['MarkupSafe==1.1.1', 'jinja2 ==2.10.1','argparse','bx-python'])
 
 
 class FriendlyArgumentParser(argparse.ArgumentParser):
