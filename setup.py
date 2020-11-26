@@ -5,7 +5,7 @@ install ChiLin and related program and dependent data
 from glob import glob
 #from pkg_resources import resource_filename
 import os
-#from distribute_setup import use_setuptools
+from distribute_setup import use_setuptools
 #import platform
 import argparse
 from argparse import RawDescriptionHelpFormatter
@@ -76,7 +76,7 @@ def module_list():
             else:
                status = "missing"
             dependency += [[sp+'  '+op, status]]
-            
+
     for d, s in dependency:
         pprint('{: ^25}: {: ^50}'.format(d, s))
 
@@ -148,7 +148,7 @@ def default_species_section():
     return
 
 #def clean():
-#    """ clean up 
+#    """ clean up
 #    """
 #    import os
 #    clean_up = os.system("""
@@ -200,7 +200,7 @@ def install():
                     'sampling_pe_sam.py = chilin2.modules.interface.sampling_pe_sam:main',
                     'filter_pe_sam_faster.py = chilin2.modules.interface.filter_pe_sam_faster:main',
                 ],
-            
+
         },
         scripts= ["chilin2/modules/ceas/meta_info.sh"],
         package_dir = {'chilin2': 'chilin2',
@@ -216,7 +216,7 @@ def install():
         author='Hanfei Sun, Shenglin Mei, Qian Qin, Len Taing',
         author_email='1410771@tongji.edu.cn',
         description=read("README.md"),
-        install_requires=['jinja2','argparse','bx-python'])
+        install_requires=['MarkupSafe==1.1.1', 'jinja2 ==2.9','argparse','bx-python'])
 
 
 class FriendlyArgumentParser(argparse.ArgumentParser):

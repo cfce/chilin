@@ -16,8 +16,6 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 
-sam = sys.argv[1]
-
 
 def flag2table(sam):
     """
@@ -99,5 +97,10 @@ def str_flag(f):
 }
     return flag[f]
 
-flag2table(sam)
 
+def main():
+    sam = sys.argv[1]
+    flag2table(sam)
+
+if __name__ == "__main__":
+    main()

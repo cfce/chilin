@@ -45,7 +45,7 @@ def macs2(workflow, conf):
                     "peaks_xls": conf.prefix + "_peaks.xls",
                     "control_bdg": conf.prefix + "_control_lambda.bdg"},
             param={"description": conf.prefix,
-                   "keep_dup": 1,
+                   "keep_dup": 'all' if conf.pe else 1,
                    "format": format,
                    "extsize": 73 * 2, # extsize=2*shiftsize
                    "fdr": 0.01,
@@ -100,7 +100,8 @@ def macs2(workflow, conf):
                                                 param = {"description": conf.prefix + "_b",
                                                          "species": "hs",
                                                          "format": format,
-                                                         "keep_dup": 1, "fdr": 0.01},
+                                                         "keep_dup": "all" if conf.pe else 1,
+                                                         "fdr": 0.01},
                                                 name = "broad peaks calling"))
         macs2_on_merged_broad.param["treat_opt"] = " -t " + macs2_on_merged_broad.input["treat"]
         macs2_on_merged_broad.allow_fail = True
@@ -215,7 +216,8 @@ def macs2_rep(workflow, conf):
                                                           "treat_bdg": target + "_treat_pileup.bdg",
                                                           "peaks_xls": target + "_peaks.xls",
                                                           "control_bdg": target + "_control_lambda.bdg"},
-                                                  param={"description": target, "keep_dup": 1, "extsize": 73*2, "species": "hs", "fdr":0.01, "format": format},
+                                                  param={"description": target, "keep_dup": 'all' if conf.pe else 1,
+                                                         "extsize": 73*2, "species": "hs", "fdr":0.01, "format": format},
                                                   name="macs2_callpeak_rep"))
             macs2_on_rep_narrow.param["treat_opt"] = "-t " + macs2_on_rep_narrow.input["treat"]
 

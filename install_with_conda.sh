@@ -18,7 +18,7 @@ conda activate chilin_env
 conda config --add channels defaults
 conda config --add channels conda-forge
 conda config --add channels bioconda
-conda install bwa=0.7.13 samtools=0.1.19 bedtools=2.17.0 seqtk ucsc-bedclip ucsc-bedgraphtobigwig ucsc-wigcorrelate ucsc-wigtobigwig fastqc numpy macs2=2.1.0 bioconductor-seqlogo 
+mamba install -c conda-forge -c bioconda bx-python bwa=0.7.13 samtools=0.1.19 bedtools=2.17.0 seqtk ucsc-bedclip ucsc-bedgraphtobigwig ucsc-wigcorrelate ucsc-wigtobigwig fastqc numpy macs2=2.1.0 bioconductor-seqlogo
 
 easy_install pip
 
