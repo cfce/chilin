@@ -124,7 +124,7 @@ def default_species_section():
     cf.set('basics', "version", _CHILIN_VERSION)
 
     current_dir = os.getcwd()
-    cf.set("contamination", "mycoplasma", os.path.join(current_dir, "db", "mycoplasma.fasta"))
+    ##cf.set("contamination", "mycoplasma", os.path.join(current_dir, "db", "mycoplasma.fasta"))
 
     for sp in ['hg38', 'hg19', 'mm9', 'mm10']:
         cf.add_section(sp)

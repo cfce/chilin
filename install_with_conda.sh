@@ -35,4 +35,3 @@ wget -c ftp://ftp.ensembl.org/pub/release-97/fasta/homo_sapiens/dna//Homo_sapien
 
 ## bwakit similar to UCSC version..
 #wget -c ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_full_analysis_set.fna.gz
-
