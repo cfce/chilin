@@ -1,10 +1,29 @@
 Cistrome ChiLin
 ================
-It is a python package for one-in-all solution of processing ChIP-seq and DNase-seq data.
+It is a pipeline for processing ChIP-seq and DNase-seq data.
 
-Quick Start
+Docker version
+================
+1. Install docker for [your system](https://docs.docker.com/get-docker/)
+
+2. Configure the memory, e.g., see ![MacOS](docker.png)
+
+3. Clone the repo,
+```sh
+git clone https://github.com/cfce/chilin
+cd chilin
+```
+
+4. `docker pull qq06/chilin:1.0`. If network is not fast, user could build the docker image locally by `docker build -t chilin:1.0 .`
+
+5. run the demo command
+```sh
+bash demo/docker_test.sh
+```
+6. copy the results out of docker, `docker cp container_id:/chilin/local .`
+
+Manual install
 ===============
-
 See if you have gcc, g++, java, R, python-dev installed (http://cistrome.org/chilin/Installation.html#dependent-software-list).
 
 First, clone:
@@ -44,29 +63,49 @@ And download the reference files, and test on `demo/foxa1`.
 mkdir -p db
 cd db
 
-# download genome specific annotation to chilin/db and uncompress
-# http://cistrome.org/chilin/Appendix.html#get-dependent-data
-cd chilin/db && wget -c http://cistrome.org/chilin/_downloads/hg38.tgz
-
-# all hg19 reference data
-wget -c http://cistrome.org/chilin/_downloads/hg19.tgz
-wget -c http://cistrome.org/chilin/_downloads/hg19.tgz.md5 ## check md5
-md5sum -c hg19.tgz
-tar xvfz hg19.tgz
 # download mycoplasma for judgement of contamination in your samples
 wget -c http://cistrome.org/chilin/_downloads/mycoplasma.tgz
 wget -c http://cistrome.org/chilin/_downloads/mycoplasma.tgz.md5
 md5sum -c mycoplasma.tgz.md5
 tar xvfz mycoplasma.tgz
 
+# http://cistrome.org/chilin/Appendix.html#get-dependent-data
+# huge reference download
+# hg38
+wget -c http://cistrome.org/chilin/_downloads/hg38.tgz
+wget -c http://cistrome.org/chilin/_downloads/hg38.tgz.md5 ## check md5
+md5sum -c hg38.tgz
+tar xvfz hg38.tgz
+
+# hg19
+wget -c http://cistrome.org/chilin/_downloads/hg19.tgz
+wget -c http://cistrome.org/chilin/_downloads/hg19.tgz.md5 ## check md5
+md5sum -c hg19.tgz
+tar xvfz hg19.tgz
+
+# mm9
+wget -c http://cistrome.org/chilin/_downloads/mm9.tgz
+wget -c http://cistrome.org/chilin/_downloads/mm9.tgz.md5 ## check md5
+md5sum -c mm9.tgz
+tar xvfz mm9.tgz
+
+# mm10
+wget -c http://cistrome.org/chilin/_downloads/mm10.tgz
+wget -c http://cistrome.org/chilin/_downloads/mm10.tgz.md5 ## check md5
+md5sum -c mm10.tgz
+tar xvfz mm10.tgz
+
 cd .. && python setup.py install
-cd demo && bash foxa1
 ```
 
 Usage
 ==============================
 
 Demo data command is as follows:
+
+```sh
+cd demo && bash foxa1
+```
 
 ``` sh
    chilin  simple -p narrow -t foxa1_t1.fastq  -c foxa1_c1.fastq -i local -o local -s hg19  --skip 10,12 --dont_remove
@@ -99,27 +138,10 @@ python setup.py install
 
 PdfLatex Troubleshooting
 ==========================
-If any error of the dependent software occur, try to upgrade the corresponding software. 
-Those *warnings* generated in *pdflatex* step is ok.
-There is one known issue of mm9 chrom-info in CentOS. ChiLin is suggested to be used under Ubuntu.
-If *sys_platform* error occurs, uninstall the system setuptools and install the latest setuptools manually.
-Later *pdflatex* is not incompatible with the macro used in the latex report, update with sudo apt install cm-super && updmap.
-
-Docker version
-================
-1. Install docker for [your system](https://docs.docker.com/get-docker/)
-2. Configure the memory, e.g., see ![MacOS](docker.png)
-3. docker pull
-4. run command
-5. copy the results out of docker
-
-```sh
-git clone https://github.com/cfce/chilin
-cd chilin
-bash demo/docker_test.sh
-```
+ChiLin is suggested to be used under Ubuntu, Mac with docker or conda environment.
 
 Documentation
 ================
 full documentation: http://cistrome.org/chilin
 github wiki: https://github.com/cfce/chilin/wiki
+
