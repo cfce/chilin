@@ -97,10 +97,6 @@ If you modify the code or update any part of the configuration file *chilin.conf
 python setup.py install 
 ```
 
-TODO
-================
-An conda or docker version is under development.
-
 PdfLatex Troubleshooting
 ==========================
 If any error of the dependent software occur, try to upgrade the corresponding software. 
@@ -109,9 +105,21 @@ There is one known issue of mm9 chrom-info in CentOS. ChiLin is suggested to be 
 If *sys_platform* error occurs, uninstall the system setuptools and install the latest setuptools manually.
 Later *pdflatex* is not incompatible with the macro used in the latex report, update with sudo apt install cm-super && updmap.
 
+Docker version
+================
+1. Install docker for [your system](https://docs.docker.com/get-docker/)
+2. Configure the memory, e.g., see ![MacOS](docker.png)
+3. docker pull
+4. run command
+5. copy the results out of docker
+
+```sh
+git clone https://github.com/cfce/chilin
+cd chilin
+bash demo/docker_test.sh
+```
+
 Documentation
 ================
 full documentation: http://cistrome.org/chilin
-
 github wiki: https://github.com/cfce/chilin/wiki
-
